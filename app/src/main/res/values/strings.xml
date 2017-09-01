@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Plant Place</string>
+    <string name="about_activity">Welcome</string>
+    <string name="terms_activity">Terms and Condition</string>
+    <string name="dashboard_activity">Dashboard</string>
+    <string name="activity_myuploads">My Uploads</string>
+    <string name="gallery_activity">Choose from Gallery</string>
+    <string name="text_acra_error_text">Error</string>
+    <string name="update_activity">Edit Upload</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="species_detail_title">Album Species</string>
+
+</resources>

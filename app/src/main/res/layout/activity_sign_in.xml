@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ibin.plantplacepic.activities.SignUpActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1"
+        android:background="@color/colorPrimary"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.50"
+            android:background="@drawable/headimage"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.50">
+
+            <LinearLayout
+                android:id="@+id/linearlayoutSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sign In"
+                    android:textColor="@color/colorText"
+                    android:textSize="@dimen/title_font_size"
+                    android:textStyle="bold"
+                    android:layout_gravity="left"/>
+
+                <EditText
+                    android:id="@+id/editTextEmailSignin"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/image_info_edittext_height"
+                    android:layout_marginTop="10dp"
+                    android:hint="Please Enter Email"
+                    android:textSize="@dimen/image_info_text_font_size"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:background="@drawable/edittextbg"/>
+
+                <EditText
+                    android:id="@+id/editTextPassSignin"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/image_info_edittext_height"
+                    android:layout_marginTop="10dp"
+                    android:hint="Please Enter Password"
+                    android:textSize="@dimen/image_info_text_font_size"
+                    android:paddingLeft="10dp"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:background="@drawable/edittextbg"/>
+
+                <Button
+                    android:id="@+id/buttonSignIn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Login"
+                    android:textSize="@dimen/image_info_text_font_size"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/button_selector"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="1"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginBottom="2dp"
+                android:layout_below="@+id/linearlayoutSignIn">
+
+                <!--<com.google.android.gms.common.SignInButton
+                    android:id="@+id/buttonGoogleSignIn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="SignIn with Gmail"
+                    android:layout_weight="0.50"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="2dp"
+                    android:background="@drawable/edittextbg"/>-->
+
+                <Button
+                    android:id="@+id/buttonGoogleSignIn"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_gravity="center"
+                    android:text="SignIN"
+                    android:textSize="@dimen/image_info_text_font_size"
+                    android:layout_weight="0.50"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginLeft="2dp"
+                    android:drawableLeft="@drawable/common_google_signin_btn_icon_dark_normal"
+                    android:background="@drawable/edittextbg"/>
+
+                <Button
+                    android:id="@+id/buttonSignUp"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_gravity="center"
+                    android:text="Register "
+                    android:layout_weight="0.50"
+                    android:textSize="@dimen/image_info_text_font_size"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginLeft="2dp"
+                    android:background="@drawable/edittextbg"/>
+
+            </LinearLayout>
+
+            <!--  <ImageView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:src="@drawable/loginwitthgmail"
+                  android:layout_alignParentTop="true"
+                  android:layout_alignParentLeft="true"
+                  android:layout_alignParentStart="true"/>-->
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

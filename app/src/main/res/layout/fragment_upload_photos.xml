@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarPhotos"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="58dp">
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_below="@+id/toolbarPhotos"
+        android:layout_marginTop="2dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view_upload_photo"
+                android:layout_width="match_parent"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                tools:listitem="@layout/row_uploaded_photo_item"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Photos not available"
+                android:textSize="20sp"
+                android:visibility="gone"
+                android:textStyle="bold"
+                android:layout_centerInParent="true"
+                android:id="@+id/textMsgPhoto"/>
+
+        </RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>
+
+</RelativeLayout>

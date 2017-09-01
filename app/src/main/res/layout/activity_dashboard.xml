@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ibin.plantplacepic.activities.SignUpActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarDashboard"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="58dp">
+    </android.support.v7.widget.Toolbar>
+
+    <!--    <ImageView
+        android:id="@+id/profilePic"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="5dp"
+        android:src="@mipmap/userpic"
+        android:layout_marginLeft="1dp"/>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbarDashboard">
+
+        <TextView
+            android:id="@+id/textUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="@dimen/image_info_text_font_size"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_gravity="right"
+            android:layout_marginRight="10dp"
+            android:text="Welcome "/>
+        
+        <RelativeLayout
+            android:id="@+id/buttonReviewMyUploads"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:background="#DA9695"
+            android:layout_weight="0.22">
+
+            <ImageView
+                android:id="@+id/iconDownload"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/downloadicon"
+                android:padding="5dp"
+                android:layout_centerVertical="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Review My Uploads"
+                android:layout_centerVertical="true"
+                android:textSize="26sp"
+                android:textColor="@color/colorText"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/iconDownload"/>
+
+            <TextView
+                android:id="@+id/textUploadCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="1dp"
+                android:text="0"
+                android:background="@drawable/round_shape"
+                android:textStyle="bold"
+                android:textSize="@dimen/image_info_text_font_size"
+                android:layout_marginRight="1dp"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/buttonGallery"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#FAC090"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="0.22">
+
+            <ImageView
+                android:id="@+id/icongallary"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/galleryicon"
+                android:padding="5dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gallery"
+                android:layout_centerVertical="true"
+                android:textSize="26sp"
+                android:textColor="@color/colorText"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/icongallary"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/buttonCamera"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:background="#C3D79C"
+            android:layout_weight="0.22">
+
+            <ImageView
+                android:id="@+id/iconCamara"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/cameraicon"
+                android:padding="5dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Camera"
+                android:layout_centerVertical="true"
+                android:textSize="26sp"
+                android:textColor="@color/colorText"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/iconCamara"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

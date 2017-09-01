@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activities.ReviewMyUpload">
+
+    <RelativeLayout
+        android:id="@+id/headTitleReview"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/species_detail_title"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="6dp"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_below="@+id/headTitleReview"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:layout_weight="0.92">
+
+            <TextView
+                android:id="@+id/textSpeciesAlbum"
+                android:layout_width="match_parent"
+                android:textSize="22sp"
+                android:text="Species"
+                android:padding="8dp"
+                android:background="@color/tab_select"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorgray"
+                android:scrollbars="vertical" />
+
+        </LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.08"
+            android:text="BACK"
+            android:layout_marginRight="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/button_selector"
+            android:id="@+id/back"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textNoRecords"
+        android:text="No Records Found"
+        android:layout_width="wrap_content"
+        android:layout_centerInParent="true"
+        android:textStyle="bold"
+        android:textSize="22sp"
+        android:visibility="gone"
+        android:layout_height="wrap_content"/>
+
+    <!--<Button
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textNoRecords"
+        android:text="BACK"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/button_selector"
+        android:id="@+id/backFromReview"/>-->
+
+</RelativeLayout>
