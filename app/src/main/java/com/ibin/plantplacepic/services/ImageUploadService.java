@@ -23,6 +23,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -31,6 +32,10 @@ import org.apache.http.util.EntityUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -58,8 +63,7 @@ public class ImageUploadService extends Service{
     private static final int MAXIMUM_POOL_SIZE = 128;
     private static final int KEEP_ALIVE = 10;
 
-    private static final BlockingQueue<Runnable> sWorkQueue =
-            new LinkedBlockingQueue<Runnable>(10);
+    private static final BlockingQueue<Runnable> sWorkQueue = new LinkedBlockingQueue(10);
 
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
@@ -68,9 +72,7 @@ public class ImageUploadService extends Service{
                     }
     };
 
-    private static final ThreadPoolExecutor sExecutor =
-            new ThreadPoolExecutor(CORE_POOL_SIZE,
-                    MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, sWorkQueue, sThreadFactory);
+    private static final ThreadPoolExecutor sExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE,MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, sWorkQueue, sThreadFactory);
 
 
     @Override
@@ -165,8 +167,7 @@ public class ImageUploadService extends Service{
      * */
     private class UploadFileToServer extends AsyncTask<Void, Integer, String> {
         int position = 0;
-        public UploadFileToServer(SubmitRequest submitRqt,int i) {
-
+        private UploadFileToServer(SubmitRequest submitRqt,int i) {
             filePath =  submitRqt.getImageUrl();
             submitRequest = submitRqt;
             position = i;
@@ -186,8 +187,7 @@ public class ImageUploadService extends Service{
 
         @SuppressWarnings("deprecation")
         private String uploadFile(String filePath) {
-            String responseString = null;
-
+            String responseString ;
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost(Constants.FILE_UPLOAD_URL);
 
@@ -223,6 +223,42 @@ public class ImageUploadService extends Service{
 
         }
 
+       /*Use HTTPUrlConnection*/
+       /*private String uploadFile(String filePath) {
+           String responseString = null;
+           HttpURLConnection conn = null;
+           String boundary =  "*****";
+           MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+           try {
+               builder.setBoundary(boundary);
+               URL url = new URL(Constants.FILE_UPLOAD_URL);
+               conn = (HttpURLConnection) url.openConnection();
+               conn.setRequestMethod("POST");
+               conn.setDoInput(true);
+               conn.setDoOutput(true);
+               conn.setUseCaches(false);
+               conn.setRequestMethod("POST");
+               conn.setRequestProperty("Connection", "Keep-Alive");
+               conn.setRequestProperty("Content-Type", "multipart/form-data;boundary="+boundary);
+               conn.setRequestProperty("image", builder.);
+               conn.setRequestProperty("folderpath", new StringBody(serverFolderPath));
+
+
+               if (statusCode == 200) {
+                   // Server response
+                   responseString = EntityUtils.toString(r_entity);
+               } else {
+                   responseString = "Error occurred! Http Status Code: "
+                           + statusCode;
+               }
+           } catch (ClientProtocolException e) {
+               responseString = e.toString();
+           } catch (IOException e) {
+               responseString = e.toString();
+           }
+           return responseString;
+       }*/
+
         @Override
         protected void onPostExecute(String result) {
             Log.d("ImageUploadService", "Response from server: " + result);
@@ -251,9 +287,8 @@ public class ImageUploadService extends Service{
         Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         ApiService service = retrofit.create(ApiService.class);
         final String USERID = submitRequest.getUserId();
-        String path ="";
-        String IMAGE = "";
-        String TIME = "";
+        String IMAGE ;
+        String TIME ;
        /* if(submitRequest.getImagesPathList() != null && submitRequest.getImagesPathList().size() >0){
             path = submitRequest.getImagesPathList().get(position);
             ExifInterface exif = null;
