@@ -29,9 +29,13 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -133,30 +137,36 @@ public class ImageUploadService extends Service{
                 new UploadFileToServer(submitRequest,0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }*/
 //           /*compress starts*/
-            File file = new File(submitRequest.getImageUrl());
-            if(file.length()/1024 > 2048 ) {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(submitRequest.getImageUrl(), options);
-                Matrix matrix = new Matrix();
-                //matrix.postRotate(90);
-                Bitmap finalBitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                        bitmap.getWidth(), bitmap.getHeight(),
-                        matrix, true);
-                if (file.exists()) {
-                    file.delete();
+            /*File file = new File(submitRequest.getImageUrl());
+            if(file != null){
+                if(file.length()/1024 > 2048 ) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(submitRequest.getImageUrl(), options);
+                    Matrix matrix = new Matrix();
+                    //matrix.postRotate(90);
+                    Bitmap finalBitmap = Bitmap.createBitmap(bitmap, 0, 0,
+                            bitmap.getWidth(), bitmap.getHeight(),
+                            matrix, true);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    try {
+                        //File file1 = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+"compress"+".jpg");
+                        FileOutputStream out = new FileOutputStream(file);
+                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                        out.flush();
+                        out.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-                try {
-                    //File file1 = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+"compress"+".jpg");
-                    FileOutputStream out = new FileOutputStream(file);
-                    finalBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
-                    out.flush();
-                    out.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            /*compress end*/
+            *//*compress end*//*
+                new UploadFileToServer(submitRequest,0).executeOnExecutor(sExecutor);
+            } else {
+                Toast.makeText(getApplicationContext(),"Image is not in proper format",Toast.LENGTH_SHORT).show();
+            }*/
+
             new UploadFileToServer(submitRequest,0).executeOnExecutor(sExecutor);
         }
         return super.onStartCommand(intent, flags, startId);
@@ -185,79 +195,116 @@ public class ImageUploadService extends Service{
             return uploadFile(filePath);
         }
 
+//        @SuppressWarnings("deprecation")
+//        private String uploadFile(String filePath) {
+//            String responseString ;
+//            HttpClient httpclient = new DefaultHttpClient();
+//            HttpPost httppost = new HttpPost(Constants.FILE_UPLOAD_URL);
+//
+//            try {
+//                AndroidMultiPartEntity entity = new AndroidMultiPartEntity(
+//                        new AndroidMultiPartEntity.ProgressListener() {
+//                            @Override
+//                            public void transferred(long num) {
+//                                publishProgress((int) ((num / (float) totalSize) * 100));
+//                            }
+//                        });
+//                File sourceFile = new File(filePath);
+//                entity.addPart("image", new FileBody(sourceFile));
+//                entity.addPart("folderpath",new StringBody(serverFolderPath));
+//                totalSize = entity.getContentLength();
+//                httppost.setEntity(entity);
+//                HttpResponse response = httpclient.execute(httppost);
+//                HttpEntity r_entity = response.getEntity();
+//                int statusCode = response.getStatusLine().getStatusCode();
+//                if (statusCode == 200) {
+//                    // Server response
+//                    responseString = EntityUtils.toString(r_entity);
+//                } else {
+//                    responseString = "Error occurred! Http Status Code: "
+//                            + statusCode;
+//                }
+//            } catch (ClientProtocolException e) {
+//                responseString = e.toString();
+//            } catch (IOException e) {
+//                responseString = e.toString();
+//            }
+//            return responseString;
+//        }
+
         @SuppressWarnings("deprecation")
         private String uploadFile(String filePath) {
-            String responseString ;
-            HttpClient httpclient = new DefaultHttpClient();
-            HttpPost httppost = new HttpPost(Constants.FILE_UPLOAD_URL);
+            String result = "";
+            final String boundary = "-------------" + System.currentTimeMillis();
+            MultipartEntityBuilder entity = MultipartEntityBuilder.create();
 
-            try {
-                AndroidMultiPartEntity entity = new AndroidMultiPartEntity(
-                        new AndroidMultiPartEntity.ProgressListener() {
-                            @Override
-                            public void transferred(long num) {
-                                publishProgress((int) ((num / (float) totalSize) * 100));
-                            }
-                        });
+            URLConnection connection = null;
+            HttpURLConnection httpConn = null;
+            try
+            {
+
+                entity.setBoundary(boundary);
                 File sourceFile = new File(filePath);
                 entity.addPart("image", new FileBody(sourceFile));
                 entity.addPart("folderpath",new StringBody(serverFolderPath));
-                totalSize = entity.getContentLength();
-                httppost.setEntity(entity);
-                HttpResponse response = httpclient.execute(httppost);
-                HttpEntity r_entity = response.getEntity();
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode == 200) {
-                    // Server response
-                    responseString = EntityUtils.toString(r_entity);
-                } else {
-                    responseString = "Error occurred! Http Status Code: "
-                            + statusCode;
+
+                java.net.URL url = new URL(Constants.FILE_UPLOAD_URL);
+                connection = url.openConnection();
+                httpConn = (HttpURLConnection) connection;
+                httpConn.setRequestProperty("Content-Type", "multipart/form-data; boundary="+boundary);
+                httpConn.setConnectTimeout(60000);
+                httpConn.setRequestMethod("POST");
+                httpConn.setDoInput(true);
+                httpConn.setDoOutput(true);
+                httpConn.connect();
+
+                OutputStream os = httpConn.getOutputStream();
+                entity.build().writeTo(os);
+                os.flush();
+                os.close();
+
+                int statusCode;
+                try {
+                    statusCode = httpConn.getResponseCode();
+                } catch (EOFException e) {
+                    return "";
                 }
-            } catch (ClientProtocolException e) {
-                responseString = e.toString();
-            } catch (IOException e) {
-                responseString = e.toString();
+                InputStreamReader isr;
+                if (statusCode != 200 && statusCode != 204 && statusCode != 201) {
+                    isr = new InputStreamReader(
+                            httpConn.getErrorStream());
+                } else {
+                    isr = new InputStreamReader(
+                            httpConn.getInputStream());
+                }
+                BufferedReader br = new BufferedReader(isr);
+                String line;
+                String tempResponse = "";
+                // Create a string using response from web services
+                while ((line = br.readLine()) != null)
+                    tempResponse = tempResponse + line;
+                result = tempResponse;
             }
-            return responseString;
-
+            catch (MalformedURLException e)
+            {
+                e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            finally
+            {
+                if(httpConn != null){
+                    httpConn.disconnect();
+                }
+            }
+            return result;
         }
-
-       /*Use HTTPUrlConnection*/
-       /*private String uploadFile(String filePath) {
-           String responseString = null;
-           HttpURLConnection conn = null;
-           String boundary =  "*****";
-           MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-           try {
-               builder.setBoundary(boundary);
-               URL url = new URL(Constants.FILE_UPLOAD_URL);
-               conn = (HttpURLConnection) url.openConnection();
-               conn.setRequestMethod("POST");
-               conn.setDoInput(true);
-               conn.setDoOutput(true);
-               conn.setUseCaches(false);
-               conn.setRequestMethod("POST");
-               conn.setRequestProperty("Connection", "Keep-Alive");
-               conn.setRequestProperty("Content-Type", "multipart/form-data;boundary="+boundary);
-               conn.setRequestProperty("image", builder.);
-               conn.setRequestProperty("folderpath", new StringBody(serverFolderPath));
-
-
-               if (statusCode == 200) {
-                   // Server response
-                   responseString = EntityUtils.toString(r_entity);
-               } else {
-                   responseString = "Error occurred! Http Status Code: "
-                           + statusCode;
-               }
-           } catch (ClientProtocolException e) {
-               responseString = e.toString();
-           } catch (IOException e) {
-               responseString = e.toString();
-           }
-           return responseString;
-       }*/
 
         @Override
         protected void onPostExecute(String result) {
@@ -338,7 +385,7 @@ public class ImageUploadService extends Service{
                                 tempFile.delete();
                             }
                         }
-                        Toast.makeText(getApplicationContext(), "Information upload successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Data upload successfully", Toast.LENGTH_SHORT).show();
                         List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(USERID);
                         Log.d("List : ","List : "+dataList.size());
                         stopSelf();
