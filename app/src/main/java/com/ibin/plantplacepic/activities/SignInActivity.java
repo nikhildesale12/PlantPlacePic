@@ -22,21 +22,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.ConnSupport;
-
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,7 +35,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.Manifest.permission.ACCESS_NETWORK_STATE;
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -59,7 +48,6 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     EditText editTextPassSignin ;
     String personPhotoUrl="";
     ProgressDialog dialog;
-    public static final int RequestPermissionCode = 1;
     private static final String TAG = SignInActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 007;

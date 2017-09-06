@@ -2,10 +2,6 @@ package com.ibin.plantplacepic.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
@@ -15,24 +11,13 @@ import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.SubmitRequest;
 import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
-import com.ibin.plantplacepic.utility.AndroidMultiPartEntity;
 import com.ibin.plantplacepic.utility.Constants;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -41,13 +26,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -67,8 +53,8 @@ public class ImageUploadService extends Service{
     private static final int MAXIMUM_POOL_SIZE = 128;
     private static final int KEEP_ALIVE = 10;
 
-    private static final BlockingQueue<Runnable> sWorkQueue = new LinkedBlockingQueue(10);
-
+    private static final BlockingQueue<Runnable> sWorkQueue = new LinkedBlockingQueue<>(15);
+//
     private static final ThreadFactory sThreadFactory = new ThreadFactory() {
         private final AtomicInteger mCount = new AtomicInteger(1);
                 public Thread newThread(Runnable r) {
@@ -166,8 +152,11 @@ public class ImageUploadService extends Service{
             } else {
                 Toast.makeText(getApplicationContext(),"Image is not in proper format",Toast.LENGTH_SHORT).show();
             }*/
-
-            new UploadFileToServer(submitRequest,0).executeOnExecutor(sExecutor);
+            try {
+                new UploadFileToServer(submitRequest, 0).executeOnExecutor(sExecutor);
+            }catch (RejectedExecutionException e){
+                e.printStackTrace();
+            }
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -308,7 +297,6 @@ public class ImageUploadService extends Service{
 
         @Override
         protected void onPostExecute(String result) {
-            Log.d("ImageUploadService", "Response from server: " + result);
             Log.d("ImageUploadService", "Response from server: " + result);
             if(result.equals("true")){
                 callRetrofitToSaveDataServer(submitRequest,position);

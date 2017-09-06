@@ -21,7 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     /*Tables Name*/
     private static final String TABLE_INFORMATION = "information";
-
+    private static final String TABLE_INFORMATION_SAVE_DATA = "informatio_save";
 
     /*Field Name - species_structure */
     private static final String COLUMN_INFO_USERID = "user_id";
@@ -132,7 +132,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int deleteFromLocal(String userId,String imageName){
         openDatabase();
-        int i = -1;;
+        int i = -1;
         i = sqLiteDatabase.delete(TABLE_INFORMATION,COLUMN_INFO_USERID  + "=? AND " +COLUMN_INFO_IMAGES + "=?",new String[] {userId,imageName});
         close();
         return i;

@@ -95,7 +95,6 @@ public class ImageInfoActivity extends AppCompatActivity {
     com.github.clans.fab.FloatingActionButton floatingActionButtonLeaf;
     com.github.clans.fab.FloatingActionButton floatingActionButtonTree;
     SubmitRequest submitRequest ;
-    private GoogleApiClient mGoogleApiClient;
     public static String uploadedSpecies = "";
 
     @Override
