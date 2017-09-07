@@ -107,7 +107,7 @@ public class CustomGallery extends AppCompatActivity {
                 String datetime = exif.getAttribute(ExifInterface.TAG_DATETIME);
                 submitRequest.setTime(datetime);
                 if(datetime == null){
-                    String currentDateTimeString =new SimpleDateFormat("dd-MM-yyyy hh:mm a").format(new Date());
+                    String currentDateTimeString =new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a").format(new Date());
                     currentDateTimeString = currentDateTimeString.replace(" ","_");
                     currentDateTimeString = currentDateTimeString.replace(":","-");
                     submitRequest.setTime(currentDateTimeString);

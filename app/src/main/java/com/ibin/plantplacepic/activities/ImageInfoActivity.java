@@ -354,7 +354,9 @@ public class ImageInfoActivity extends AppCompatActivity {
             } else {
                 //save in local db
                 Toast.makeText(ImageInfoActivity.this, "Internet Unavailable,Data will automatically upload once device connect to internet ...", Toast.LENGTH_LONG).show();
-                databaseHelper.insertDataInTableInformation(submitReq);
+                if(!databaseHelper.isDataAvialableInLocalDb(submitReq)) {
+                    databaseHelper.insertDataInTableInformation(submitReq);
+                }
             }
             //if(imageName.contains(submitRequest.getImagesPathList().get(submitRequest.getImagesPathList().size() - 1))) {
             Constants.countSelectedPhotoFromGallery--;
@@ -389,13 +391,14 @@ public class ImageInfoActivity extends AppCompatActivity {
             submitReq.setCrop(cropStatus);
             submitReq.setStatus("false");
             submitReq.setTime(currentDateTimeString);
-            long insertedToLater = databaseHelper.insertDataInTableInformation(submitReq);
-            if (insertedToLater != -1) {
-                Log.d("Done", "Inserted : " + insertedToLater);
-            } else {
-                Toast.makeText(getApplicationContext(), "Unable to save", Toast.LENGTH_SHORT).show();
+            if(!databaseHelper.isDataAvialableInLocalDb(submitReq)){
+                long insertedToLater = databaseHelper.insertDataInTableInformation(submitReq);
+                if (insertedToLater != -1) {
+                    Log.d("Done", "Inserted : " + insertedToLater);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Unable to save", Toast.LENGTH_SHORT).show();
+                }
             }
-
             //if(imageName.contains(submitRequest.getImagesPathList().get(submitRequest.getImagesPathList().size() - 1))) {
             Constants.countSelectedPhotoFromGallery--;
             if (Constants.countSelectedPhotoFromGallery == 0) {

@@ -2,6 +2,9 @@ package com.ibin.plantplacepic.services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
@@ -18,6 +21,7 @@ import org.apache.http.entity.mime.content.StringBody;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -123,7 +127,7 @@ public class ImageUploadService extends Service{
                 new UploadFileToServer(submitRequest,0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }*/
 //           /*compress starts*/
-            /*File file = new File(submitRequest.getImageUrl());
+            File file = new File(submitRequest.getImageUrl());
             if(file != null){
                 if(file.length()/1024 > 2048 ) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
@@ -147,16 +151,16 @@ public class ImageUploadService extends Service{
                         e.printStackTrace();
                     }
                 }
-            *//*compress end*//*
+            /*compress end*/
                 new UploadFileToServer(submitRequest,0).executeOnExecutor(sExecutor);
             } else {
                 Toast.makeText(getApplicationContext(),"Image is not in proper format",Toast.LENGTH_SHORT).show();
-            }*/
-            try {
-                new UploadFileToServer(submitRequest, 0).executeOnExecutor(sExecutor);
-            }catch (RejectedExecutionException e){
-                e.printStackTrace();
             }
+//            try {
+//                new UploadFileToServer(submitRequest, 0).executeOnExecutor(sExecutor);
+//            }catch (RejectedExecutionException e){
+//                e.printStackTrace();
+//            }
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -301,20 +305,26 @@ public class ImageUploadService extends Service{
             if(result.equals("true")){
                 callRetrofitToSaveDataServer(submitRequest,position);
             }else{
-                saveInLocalForLaterUpload(submitRequest);
+                if(submitRequest.getIsSaveInLocal() != null && submitRequest.getIsSaveInLocal().equals("NO")){
+                    Log.d("ImageUploadService", "Already in DB");
+                }else{
+                    saveInLocalForLaterUpload(submitRequest);
+                }
+
             }
             super.onPostExecute(result);
         }
-
     }
 
     private void saveInLocalForLaterUpload(SubmitRequest submitRequest){
         submitRequest.setStatus("false");
-        long insertedToLater = databaseHelper.insertDataInTableInformation(submitRequest);
-        if(insertedToLater != -1){
-            Log.d("Done","Inserted In Service  : "+insertedToLater);
-        }else{
-            Toast.makeText(getApplicationContext(),"Unable to save",Toast.LENGTH_SHORT).show();
+        if(!databaseHelper.isDataAvialableInLocalDb(submitRequest)){
+            long insertedToLater = databaseHelper.insertDataInTableInformation(submitRequest);
+            if(insertedToLater != -1){
+                Log.d("Done","Inserted In Service  : "+insertedToLater);
+            }else{
+                Toast.makeText(getApplicationContext(),"Unable to save",Toast.LENGTH_SHORT).show();
+            }
         }
     }
     private void callRetrofitToSaveDataServer(final SubmitRequest submitRequest, int position){

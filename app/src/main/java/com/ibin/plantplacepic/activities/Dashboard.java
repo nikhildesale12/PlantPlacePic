@@ -247,6 +247,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                     submitRequest.setTag(dataList.get(i).getTag());
                     submitRequest.setStatus(dataList.get(i).getStatus());
                     submitRequest.setTime(dataList.get(i).getTime());
+                    submitRequest.setIsSaveInLocal("NO");
                     if(submitRequest.getImageUrl() != null){
                         Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
                         intentService.putExtra("submitRequest",submitRequest);
@@ -307,7 +308,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     }
 
     private void openCamera(){
-        currentDateTimeString =new SimpleDateFormat("dd-MM-yyyy hh:mm a").format(new Date());
+        currentDateTimeString =new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a").format(new Date());
 //        currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
         currentDateTimeString = currentDateTimeString.replace(" ","_");
         currentDateTimeString = currentDateTimeString.replace(":","-");

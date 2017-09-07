@@ -107,7 +107,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<SubmitRequest> getImageInfoToUpload(String userId) {
         openDatabase();
         List<SubmitRequest> dataList = new ArrayList<SubmitRequest>();
-        String selectQuery = "SELECT * FROM " + TABLE_INFORMATION  + " WHERE " + COLUMN_INFO_USERID + "='" + userId + "' AND "+COLUMN_INFO_STATUS + "='false'" ;
+      //  String selectQuery = "SELECT * FROM " + TABLE_INFORMATION  + " WHERE " + COLUMN_INFO_USERID + "='" + userId + "' AND "+COLUMN_INFO_STATUS + "='false'" ;
+        String selectQuery = "SELECT * FROM " + TABLE_INFORMATION  + " WHERE " + COLUMN_INFO_USERID + "='" + userId + "'";
         Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
@@ -158,5 +159,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             sqLiteDatabase.close();
             sqLiteDatabase = null;
         }
+    }
+
+    public boolean isDataAvialableInLocalDb(SubmitRequest submitRequest){
+        List<SubmitRequest> submitRequestList = getImageInfoToUpload(submitRequest.getUserId());
+        if(submitRequestList != null && submitRequestList.size() > 0){
+            for (int i =0;i<submitRequestList.size();i++){
+                if(  submitRequestList.get(i).getImageName().equals(submitRequest.getImageName())
+                 &&  submitRequestList.get(i).getUserId().equals(submitRequest.getUserId())
+                 &&  submitRequestList.get(i).getImageUrl().equals(submitRequest.getImageUrl())
+                 &&  submitRequestList.get(i).getSpecies().equals(submitRequest.getSpecies())
+                 &&  submitRequestList.get(i).getRemark().equals(submitRequest.getRemark())
+                 &&  submitRequestList.get(i).getTag().equals(submitRequest.getTag())
+                 &&  submitRequestList.get(i).getStatus().equals(submitRequest.getStatus())
+                 &&  submitRequestList.get(i).getTitle().equals(submitRequest.getTitle())
+                 &&  submitRequestList.get(i).getLatitude().equals(submitRequest.getLatitude())
+                 &&  submitRequestList.get(i).getLongitude().equals(submitRequest.getLongitude())
+                 &&  submitRequestList.get(i).getAddress().equals(submitRequest.getAddress())
+                 &&  submitRequestList.get(i).getCrop().equals(submitRequest.getCrop())
+                 &&  submitRequestList.get(i).getTime().equals(submitRequest.getTime())
+                 &&  submitRequestList.get(i).getUploadedFrom().equals(submitRequest.getUploadedFrom()))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

@@ -28,6 +28,8 @@ public class SubmitRequest implements Serializable {
     private String address;
     private String uploadedFrom;
 
+    private String isSaveInLocal;
+
     public String getUserId() {
         return userId;
     }
@@ -147,5 +149,10 @@ public class SubmitRequest implements Serializable {
     public void setImagesPathList(ArrayList<String> imagesPathList) {
         this.imagesPathList = imagesPathList;
     }
-
+    public String getIsSaveInLocal() {
+        return isSaveInLocal;
+    }
+    public void setIsSaveInLocal(String isSaveInLocal) {
+        this.isSaveInLocal = isSaveInLocal;
+    }
 }
