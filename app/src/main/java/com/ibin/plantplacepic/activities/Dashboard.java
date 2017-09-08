@@ -113,63 +113,75 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         setContentView(R.layout.activity_dashboard);
 
         if (getIntent() != null && getIntent().getBooleanExtra("EXIT", false)) {
-            finish();
-        }
-        initViews();
-        topToolBar = (Toolbar)findViewById(R.id.toolbarDashboard);
-        setSupportActionBar(topToolBar);
-        topToolBar.setNavigationIcon(R.mipmap.userpic);
+            Dashboard.this.finish();
+            System.exit(1);
+        }else {
+            initViews();
+            topToolBar = (Toolbar)findViewById(R.id.toolbarDashboard);
+            setSupportActionBar(topToolBar);
+            topToolBar.setNavigationIcon(R.mipmap.userpic);
 
-        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE);
-        userName  = prefs.getString(Constants.KEY_USERNAME, "Guest");
-        userId = prefs.getString(Constants.KEY_USERID, "0");
-        personPhotoUrl = prefs.getString(Constants.KEY_PHOTO, "");
+            SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE);
+            userName  = prefs.getString(Constants.KEY_USERNAME, "Guest");
+            userId = prefs.getString(Constants.KEY_USERID, "0");
+            personPhotoUrl = prefs.getString(Constants.KEY_PHOTO, "");
 
-        Target target = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                Log.d("onBitmapLoaded", "onBitmapLoaded");
-                Bitmap b = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
-                BitmapDrawable icon = new BitmapDrawable(topToolBar.getResources(), b);
-                topToolBar.setNavigationIcon(icon);
+            Target target = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    Log.d("onBitmapLoaded", "onBitmapLoaded");
+                    Bitmap b = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                    BitmapDrawable icon = new BitmapDrawable(topToolBar.getResources(), b);
+                    topToolBar.setNavigationIcon(icon);
+                }
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    Log.d("onBitmapFailed", "onBitmapFailed");
+                    topToolBar.setNavigationIcon(R.mipmap.userpic);
+                }
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    Log.d("onPrepareLoad", "onPrepareLoad");
+                    topToolBar.setNavigationIcon(R.mipmap.userpic);
+                }
+            };
+            if(personPhotoUrl != null && personPhotoUrl.length()>0){
+                Picasso.with(topToolBar.getContext())
+                        .load(personPhotoUrl)
+                        .placeholder(R.mipmap.userpic)
+                        .error(R.mipmap.userpic)
+                        .into(target);
+            }else{
+                Picasso.with(topToolBar.getContext())
+                        .load(R.mipmap.userpic)
+                        .placeholder(R.mipmap.userpic)
+                        .error(R.mipmap.userpic)
+                        .into(target);
             }
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                Log.d("onBitmapFailed", "onBitmapFailed");
-                topToolBar.setNavigationIcon(R.mipmap.userpic);
-            }
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-                Log.d("onPrepareLoad", "onPrepareLoad");
-                topToolBar.setNavigationIcon(R.mipmap.userpic);
-            }
-        };
-        if(personPhotoUrl != null && personPhotoUrl.length()>0){
-            Picasso.with(topToolBar.getContext())
-                    .load(personPhotoUrl)
-                    .placeholder(R.mipmap.userpic)
-                    .error(R.mipmap.userpic)
-                    .into(target);
-        }else{
-            Picasso.with(topToolBar.getContext())
-                    .load(R.mipmap.userpic)
-                    .placeholder(R.mipmap.userpic)
-                    .error(R.mipmap.userpic)
-                    .into(target);
-        }
 
-        getUploadedCount(userId);
+            getUploadedCount(userId);
 
-        textUserName.setText("Welcome "+userName+" !");
-        buttonGallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            textUserName.setText("Welcome "+userName+" !");
+            buttonGallery.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
                 /*Intent intent = new Intent();
                 intent.setType("image*//*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), 1);*/
-                if(android.os.Build.VERSION.SDK_INT >= Constants.API_LEVEL_23){
-                    if(checkPermission()){
+                    if(android.os.Build.VERSION.SDK_INT >= Constants.API_LEVEL_23){
+                        if(checkPermission()){
+                            if(!isGPSEnabled()){
+                                showSettingsAlert();
+                            }else{
+                                Intent photoPickerIntent = new Intent(Dashboard.this,CustomGallery.class);
+                                startActivity(photoPickerIntent);
+                                finish();
+                            }
+                        }else {
+                            requestPermission();
+                        }
+                    }else{
                         if(!isGPSEnabled()){
                             showSettingsAlert();
                         }else{
@@ -177,81 +189,71 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                             startActivity(photoPickerIntent);
                             finish();
                         }
-                    }else {
-                        requestPermission();
-                    }
-                }else{
-                    if(!isGPSEnabled()){
-                        showSettingsAlert();
-                    }else{
-                        Intent photoPickerIntent = new Intent(Dashboard.this,CustomGallery.class);
-                        startActivity(photoPickerIntent);
-                        finish();
                     }
                 }
-            }
-        });
+            });
 
-        buttonCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(android.os.Build.VERSION.SDK_INT >= Constants.API_LEVEL_23 ){
-                    if(checkPermission()){
+            buttonCamera.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(android.os.Build.VERSION.SDK_INT >= Constants.API_LEVEL_23 ){
+                        if(checkPermission()){
+                            if(!isGPSEnabled()){
+                                showSettingsAlert();
+                            }else{
+                                openCamera();
+                            }
+                        }else {
+                            requestPermission();
+                        }
+                    }else{
                         if(!isGPSEnabled()){
                             showSettingsAlert();
                         }else{
                             openCamera();
                         }
-                    }else {
-                        requestPermission();
                     }
-                }else{
-                    if(!isGPSEnabled()){
-                        showSettingsAlert();
+                }
+            });
+            buttonReviewMyUploads.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(Constants.isNetworkAvailable(Dashboard.this)){
+                        Intent intent1 = new Intent(Dashboard.this,ReviewMyUploadTabActivity.class);
+                        startActivity(intent1);
+                        finish();
                     }else{
-                        openCamera();
+                        Constants.dispalyDialogInternet(Dashboard.this,"Internet Unavailable","Please check internet connection",false,false);
                     }
                 }
-            }
-        });
-        buttonReviewMyUploads.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(Constants.isNetworkAvailable(Dashboard.this)){
-                    Intent intent1 = new Intent(Dashboard.this,ReviewMyUploadTabActivity.class);
-                    startActivity(intent1);
-                    finish();
-                }else{
-                    Constants.dispalyDialogInternet(Dashboard.this,"Internet Unavailable","Please check internet connection",false,false);
-                }
-            }
-        });
-        databaseHelper = DatabaseHelper.getDatabaseInstance(getApplicationContext());
-        if(Constants.isNetworkAvailable(Dashboard.this)){
-            List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(userId);
-            Log.d("List : ","List : "+dataList.size());
-            if(dataList!=null && dataList.size()>0){
-                for(int i=0;i<dataList.size();i++){
-                    SubmitRequest  submitRequest = new SubmitRequest();
-                    submitRequest.setUserId(dataList.get(i).getUserId());
-                    submitRequest.setRemark(dataList.get(i).getRemark());
-                    submitRequest.setSpecies(dataList.get(i).getSpecies());
-                    submitRequest.setAddress(dataList.get(i).getAddress());
-                    submitRequest.setCrop(dataList.get(i).getCrop());
-                    submitRequest.setImageName(dataList.get(i).getImageName());
-                    submitRequest.setImagesPathList(dataList.get(i).getImagesPathList());
-                    submitRequest.setImageUrl(dataList.get(i).getImageUrl());
-                    submitRequest.setLatitude(dataList.get(i).getLatitude());
-                    submitRequest.setLongitude(dataList.get(i).getLongitude());
-                    submitRequest.setTitle(dataList.get(i).getTitle());
-                    submitRequest.setTag(dataList.get(i).getTag());
-                    submitRequest.setStatus(dataList.get(i).getStatus());
-                    submitRequest.setTime(dataList.get(i).getTime());
-                    submitRequest.setIsSaveInLocal("NO");
-                    if(submitRequest.getImageUrl() != null){
-                        Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
-                        intentService.putExtra("submitRequest",submitRequest);
-                        startService(intentService);
+            });
+            databaseHelper = DatabaseHelper.getDatabaseInstance(getApplicationContext());
+            if(Constants.isNetworkAvailable(Dashboard.this)){
+                List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(userId);
+                Log.d("List : ","List : "+dataList.size());
+                if(dataList!=null && dataList.size()>0){
+                    for(int i=0;i<dataList.size();i++){
+                        SubmitRequest  submitRequest = new SubmitRequest();
+                        submitRequest.setUserId(dataList.get(i).getUserId());
+                        submitRequest.setRemark(dataList.get(i).getRemark());
+                        submitRequest.setSpecies(dataList.get(i).getSpecies());
+                        submitRequest.setAddress(dataList.get(i).getAddress());
+                        submitRequest.setCrop(dataList.get(i).getCrop());
+                        submitRequest.setImageName(dataList.get(i).getImageName());
+                        submitRequest.setImagesPathList(dataList.get(i).getImagesPathList());
+                        submitRequest.setImageUrl(dataList.get(i).getImageUrl());
+                        submitRequest.setLatitude(dataList.get(i).getLatitude());
+                        submitRequest.setLongitude(dataList.get(i).getLongitude());
+                        submitRequest.setTitle(dataList.get(i).getTitle());
+                        submitRequest.setTag(dataList.get(i).getTag());
+                        submitRequest.setStatus(dataList.get(i).getStatus());
+                        submitRequest.setTime(dataList.get(i).getTime());
+                        submitRequest.setIsSaveInLocal("NO");
+                        if(submitRequest.getImageUrl() != null){
+                            Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
+                            intentService.putExtra("submitRequest",submitRequest);
+                            startService(intentService);
+                        }
                     }
                 }
             }

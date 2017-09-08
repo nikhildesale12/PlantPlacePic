@@ -83,49 +83,12 @@ public class ImageUploadService extends Service{
                 if(submitRequest.getImageUrl() != null && submitRequest.getImageUrl().length()>0){
                     filePath = submitRequest.getImageUrl();
                 }
-                /*if(submitRequest.getTag() != null){
-                    if(submitRequest.getTag().equals(Constants.TAG_TREE)){
-                        serverFolderPath = Constants.SERVER_FOLDER_PATH_TREE;
-                    }else
-                    if(submitRequest.getTag().equals(Constants.TAG_FLOWER)){
-                        serverFolderPath = Constants.SERVER_FOLDER_PATH_FLOWER;
-                    }else
-                    if(submitRequest.getTag().equals(Constants.TAG_FRUIT)){
-                        serverFolderPath = Constants.SERVER_FOLDER_PATH_FRUIT;
-                    }else
-                    if(submitRequest.getTag().equals(Constants.TAG_LEAF)){
-                        serverFolderPath = Constants.SERVER_FOLDER_PATH_LEAF;
-                    }else{
-                        serverFolderPath = Constants.SERVER_FOLDER_PATH_ALL;
-                    }
-                }else{
-                    serverFolderPath = Constants.SERVER_FOLDER_PATH_ALL;
-                }*/
                 serverFolderPath = Constants.SERVER_FOLDER_PATH_ALL;
             }else{
                 submitRequest = new SubmitRequest();
             }
         }
         if(Constants.isNetworkAvailable(getApplicationContext())){
-            /*if(submitRequest != null && submitRequest.getImagesPathList()!= null && submitRequest.getImagesPathList().size() >0){
-                for(int i=0;i < submitRequest.getImagesPathList().size();i++){
-                    String path = submitRequest.getImagesPathList().get(i);
-                    ExifInterface exif = null;
-                        try {
-                            exif = new ExifInterface(path);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    String datetime =  exif.getAttribute(ExifInterface.TAG_DATETIME);
-                    String fileName = path.substring(path.lastIndexOf('/')+1, path.length());
-                    submitRequest.setTime(datetime);
-                    submitRequest.setImageUrl(path);
-                    submitRequest.setImageName(fileName);
-                    new UploadFileToServer(submitRequest,i).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
-            }else{
-                new UploadFileToServer(submitRequest,0).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }*/
 //           /*compress starts*/
             File file = new File(submitRequest.getImageUrl());
             if(file != null){
