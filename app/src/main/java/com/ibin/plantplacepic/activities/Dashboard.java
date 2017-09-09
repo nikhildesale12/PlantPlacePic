@@ -19,6 +19,7 @@ import android.location.Geocoder;
 import android.location.LocationManager;
 import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -74,6 +75,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -249,10 +251,9 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                         submitRequest.setStatus(dataList.get(i).getStatus());
                         submitRequest.setTime(dataList.get(i).getTime());
                         submitRequest.setIsSaveInLocal("NO");
-                        if(submitRequest.getImageUrl() != null){
-                            Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
-                            intentService.putExtra("submitRequest",submitRequest);
-                            startService(intentService);
+                        if(submitRequest.getImageUrl() != null && (submitRequest.getStatus() == null || submitRequest.getStatus() != null && submitRequest.getStatus().equals("false"))){
+                            submitRequest.setStatus("true");
+                            new StarServiceInAsync(submitRequest).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         }
                     }
                 }
@@ -260,6 +261,21 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         }
     } /*onCreate End*/
 
+
+    private class StarServiceInAsync extends AsyncTask<Void, Integer, String> {
+        SubmitRequest submitRequest = new SubmitRequest();
+        private StarServiceInAsync(SubmitRequest submitRqt) {
+            submitRequest = submitRqt;
+        }
+        @Override
+        protected String doInBackground(Void... params) {
+            Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
+            intentService.putExtra("submitRequest",submitRequest);
+            startService(intentService);
+            return null;
+        }
+
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
