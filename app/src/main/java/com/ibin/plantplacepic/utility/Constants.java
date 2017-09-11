@@ -58,7 +58,7 @@ public class Constants {
 //    public static final String SERVER_FOLDER_PATH_LEAF = "UploadedLeaf";
 //    public static final String SERVER_FOLDER_PATH_FLOWER = "UploadedFlower";
     public static final String SERVER_FOLDER_PATH_ALL = "UploadedImages";
-    public static final String MY_PREFS_NAME = "myPref";
+    public static final String MY_PREFS_LOGIN = "loginPref";
     public static final String MY_PREFS_SWIPE = "myPrefSwipe";
     public static final String KEY_IS_LOGIN =  "login";
     public static final String KEY_USERNAME = "USERNAME";

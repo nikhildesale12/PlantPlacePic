@@ -3,6 +3,7 @@ package com.ibin.plantplacepic.fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -25,12 +26,16 @@ import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.activities.ReviewMyUpload;
 import com.ibin.plantplacepic.adapter.UploadedSpeciesAdapter;
 import com.ibin.plantplacepic.bean.Information;
+import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.serviceinterface.RecyclerViewItemClickListener;
+import com.ibin.plantplacepic.utility.Constants;
 import com.ibin.plantplacepic.utility.CustomRVItemTouchListener;
 import com.ibin.plantplacepic.utility.ItemOffsetDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class SpeciesPhotoFragment extends Fragment implements UploadedSpeciesAdapter.MyViewHolder.ClickListener {
     Context context;
@@ -44,6 +49,7 @@ public class SpeciesPhotoFragment extends Fragment implements UploadedSpeciesAda
     MenuItem deleteMenuFolder;
     MenuItem moveMenuFolder;
     private SparseBooleanArray selectedItems ;
+    DatabaseHelper databaseHelper;
 
     public SpeciesPhotoFragment() {
     }
@@ -65,6 +71,9 @@ public class SpeciesPhotoFragment extends Fragment implements UploadedSpeciesAda
         View view = inflater.inflate(R.layout.fragment_species_photo,
                 container, false);
         setHasOptionsMenu(true);
+        databaseHelper = DatabaseHelper.getDatabaseInstance(context);
+        SharedPreferences prefs = context.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
+        String userId = prefs.getString("USERID", "0");
         selectedItems = new SparseBooleanArray();
         TextView textMsg = (TextView) view.findViewById(R.id.textMsg);
         topToolBar = (Toolbar)view.findViewById(R.id.toolbarSpecies);
@@ -74,8 +83,10 @@ public class SpeciesPhotoFragment extends Fragment implements UploadedSpeciesAda
         dataListSameSpecies = new ArrayList<>();
         dataList = new ArrayList<>();
         recyclerViewSpecies = (RecyclerView) view.findViewById(R.id.recycler_view_upload_species);
-        if (getArguments() != null) {
+        if (getArguments() != null && Constants.isNetworkAvailable(context)) {
             dataList = getArguments().getParcelableArrayList("reviewList");
+        }else{
+            dataList = databaseHelper.getImageUploadedInfo(userId);
         }
         int flagSpeciesName = 0;
         dataListSpeciesNames.add(0,"Select Species");
@@ -171,9 +182,11 @@ public class SpeciesPhotoFragment extends Fragment implements UploadedSpeciesAda
     {
         deleteMenuFolder = menu.findItem(R.id.action_delete_folder);
         moveMenuFolder = menu.findItem(R.id.action_move_folder);
-        if(mAdapter.getSelectedItemCount() == 0){
-            deleteMenuFolder.setVisible(false);
-            moveMenuFolder.setVisible(false);
+        if(mAdapter != null){
+            if(mAdapter.getSelectedItemCount() == 0){
+                deleteMenuFolder.setVisible(false);
+                moveMenuFolder.setVisible(false);
+            }
         }
     }
 
@@ -190,7 +203,9 @@ public class SpeciesPhotoFragment extends Fragment implements UploadedSpeciesAda
         return true;
     }
     private void toggleSelection(int position) {
-        mAdapter.toggleSelection (position);
+        if(mAdapter != null){
+            mAdapter.toggleSelection (position);
+        }
         if (selectedItems.get(position, false)) {
             selectedItems.delete(position);
         }

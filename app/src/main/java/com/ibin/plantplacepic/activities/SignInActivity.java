@@ -14,6 +14,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -48,6 +50,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     EditText editTextPassSignin ;
     String personPhotoUrl="";
     ProgressDialog dialog;
+    CheckBox keepMeSignin;
     private static final String TAG = SignInActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 007;
@@ -63,6 +66,18 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 requestPermission();
             }
         }
+        keepMeSignin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor editor2 = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE).edit();
+                if(isChecked){
+                    editor2.putBoolean(Constants.KEY_IS_LOGIN,true);
+                }else{
+                    editor2.putBoolean(Constants.KEY_IS_LOGIN,false);
+                }
+                editor2.commit();
+            }
+        });
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent activityChangeIntent = new Intent(SignInActivity.this, SignUpActivity.class);
@@ -135,13 +150,16 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                     }
                     if(response.body().getSuccess().toString().trim().equals("1")) {
                         //dispalyToast(response.body().getResult());
-                        SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE).edit();
+                        SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE).edit();
                         editor1.putString(Constants.KEY_USERNAME, USER);
                         editor1.putString(Constants.KEY_USERID, response.body().getUserId());
-                        editor1.putBoolean(Constants.KEY_IS_LOGIN,true);
                         editor1.putString(Constants.KEY_PHOTO, personPhotoUrl);
+                        if(keepMeSignin.isChecked()){
+                            editor1.putBoolean(Constants.KEY_IS_LOGIN,true);
+                        }else{
+                            editor1.putBoolean(Constants.KEY_IS_LOGIN,false);
+                        }
                         editor1.commit();
-
                         Intent intent = new Intent(SignInActivity.this,AboutActivity.class);
                         startActivity(intent);
                         finish();
@@ -287,5 +305,6 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         buttonGoogleSignIn = (Button)findViewById(R.id.buttonGoogleSignIn);
         editTextEmailSignin = (EditText) findViewById(R.id.editTextEmailSignin);
         editTextPassSignin = (EditText) findViewById(R.id.editTextPassSignin);
+        keepMeSignin = (CheckBox) findViewById(R.id.checkboxRemember);
     }
 }

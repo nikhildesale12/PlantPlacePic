@@ -40,6 +40,7 @@ import com.ibin.plantplacepic.activities.UpdateInfoActivity;
 import com.ibin.plantplacepic.adapter.UploadedPhotoAdapter;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.LoginResponse;
+import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
 import com.ibin.plantplacepic.utility.ItemOffsetDecoration;
@@ -69,6 +70,7 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
     MenuItem moveMenu;
     MenuItem viewMenu;
     private SparseBooleanArray selectedItems ;
+    DatabaseHelper databaseHelper;
 
     public PhotosFragment() {
     }
@@ -91,13 +93,18 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_upload_photos,
                 container, false);
+        databaseHelper = DatabaseHelper.getDatabaseInstance(context);
+        SharedPreferences prefs = context.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
+        String userId = prefs.getString("USERID", "0");
         selectedItems = new SparseBooleanArray();
         TextView textMsg = (TextView) view.findViewById(R.id.textMsgPhoto);
         topToolBar = (Toolbar) view.findViewById(R.id.toolbarPhotos);
         ((AppCompatActivity)getActivity()).setSupportActionBar(topToolBar);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_upload_photo);
-        if (getArguments() != null) {
+        if (getArguments() != null && Constants.isNetworkAvailable(context)) {
             dataList = getArguments().getParcelableArrayList("reviewList");
+        }else {
+            dataList = databaseHelper.getImageUploadedInfo(userId);
         }
         if(dataList != null && dataList.size()>0){
             textMsg.setVisibility(View.GONE);
@@ -213,11 +220,13 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
         deleteMenu = menu.findItem(R.id.action_delete);
         editMenu = menu.findItem(R.id.action_edit);
         moveMenu = menu.findItem(R.id.action_move);
-        if(mAdapter.getSelectedItemCount() == 0){
-            deleteMenu.setVisible(false);
-            moveMenu.setVisible(false);
-            viewMenu.setVisible(false);
-            editMenu.setVisible(false);
+        if(mAdapter != null){
+            if(mAdapter.getSelectedItemCount() == 0){
+                deleteMenu.setVisible(false);
+                moveMenu.setVisible(false);
+                viewMenu.setVisible(false);
+                editMenu.setVisible(false);
+            }
         }
     }
 
@@ -229,48 +238,54 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
     @Override
     public void onItemClicked(int position) {
         toggleSelection(position);
-        if(mAdapter.getSelectedItemCount() == 0){
-            deleteMenu.setVisible(false);
-            moveMenu.setVisible(false);
-            viewMenu.setVisible(false);
-            editMenu.setVisible(false);
-        }else if(mAdapter.getSelectedItemCount() > 1){
-            deleteMenu.setVisible(true);
-            moveMenu.setVisible(true);
-            viewMenu.setVisible(false);
-            editMenu.setVisible(false);
-        }else if(mAdapter.getSelectedItemCount() == 1){
-            viewMenu.setVisible(true);
-            editMenu.setVisible(true);
-            deleteMenu.setVisible(true);
-            moveMenu.setVisible(true);
+        if(mAdapter != null) {
+            if (mAdapter.getSelectedItemCount() == 0) {
+                deleteMenu.setVisible(false);
+                moveMenu.setVisible(false);
+                viewMenu.setVisible(false);
+                editMenu.setVisible(false);
+            } else if (mAdapter.getSelectedItemCount() > 1) {
+                deleteMenu.setVisible(true);
+                moveMenu.setVisible(true);
+                viewMenu.setVisible(false);
+                editMenu.setVisible(false);
+            } else if (mAdapter.getSelectedItemCount() == 1) {
+                viewMenu.setVisible(true);
+                editMenu.setVisible(true);
+                deleteMenu.setVisible(true);
+                moveMenu.setVisible(true);
+            }
         }
     }
 
     @Override
     public boolean onItemLongClicked (int position) {
         toggleSelection(position);
-        if(mAdapter.getSelectedItemCount() == 0){
-            deleteMenu.setVisible(false);
-            moveMenu.setVisible(false);
-            viewMenu.setVisible(false);
-            editMenu.setVisible(false);
-        }else if(mAdapter.getSelectedItemCount() > 1){
-            deleteMenu.setVisible(true);
-            moveMenu.setVisible(true);
-            viewMenu.setVisible(false);
-            editMenu.setVisible(false);
-        }else if(mAdapter.getSelectedItemCount() == 1){
-            viewMenu.setVisible(true);
-            editMenu.setVisible(true);
-            deleteMenu.setVisible(true);
-            moveMenu.setVisible(true);
+        if(mAdapter != null) {
+            if (mAdapter.getSelectedItemCount() == 0) {
+                deleteMenu.setVisible(false);
+                moveMenu.setVisible(false);
+                viewMenu.setVisible(false);
+                editMenu.setVisible(false);
+            } else if (mAdapter.getSelectedItemCount() > 1) {
+                deleteMenu.setVisible(true);
+                moveMenu.setVisible(true);
+                viewMenu.setVisible(false);
+                editMenu.setVisible(false);
+            } else if (mAdapter.getSelectedItemCount() == 1) {
+                viewMenu.setVisible(true);
+                editMenu.setVisible(true);
+                deleteMenu.setVisible(true);
+                moveMenu.setVisible(true);
+            }
         }
         return true;
     }
 
     private void toggleSelection(int position) {
-        mAdapter.toggleSelection (position);
+        if(mAdapter != null) {
+            mAdapter.toggleSelection(position);
+        }
         if (selectedItems.get(position, false)) {
             selectedItems.delete(position);
         }
@@ -355,7 +370,7 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int positionFolderList, long id) {
-                SharedPreferences prefs = context.getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE);
+                SharedPreferences prefs = context.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
                 String userId = prefs.getString("USERID", "0");
                 String toSpecies = (String) listview.getItemAtPosition(positionFolderList);
                 for (int i = 0; i < getSelectedItems().size(); i++) {

@@ -47,6 +47,12 @@ public class Information implements Parcelable {
     @SerializedName("time")
     @Expose
     private String time;
+    @SerializedName("updateinfo")
+    @Expose
+    private String updateinfo;
+    @SerializedName("upload_from")
+    @Expose
+    private String 	uploadFrom;
 
     public String getUserId() {
         return userId;
@@ -144,6 +150,22 @@ public class Information implements Parcelable {
         this.time = time;
     }
 
+    public String getUpdateinfo() {
+        return updateinfo;
+    }
+
+    public void setUpdateinfo(String updateinfo) {
+        this.updateinfo = updateinfo;
+    }
+
+    public String getUploadFrom() {
+        return uploadFrom;
+    }
+
+    public void setUploadFrom(String uploadFrom) {
+        this.uploadFrom = uploadFrom;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -163,6 +185,8 @@ public class Information implements Parcelable {
         dest.writeString(address);
         dest.writeString(crop);
         dest.writeString(time);
+        dest.writeString(updateinfo);
+        dest.writeString(uploadFrom);
     }
     public Information() {
 
@@ -180,6 +204,8 @@ public class Information implements Parcelable {
         address = in.readString();
         crop = in.readString();
         time = in.readString();
+        updateinfo = in.readString();
+        uploadFrom = in.readString();
     }
 
     public static final Creator<Information> CREATOR = new Parcelable.Creator<Information>() {

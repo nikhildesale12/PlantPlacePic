@@ -82,7 +82,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_update_info);
         initViews();
         cityEditText.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.list_text_item));
-        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
         userId = prefs.getString("USERID", "0");
         Intent intent = getIntent();
         if(intent != null){

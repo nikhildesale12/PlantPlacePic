@@ -344,7 +344,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SharedPreferences prefs = context.getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE);
+                SharedPreferences prefs = context.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
                 String userId = prefs.getString("USERID", "0");
                 String imageName = dataListSameSpecies.get(positionSameSpec).getImages();
                 String fromSpecies = dataListSameSpecies.get(positionSameSpec).getSpecies();

@@ -85,7 +85,7 @@ public class CustomGallery extends AppCompatActivity {
 
     private void UploadImageServiceCall(ArrayList<String> imageList) {
 
-        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
         userId = prefs.getString("USERID", "0");
         SubmitRequest submitRequest = new SubmitRequest();
         submitRequest.setUserId(userId);

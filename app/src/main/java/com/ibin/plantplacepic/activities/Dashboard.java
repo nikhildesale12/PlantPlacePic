@@ -1,8 +1,6 @@
 package com.ibin.plantplacepic.activities;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,16 +8,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
-import android.media.Image;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -27,8 +21,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v4.widget.TextViewCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,13 +29,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -62,21 +50,11 @@ import com.ibin.plantplacepic.utility.Constants;
 import com.ibin.plantplacepic.utility.GPSTracker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-
-import org.w3c.dom.Text;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.DateFormat;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -123,7 +101,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             setSupportActionBar(topToolBar);
             topToolBar.setNavigationIcon(R.mipmap.userpic);
 
-            SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE);
+            SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
             userName  = prefs.getString(Constants.KEY_USERNAME, "Guest");
             userId = prefs.getString(Constants.KEY_USERID, "0");
             personPhotoUrl = prefs.getString(Constants.KEY_PHOTO, "");
@@ -220,21 +198,24 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             buttonReviewMyUploads.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(Constants.isNetworkAvailable(Dashboard.this)){
-                        Intent intent1 = new Intent(Dashboard.this,ReviewMyUploadTabActivity.class);
-                        startActivity(intent1);
-                        finish();
-                    }else{
-                        Constants.dispalyDialogInternet(Dashboard.this,"Internet Unavailable","Please check internet connection",false,false);
-                    }
+                    Intent intent1 = new Intent(Dashboard.this,ReviewMyUploadTabActivity.class);
+                    startActivity(intent1);
+                    finish();
+//                    if(Constants.isNetworkAvailable(Dashboard.this)){
+//
+//                    }else{
+//                        Constants.dispalyDialogInternet(Dashboard.this,"Internet Unavailable","Please check internet connection",false,false);
+//                    }
                 }
             });
-            databaseHelper = DatabaseHelper.getDatabaseInstance(getApplicationContext());
             if(Constants.isNetworkAvailable(Dashboard.this)){
                 List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(userId);
                 Log.d("List : ","List : "+dataList.size());
                 if(dataList!=null && dataList.size()>0){
-                    for(int i=0;i<dataList.size();i++){
+                    Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
+                    intentService.putExtra("submitRequest", (Serializable) dataList);
+                    startService(intentService);
+                   /* for(int i=0;i<dataList.size();i++){
                         SubmitRequest  submitRequest = new SubmitRequest();
                         submitRequest.setUserId(dataList.get(i).getUserId());
                         submitRequest.setRemark(dataList.get(i).getRemark());
@@ -251,18 +232,17 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                         submitRequest.setStatus(dataList.get(i).getStatus());
                         submitRequest.setTime(dataList.get(i).getTime());
                         submitRequest.setIsSaveInLocal("NO");
-                        if(submitRequest.getImageUrl() != null && (submitRequest.getStatus() == null || submitRequest.getStatus() != null && submitRequest.getStatus().equals("false"))){
-                            submitRequest.setStatus("true");
-                            new StarServiceInAsync(submitRequest).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        }
                     }
+                    if(submitRequest.getImageUrl() != null && (submitRequest.getStatus() == null || submitRequest.getStatus() != null && submitRequest.getStatus().equals("false"))){
+
+                    }*/
                 }
             }
         }
     } /*onCreate End*/
 
 
-    private class StarServiceInAsync extends AsyncTask<Void, Integer, String> {
+   /* private class StarServiceInAsync extends AsyncTask<Void, Integer, String> {
         SubmitRequest submitRequest = new SubmitRequest();
         private StarServiceInAsync(SubmitRequest submitRqt) {
             submitRequest = submitRqt;
@@ -275,7 +255,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             return null;
         }
 
-    }
+    }*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -287,7 +267,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_logout) {
-            SharedPreferences.Editor editor = getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE).edit();
+            SharedPreferences.Editor editor = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE).edit();
             editor.clear();
             editor.commit();
             Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
@@ -307,22 +287,27 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     }
 
     private void getUploadedCount(String userId) {
-        Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
-        ApiService service = retrofit.create(ApiService.class);
-        Call<String> call = service.getUplodCount(userId);
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if(response != null && response.body() != null ){
-                    textUploadCount.setText(response.body());
+        if(Constants.isNetworkAvailable(Dashboard.this)){
+            textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
+            Gson gson = new GsonBuilder().setLenient().create();
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
+            ApiService service = retrofit.create(ApiService.class);
+            Call<String> call = service.getUplodCount(userId);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if(response != null && response.body() != null ){
+                        textUploadCount.setText(response.body());
+                    }
                 }
-            }
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                textUploadCount.setText("0");
-            }
-        });
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    textUploadCount.setText("0");
+                }
+            });
+        }else{
+            textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
+        }
     }
 
     private void openCamera(){
@@ -509,7 +494,8 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         buttonReviewMyUploads = (RelativeLayout)findViewById(R.id.buttonReviewMyUploads);
         buttonGallery = (RelativeLayout)findViewById(R.id.buttonGallery);
         textUserName = (TextView) findViewById(R.id.textUserName);
-        textUploadCount = (TextView)findViewById(R.id.textUploadCount);
+        textUploadCount = (TextView)findViewById(R.id.text_uploaded_count);
+        databaseHelper = DatabaseHelper.getDatabaseInstance(Dashboard.this);
     }
     private void showCloseAppPopUp(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(Dashboard.this);

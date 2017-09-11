@@ -112,10 +112,10 @@ public class SignUpActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                     if (response.body().getSuccess().toString().trim().equals("1")) {
-                        SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE).edit();
+                        SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE).edit();
                         editor1.putString(Constants.KEY_USERNAME, USER);
                         editor1.putString(Constants.KEY_USERID, response.body().getUserId());
-                        editor1.putBoolean(Constants.KEY_IS_LOGIN,true);
+                        editor1.putBoolean(Constants.KEY_IS_LOGIN,false);
                         editor1.commit();
 
                         Intent intent = new Intent(SignUpActivity.this, AboutActivity.class);

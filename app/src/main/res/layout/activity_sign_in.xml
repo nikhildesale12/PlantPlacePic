@@ -72,12 +72,21 @@
                 <Button
                     android:id="@+id/buttonSignIn"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/image_info_edittext_height"
                     android:layout_gravity="center"
                     android:text="Login"
                     android:textSize="@dimen/image_info_text_font_size"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/button_selector"/>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/checkboxRemember"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="2dp"
+                    android:textStyle="bold"
+                    android:text="Keep me signin"/>
 
             </LinearLayout>
 
@@ -109,7 +118,6 @@
                     android:text="SignIN"
                     android:textSize="@dimen/image_info_text_font_size"
                     android:layout_weight="0.50"
-                    android:layout_marginTop="6dp"
                     android:layout_marginLeft="2dp"
                     android:drawableLeft="@drawable/common_google_signin_btn_icon_dark_normal"
                     android:background="@drawable/edittextbg"/>
@@ -122,7 +130,6 @@
                     android:text="Register "
                     android:layout_weight="0.50"
                     android:textSize="@dimen/image_info_text_font_size"
-                    android:layout_marginTop="6dp"
                     android:layout_marginLeft="2dp"
                     android:background="@drawable/edittextbg"/>
 

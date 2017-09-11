@@ -29,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -46,12 +47,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ImageUploadService extends Service{
     DatabaseHelper databaseHelper;
-    SubmitRequest submitRequest;
-    String serverFolderPath="";
-    String filePath = "";
+    //SubmitRequest submitRequest;
+    List<SubmitRequest> submitRequestList;
+    //String serverFolderPath="";
+   // String filePath = "";
     long totalSize = 0;
     public ImageUploadService() {
-        submitRequest = new SubmitRequest();
+        submitRequestList = new ArrayList<>();
     }
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAXIMUM_POOL_SIZE = 128;
@@ -78,52 +80,50 @@ public class ImageUploadService extends Service{
     public int onStartCommand(Intent intent, int flags, int startId) {
         databaseHelper = DatabaseHelper.getDatabaseInstance(getApplicationContext());
         if(intent != null && intent.getSerializableExtra("submitRequest") != null){
-            submitRequest = (SubmitRequest) intent.getSerializableExtra("submitRequest");
-            if(submitRequest != null){
-                if(submitRequest.getImageUrl() != null && submitRequest.getImageUrl().length()>0){
-                    filePath = submitRequest.getImageUrl();
-                }
-                serverFolderPath = Constants.SERVER_FOLDER_PATH_ALL;
-            }else{
-                submitRequest = new SubmitRequest();
-            }
-        }
-        if(Constants.isNetworkAvailable(getApplicationContext())){
-//           /*compress starts*/
-            File file = new File(submitRequest.getImageUrl());
-            if(file != null){
-                if(file.length()/1024 > 2048 ) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(submitRequest.getImageUrl(), options);
-                    Matrix matrix = new Matrix();
-                    //matrix.postRotate(90);
-                    Bitmap finalBitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                            bitmap.getWidth(), bitmap.getHeight(),
-                            matrix, true);
-                    if (file.exists()) {
-                        file.delete();
+            submitRequestList = (List<SubmitRequest>) intent.getSerializableExtra("submitRequest");
+            if(submitRequestList != null){
+                if(Constants.isNetworkAvailable(getApplicationContext())){
+                    for(int i=0;i<submitRequestList.size();i++){
+                        SubmitRequest submitRequest = submitRequestList.get(i);
+                        if(submitRequest.getImageUrl() != null && (submitRequest.getStatus() == null || submitRequest.getStatus() != null && submitRequest.getStatus().equals("false"))){
+                            submitRequest.setStatus("true");
+                            submitRequest.setIsSaveInLocal("NO");
+                            /*compress starts*/
+                            File file = new File(submitRequest.getImageUrl());
+                            if(file != null) {
+                                if (file.length() / 1024 > 2048) {
+                                    BitmapFactory.Options options = new BitmapFactory.Options();
+                                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                                    Bitmap bitmap = BitmapFactory.decodeFile(submitRequest.getImageUrl(), options);
+                                    Matrix matrix = new Matrix();
+                                    //matrix.postRotate(90);
+                                    Bitmap finalBitmap = Bitmap.createBitmap(bitmap, 0, 0,
+                                            bitmap.getWidth(), bitmap.getHeight(),
+                                            matrix, true);
+                                    if (file.exists()) {
+                                        file.delete();
+                                    }
+                                    try {
+                                        //File file1 = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+"compress"+".jpg");
+                                        FileOutputStream out = new FileOutputStream(file);
+                                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                                        out.flush();
+                                        out.close();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                /*compress end*/
+                                new UploadFileToServer(submitRequest).executeOnExecutor(sExecutor);
+                            }
+                        }
                     }
-                    try {
-                        //File file1 = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+"compress"+".jpg");
-                        FileOutputStream out = new FileOutputStream(file);
-                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
-                        out.flush();
-                        out.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                } else {
+                    Toast.makeText(getApplicationContext(),"Image is not in proper format",Toast.LENGTH_SHORT).show();
                 }
-            /*compress end*/
-                new UploadFileToServer(submitRequest,0).executeOnExecutor(sExecutor);
-            } else {
-                Toast.makeText(getApplicationContext(),"Image is not in proper format",Toast.LENGTH_SHORT).show();
             }
-//            try {
-//                new UploadFileToServer(submitRequest, 0).executeOnExecutor(sExecutor);
-//            }catch (RejectedExecutionException e){
-//                e.printStackTrace();
-//            }
+        }else{
+            stopSelf();
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -132,62 +132,14 @@ public class ImageUploadService extends Service{
      * Uploading the file to server
      * */
     private class UploadFileToServer extends AsyncTask<Void, Integer, String> {
-        int position = 0;
-        private UploadFileToServer(SubmitRequest submitRqt,int i) {
-            filePath =  submitRqt.getImageUrl();
+        SubmitRequest submitRequest = new SubmitRequest();
+        private UploadFileToServer(SubmitRequest submitRqt) {
             submitRequest = submitRqt;
-            position = i;
-        }
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
         }
         @Override
         protected String doInBackground(Void... params) {
-            //filePath = params[0];
-            return uploadFile(filePath);
+            return uploadFile(submitRequest.getImageUrl());
         }
-
-//        @SuppressWarnings("deprecation")
-//        private String uploadFile(String filePath) {
-//            String responseString ;
-//            HttpClient httpclient = new DefaultHttpClient();
-//            HttpPost httppost = new HttpPost(Constants.FILE_UPLOAD_URL);
-//
-//            try {
-//                AndroidMultiPartEntity entity = new AndroidMultiPartEntity(
-//                        new AndroidMultiPartEntity.ProgressListener() {
-//                            @Override
-//                            public void transferred(long num) {
-//                                publishProgress((int) ((num / (float) totalSize) * 100));
-//                            }
-//                        });
-//                File sourceFile = new File(filePath);
-//                entity.addPart("image", new FileBody(sourceFile));
-//                entity.addPart("folderpath",new StringBody(serverFolderPath));
-//                totalSize = entity.getContentLength();
-//                httppost.setEntity(entity);
-//                HttpResponse response = httpclient.execute(httppost);
-//                HttpEntity r_entity = response.getEntity();
-//                int statusCode = response.getStatusLine().getStatusCode();
-//                if (statusCode == 200) {
-//                    // Server response
-//                    responseString = EntityUtils.toString(r_entity);
-//                } else {
-//                    responseString = "Error occurred! Http Status Code: "
-//                            + statusCode;
-//                }
-//            } catch (ClientProtocolException e) {
-//                responseString = e.toString();
-//            } catch (IOException e) {
-//                responseString = e.toString();
-//            }
-//            return responseString;
-//        }
-
         @SuppressWarnings("deprecation")
         private String uploadFile(String filePath) {
             String result = "";
@@ -202,7 +154,7 @@ public class ImageUploadService extends Service{
                 entity.setBoundary(boundary);
                 File sourceFile = new File(filePath);
                 entity.addPart("image", new FileBody(sourceFile));
-                entity.addPart("folderpath",new StringBody(serverFolderPath));
+                entity.addPart("folderpath",new StringBody(Constants.SERVER_FOLDER_PATH_ALL));
 
                 java.net.URL url = new URL(Constants.FILE_UPLOAD_URL);
                 connection = url.openConnection();
@@ -266,7 +218,7 @@ public class ImageUploadService extends Service{
         protected void onPostExecute(String result) {
             Log.d("ImageUploadService", "Response from server: " + result);
             if(result.equals("true")){
-                callRetrofitToSaveDataServer(submitRequest,position);
+                callRetrofitToSaveDataServer(submitRequest);
             }else{
                 if(submitRequest.getIsSaveInLocal() != null && submitRequest.getIsSaveInLocal().equals("NO")){
                     Log.d("ImageUploadService", "Already in DB");
@@ -290,33 +242,13 @@ public class ImageUploadService extends Service{
             }
         }
     }
-    private void callRetrofitToSaveDataServer(final SubmitRequest submitRequest, int position){
+    private void callRetrofitToSaveDataServer(final SubmitRequest submitRequest){
         Log.d("In callRetrofitToSaveDataServer","In callRetrofitToSaveDataServer");
         Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         ApiService service = retrofit.create(ApiService.class);
         final String USERID = submitRequest.getUserId();
-        String IMAGE ;
-        String TIME ;
-       /* if(submitRequest.getImagesPathList() != null && submitRequest.getImagesPathList().size() >0){
-            path = submitRequest.getImagesPathList().get(position);
-            ExifInterface exif = null;
-            try {
-                exif = new ExifInterface(path);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String datetime =  exif.getAttribute(ExifInterface.TAG_DATETIME);
-            String fileName = path.substring(path.lastIndexOf('/')+1, path.length());
-            IMAGE = fileName;
-            TIME = datetime;
-        }else{
-            //path = submitRequest.getImageUrl();
-            IMAGE = submitRequest.getImageName();
-            TIME = submitRequest.getTime();
-        }*/
-
-        IMAGE = submitRequest.getImageName();
-        TIME = submitRequest.getTime();
+        String IMAGE = submitRequest.getImageName();
+        String TIME = submitRequest.getTime();
         String SPECIES = submitRequest.getSpecies();
         String REMARK = submitRequest.getRemark();
         String TAG = submitRequest.getTag();
@@ -349,7 +281,11 @@ public class ImageUploadService extends Service{
                         Toast.makeText(getApplicationContext(), "Data upload successfully", Toast.LENGTH_SHORT).show();
                         List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(USERID);
                         Log.d("List : ","List : "+dataList.size());
-                        stopSelf();
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }else  if(response.body().getSuccess().toString().trim().equals("0")) {
                         Log.d("Result DataUploadService : ","Result :"+response.body().getResult());
                     }else {

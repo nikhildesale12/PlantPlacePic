@@ -26,8 +26,8 @@ public class SubmitRequest implements Serializable {
     private String time;
     private String crop ;
     private String address;
+    private String updateInfo;
     private String uploadedFrom;
-
     private String isSaveInLocal;
 
     public String getUserId() {
@@ -154,5 +154,13 @@ public class SubmitRequest implements Serializable {
     }
     public void setIsSaveInLocal(String isSaveInLocal) {
         this.isSaveInLocal = isSaveInLocal;
+    }
+
+    public String getUpdateInfo() {
+        return updateInfo;
+    }
+
+    public void setUpdateInfo(String updateInfo) {
+        this.updateInfo = updateInfo;
     }
 }

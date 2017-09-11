@@ -38,7 +38,7 @@ public class SplashScreen extends AppCompatActivity {
                     e.printStackTrace();
                 } finally
                 {
-                    SharedPreferences sharedPreferences = SplashScreen.this.getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE);
+                    SharedPreferences sharedPreferences = SplashScreen.this.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
                     boolean login = sharedPreferences.getBoolean(Constants.KEY_IS_LOGIN, false);
                     if (login) {
                         Intent i = new Intent(SplashScreen.this,AboutActivity.class);

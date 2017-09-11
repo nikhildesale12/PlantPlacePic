@@ -7,15 +7,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
-import android.media.Image;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -32,8 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.ibin.plantplacepic.BuildConfig;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
 import com.ibin.plantplacepic.bean.SubmitRequest;
@@ -41,15 +34,14 @@ import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.services.ImageUploadService;
 import com.ibin.plantplacepic.utility.Constants;
-import com.ibin.plantplacepic.utility.GPSTracker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -103,9 +95,15 @@ public class ImageInfoActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_image_info);
         initViews();
+        if (Constants.isNetworkAvailable(ImageInfoActivity.this)) {
+            layoutSpeciesSpinner.setVisibility(View.VISIBLE);
+            callServiceToGetSpeciesNames(userId);
+        }else{
+            //layoutSpeciesSpinner.setVisibility(View.GONE);
+        }
         //cityEditText.setThreshold(3);
         cityEditText.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.list_text_item));
-        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
         userId = prefs.getString("USERID", "0");
         Intent intent = getIntent();
         submitRequest = new SubmitRequest();
@@ -147,24 +145,6 @@ public class ImageInfoActivity extends AppCompatActivity {
                 }
             }
         }
-//        try {
-//            GPSTracker gps = new GPSTracker(ImageInfoActivity.this);
-//            if (gps.canGetLocation()) {
-//                latitude = gps.getLatitude();
-//                longitude = gps.getLongitude();
-//                List<Address> addresses = getAddress(latitude, longitude);
-//                String addres = "", city = "", country = "";
-//                if (addresses != null) {
-//                    address = addresses.get(0).getAddressLine(0);
-//                    city = addresses.get(0).getAddressLine(1);
-//                    country = addresses.get(0).getAddressLine(2);
-//                }
-//                address = addres + "," + city + "," + country;
-//            }
-//        }catch(Exception e){
-//            e.printStackTrace();
-//        }
-//        if(latitude == 0 && longitude == 0){
         if(uploadFrom.equals(Constants.UPLOAD_FROM_GALLERY)){
             cityEditText.setVisibility(View.VISIBLE);
         }else if(uploadFrom.equals(Constants.UPLOAD_FROM_CAMERA) && latitude == 0 && longitude == 0){
@@ -235,10 +215,6 @@ public class ImageInfoActivity extends AppCompatActivity {
                 textTeg.setText("TAG : "+TAG);
             }
         });
-
-        if(Constants.isNetworkAvailable(this)){
-            callServiceToGetSpeciesNames(userId);
-        }
 
         speciesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -349,7 +325,10 @@ public class ImageInfoActivity extends AppCompatActivity {
             if (Constants.isNetworkAvailable(ImageInfoActivity.this)) {
                 Toast.makeText(ImageInfoActivity.this, "Uploading Data...", Toast.LENGTH_LONG).show();
                 Intent intentService = new Intent(this, ImageUploadService.class);
-                intentService.putExtra("submitRequest", submitReq);
+                //intentService.putExtra("submitRequest", submitReq);
+                List<SubmitRequest> submitReqList = new ArrayList<>();
+                submitReqList.add(submitReq);
+                intentService.putExtra("submitRequest", (Serializable) submitReqList);
                 startService(intentService);
             } else {
                 //save in local db
@@ -390,6 +369,7 @@ public class ImageInfoActivity extends AppCompatActivity {
             }
             submitReq.setCrop(cropStatus);
             submitReq.setStatus("false");
+            submitReq.setUploadedFrom(uploadFrom);
             submitReq.setTime(currentDateTimeString);
             if(!databaseHelper.isDataAvialableInLocalDb(submitReq)){
                 long insertedToLater = databaseHelper.insertDataInTableInformation(submitReq);
