@@ -3,48 +3,17 @@ package com.ibin.plantplacepic.services;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
-import com.ibin.plantplacepic.activities.ReviewMyUploadTabActivity;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
-import com.ibin.plantplacepic.bean.LoginResponse;
-import com.ibin.plantplacepic.bean.SubmitRequest;
 import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
-
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
-
-import java.io.BufferedReader;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -111,7 +80,10 @@ public class GetUploadedDataService extends Service{
 //                            setupTabIcons();
 
                                 Intent intent = new Intent();
-                                intent.setAction("CUSTOM_INTENT");
+                                intent.setAction("com.ibin.plantplacepic.CUSTOM_INTENT");
+                                Bundle data = new Bundle();
+                                data.putParcelableArrayList("reviewList", (ArrayList<? extends Parcelable>) informationList);
+                                intent.putExtras(data);
                                 sendBroadcast(intent);
                             }
                         }else{

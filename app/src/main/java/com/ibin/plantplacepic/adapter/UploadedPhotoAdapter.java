@@ -131,7 +131,6 @@ public class UploadedPhotoAdapter extends SelectableAdapter<UploadedPhotoAdapter
                 imv.setImageBitmap(bitmap);
             }
         }
-
     }
 
     private Bitmap decodeSampledBitmapFromResource(Resources resources, int imageViewUploadedPhotoes, int reqWidth, int reqHeight) {

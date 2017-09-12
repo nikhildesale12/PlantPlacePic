@@ -219,6 +219,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         close();
         return i;
     }
+
+    public int deleteSaveDataFromLocal(String userId,String imageName){
+        openDatabase();
+        int i = -1;
+        i = sqLiteDatabase.delete(TABLE_INFORMATION_SAVE_DATA,COLUMN_INFO_USERID  + "=? AND " +COLUMN_INFO_IMAGES + "=?",new String[] {userId,imageName});
+        close();
+        return i;
+    }
+
     /*Delete all table*/
     public void removeAllTable() {
         openDatabase();

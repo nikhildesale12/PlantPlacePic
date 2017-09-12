@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
@@ -13,13 +14,11 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
@@ -28,7 +27,6 @@ import com.ibin.plantplacepic.fragment.PhotosFragment;
 import com.ibin.plantplacepic.fragment.SpeciesPhotoFragment;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.services.GetUploadedDataService;
-import com.ibin.plantplacepic.services.ImageUploadService;
 import com.ibin.plantplacepic.utility.Constants;
 
 import org.w3c.dom.Text;
@@ -47,12 +45,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ReviewMyUploadTabActivity extends AppCompatActivity implements MaterialTabListener {
     private List<Information> reviewList = null;
-    private TabLayout tabLayout;
+    public TabLayout tabLayout;
     private ViewPager viewPager;
     public String userId = "";
     private TextView textNoDataAvailable;
     DatabaseHelper databaseHelper;
     int totalUploadedCount = 0;
+    BroadcastReceiver receiver = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,14 +62,13 @@ public class ReviewMyUploadTabActivity extends AppCompatActivity implements Mate
         userId = prefs.getString(Constants.KEY_USERID, "0");
         totalUploadedCount = databaseHelper.getTotalUploadedData(userId);
         if(Constants.isNetworkAvailable(this)){
-            if(totalUploadedCount > 0){
+            if(totalUploadedCount == 0){
+                callServiceToGetPhotoesData(userId);
+            } if(totalUploadedCount > 0){
                 setupViewPager(viewPager);
                 tabLayout.setupWithViewPager(viewPager);
                 setupTabIcons();
-            }
-            if(totalUploadedCount == 0){
-                callServiceToGetPhotoesData(userId);
-            }else{
+
                 Intent intentService = new Intent(ReviewMyUploadTabActivity.this, GetUploadedDataService.class);
                 startService(intentService);
             }
@@ -83,6 +81,22 @@ public class ReviewMyUploadTabActivity extends AppCompatActivity implements Mate
                 setupTabIcons();
             }
         }
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.ibin.plantplacepic.CUSTOM_INTENT");
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Toast.makeText(context, "Intent Detected hhhhNew....", Toast.LENGTH_LONG).show();
+                if (intent.getExtras().getParcelableArrayList("reviewList") != null) {
+                    reviewList = intent.getExtras().getParcelableArrayList("reviewList");
+                    setupViewPager(viewPager);
+                    tabLayout.setupWithViewPager(viewPager);
+                    setupTabIcons();
+                }
+            }
+        };
+        registerReceiver(receiver, filter);
     }
 
     private void initviews() {
@@ -219,7 +233,7 @@ public class ReviewMyUploadTabActivity extends AppCompatActivity implements Mate
         viewPager.setAdapter(adapter);
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    public class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
@@ -250,9 +264,29 @@ public class ReviewMyUploadTabActivity extends AppCompatActivity implements Mate
 
     @Override
     public void onBackPressed() {
-
         Intent intentdASH = new Intent(this, Dashboard.class);
         startActivity(intentdASH);
         finish();
+    }
+
+    /*class DataReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "Intent Detected hhhh....", Toast.LENGTH_LONG).show();
+            if (intent.getExtras().getParcelableArrayList("reviewList") != null) {
+                reviewList = intent.getExtras().getParcelableArrayList("reviewList");
+                setupViewPager(viewPager);
+                tabLayout.setupWithViewPager(viewPager);
+                setupTabIcons();
+            }
+        }
+    }*/
+    @Override
+    protected void onDestroy() {
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
+        super.onDestroy();
     }
 }

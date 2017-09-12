@@ -101,9 +101,14 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
         topToolBar = (Toolbar) view.findViewById(R.id.toolbarPhotos);
         ((AppCompatActivity)getActivity()).setSupportActionBar(topToolBar);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_upload_photo);
-        if (getArguments() != null && Constants.isNetworkAvailable(context)) {
+//        if (getArguments() != null && Constants.isNetworkAvailable(context)) {
+//            dataList = getArguments().getParcelableArrayList("reviewList");
+//        }else {
+//            dataList = databaseHelper.getImageUploadedInfo(userId);
+//        }
+        if(getArguments() != null  && databaseHelper.getTotalUploadedData(userId) == 0){
             dataList = getArguments().getParcelableArrayList("reviewList");
-        }else {
+        }else{
             dataList = databaseHelper.getImageUploadedInfo(userId);
         }
         if(dataList != null && dataList.size()>0){

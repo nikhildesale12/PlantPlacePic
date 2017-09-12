@@ -281,11 +281,11 @@ public class ImageUploadService extends Service{
                         Toast.makeText(getApplicationContext(), "Data upload successfully", Toast.LENGTH_SHORT).show();
                         List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(USERID);
                         Log.d("List : ","List : "+dataList.size());
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+//                        try {
+//                            Thread.sleep(2000);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
                     }else  if(response.body().getSuccess().toString().trim().equals("0")) {
                         Log.d("Result DataUploadService : ","Result :"+response.body().getResult());
                     }else {

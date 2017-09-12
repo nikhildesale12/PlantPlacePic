@@ -40,6 +40,7 @@ import com.ibin.plantplacepic.activities.UpdateInfoActivity;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
 import com.ibin.plantplacepic.bean.LoginResponse;
+import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.fragment.SpeciesPhotoFragment;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
@@ -64,6 +65,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHolder> {
     Context context ;
     private List<Information> dataListSameSpecies;
+    DatabaseHelper databaseHelper;
     public static boolean moveFlag = false;
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView textSpecies;
@@ -95,7 +97,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.review_details, parent, false);
-
+        databaseHelper = DatabaseHelper.getDatabaseInstance(context);
         return new MyViewHolder(itemView);
     }
 
@@ -260,7 +262,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         return dataListSameSpecies.size();
     }
 
-    private void callDeleteService(String userId, String ImageName, final int position) {
+    private void callDeleteService(String userId, final String ImageName, final int position) {
         if(Constants.isNetworkAvailable(context)){
             Log.d("In callDeleteService","In callDeleteService");
             final ProgressDialog dialog = new ProgressDialog(context);
@@ -284,6 +286,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
                             Toast toast = Toast.makeText(context,"Deleted Successfully...", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
+                            //delete from local
+                            SharedPreferences prefs = context.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
+                            String userId = prefs.getString("USERID", "0");
+                            databaseHelper.deleteSaveDataFromLocal(ImageName,userId);
                             Intent i = new Intent(context,ReviewMyUploadTabActivity.class);
                             context.startActivity(i);
                             ((Activity)context).finish();
@@ -395,6 +401,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
                             Toast toast = Toast.makeText(context,"Move Successfully...", Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
+                            //move in local db
+                            databaseHelper.moveSpeciesLocal(ImageName,userId);
                             Intent i = new Intent(context,ReviewMyUploadTabActivity.class);
                             context.startActivity(i);
                             ((Activity)context).finish();
