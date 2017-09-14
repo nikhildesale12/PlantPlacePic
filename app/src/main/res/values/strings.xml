@@ -9,5 +9,10 @@
     <string name="update_activity">Edit Upload</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="species_detail_title">Album Species</string>
+    <string name="species_search_activity">Species Search</string>
+    <string name="species_around_you">Species Around You</string>
+    <string name="search_species_by_name">Search Species By Name</string>
+    <string name="species_detail">Species Detail </string>
+    <!--<string name="google_maps_key">AIzaSyBMBlqdDPcTXZpAXffXPVNReyTe4JmjG9k</string>-->
 
 </resources>

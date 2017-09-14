@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ibin.plantplacepic.activities.SpeciesAroundYouActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarSpeciesAroundYou"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        app:title="@string/species_around_you">
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:id="@+id/layout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbarSpeciesAroundYou"
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:id="@+id/mapSpeciesSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Map Species"/>
+    </LinearLayout>
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:map="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/map"
+              android:layout_below="@+id/layout_button"
+              android:name="com.google.android.gms.maps.SupportMapFragment"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context="com.sing.mymap.MapsActivity"/>
+
+
+</RelativeLayout>

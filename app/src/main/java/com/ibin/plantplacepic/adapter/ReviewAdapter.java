@@ -402,7 +402,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             //move in local db
-                            databaseHelper.moveSpeciesLocal(ImageName,userId);
+                            //databaseHelper.moveSpeciesLocal(ImageName,userId);
                             Intent i = new Intent(context,ReviewMyUploadTabActivity.class);
                             context.startActivity(i);
                             ((Activity)context).finish();

@@ -71,6 +71,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     RelativeLayout buttonReviewMyUploads;
     RelativeLayout buttonGallery;
     RelativeLayout buttonCamera;
+    RelativeLayout buttonSearch;
     TextView textUploadCount;
     String currentDateTimeString;
     GPSTracker gps;
@@ -208,6 +209,21 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
 //                    }
                 }
             });
+
+            buttonSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent1 = new Intent(Dashboard.this, SpeciesSearchActivity.class);
+                    startActivity(intent1);
+                    finish();
+//                    if(Constants.isNetworkAvailable(Dashboard.this)){
+//
+//                    }else{
+//                        Constants.dispalyDialogInternet(Dashboard.this,"Internet Unavailable","Please check internet connection",false,false);
+//                    }
+                }
+            });
+
             if(Constants.isNetworkAvailable(Dashboard.this)){
                 List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(userId);
                 Log.d("List : ","List : "+dataList.size());
@@ -493,6 +509,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         buttonCamera = (RelativeLayout)findViewById(R.id.buttonCamera);
         buttonReviewMyUploads = (RelativeLayout)findViewById(R.id.buttonReviewMyUploads);
         buttonGallery = (RelativeLayout)findViewById(R.id.buttonGallery);
+        buttonSearch = (RelativeLayout)findViewById(R.id.buttonSearchMain);
         textUserName = (TextView) findViewById(R.id.textUserName);
         textUploadCount = (TextView)findViewById(R.id.text_uploaded_count);
         databaseHelper = DatabaseHelper.getDatabaseInstance(Dashboard.this);
