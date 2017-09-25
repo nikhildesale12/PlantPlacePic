@@ -228,6 +228,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return i;
     }
 
+   public ArrayList<String> getSpeciesNames() {
+        openDatabase();
+        ArrayList<String> speciesList = new ArrayList<>();
+        String selectQuery = "SELECT " + COLUMN_INFO_SPECIES + " FROM " + TABLE_INFORMATION_SAVE_DATA;
+        Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                speciesList.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        close();
+        return speciesList;
+    }
     /*Delete all table*/
     public void removeAllTable() {
         openDatabase();

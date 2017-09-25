@@ -16,26 +16,38 @@
         app:title="@string/search_species_by_name">
     </android.support.v7.widget.Toolbar>
 
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search species to get detail."
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@id/toolbarSpeciesSearchByName"
+        android:textColor="@color/colorText"
+        android:textSize="22sp"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbarSpeciesSearchByName"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:id="@+id/linearLayout"
+        android:layout_below="@+id/textViewTitle"
+        android:layout_alignLeft="@+id/textViewTitle"
+        android:layout_alignStart="@+id/textViewTitle">
 
-
-        <TextView
+      <!--  <TextView
             android:id="@+id/textViewEnterSpecies"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:text="Enter Species"
-            android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:textColor="@color/colorText"
-            android:textSize="24sp"/>
+            android:textSize="22sp"/>-->
 
-        <EditText
+        <!--<EditText
             android:id="@+id/editTextEnterSpeciesName"
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -45,17 +57,35 @@
             android:layout_marginRight="10dp"
             android:hint="Enter Species Name"
             android:paddingLeft="10dp"
-            android:textSize="20sp"/>
-
-
+            android:textSize="20sp"/>-->
+        <AutoCompleteTextView
+            android:id="@+id/ACTtEnterSpeciesName"
+            android:layout_width="match_parent"
+            android:hint="Enter Species"
+            android:layout_height="50dp">
+        </AutoCompleteTextView>
     </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_all_species"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/linearLayout"
+        android:layout_alignEnd="@+id/linearLayout"
+        android:layout_below="@+id/linearLayout"
+        android:layout_above="@+id/linearLayout2"
+        android:layout_marginTop="5dp"
+        android:layout_alignLeft="@+id/linearLayout"
+        android:layout_alignStart="@+id/linearLayout"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:weightSum="1"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout2">
 
         <Button
             android:id="@+id/buttonSearch"

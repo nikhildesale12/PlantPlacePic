@@ -42,6 +42,10 @@ public class Constants {
     public static final String UPDATE_DATA_SERVICE_URL = "/plantplace/updateData.php";
     public static final String MOVE_SPECIES_SERVICE_URL = "/plantplace/moveUpdateData.php";
     public static final String DOWNLOAD_DATA_SERVICE_URL = "/plantplace/getDataByUserId.php";
+    public static final String POST_FEEDBACK_DATA = "/plantplace/getFeedbackData.php";
+    //public static final String DOWNLOAD_ALL_DATA_SERVICE_URL  = "/plantplace/getAllData.php";
+    public static final String GET_ALL_DATA_SERVICE_URL = "/plantplace/getAllSpeciesData.php";
+    public static final String GET_DETAIL_BY_SPECIES_NAME = "/plantplace/getSpeciesDataByName.php";
     public static final String GET_COUNT_SERVICE_URL = "/plantplace/getUploadCount.php";
     public static final String DELET_DATA_SERVICE_URL = "/plantplace/deleteData.php";
     public static final String IMAGE_DOWNLOAD_PATH = "http://ibin.plantplacepicture.com/plantplace/UploadedImages/";
@@ -65,6 +69,7 @@ public class Constants {
     public static final String KEY_USERID =  "USERID";
     public static final String KEY_PHOTO =  "personPhotoUrl";
     public static final String KEY_HINT_SWAP =  "swap";
+    public static final String KEY_ONE_TIME_PAGE = "pages";
     public static int countSelectedPhotoFromGallery = 0;
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -112,4 +117,8 @@ public class Constants {
 
     public static final String UPLOAD_FROM_GALLERY ="Gallery";
     public static final String UPLOAD_FROM_CAMERA ="Camera";
+
+    public static final String FROM_SPECIES_IMAGE = "fromSpeciesImage";
+    public static final String FROM_SPECIES_INFORMATION = "fromSpeciesInformation";
+    public static final String FROM_SPECIES_DISTRIBUTION = "fromSpeciesDistribution";
 }

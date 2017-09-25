@@ -298,6 +298,31 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             startActivity(intent);
             finish();
         }
+        if (id == R.id.action_feedback) {
+            //Toast.makeText(Dashboard.this, "feeback", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Dashboard.this, FeedbackActivity.class);
+            startActivity(intent);
+        }
+        if (id == R.id.action_share) {
+            //Toast.makeText(Dashboard.this, "share", Toast.LENGTH_SHORT).show();
+            try {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "My application name");
+                String sAux = "\nLet me recommend you this application\n\n";
+                sAux = sAux + "https://play.google.com/store/apps/details?id=com.ibin.plantplacepic&hl=en \n\n";
+                i.putExtra(Intent.EXTRA_TEXT, sAux);
+                startActivity(Intent.createChooser(i, "choose one"));
+            } catch(Exception e) {
+                //e.toString();
+            }
+        }
+        if (id == R.id.action_about) {
+            //Toast.makeText(Dashboard.this, "about", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Dashboard.this, AboutActivity.class);
+            intent.putExtra("from","dashboard");
+            startActivity(intent);
+        }
 
         return super.onOptionsItemSelected(item);
     }

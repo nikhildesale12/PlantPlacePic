@@ -28,4 +28,6 @@ public class ImagesFragment extends Fragment{
         return inflater.inflate(R.layout.fragment_images, container, false);
     }
 
+    public interface OnFragmentInteractionListner {
+    }
 }

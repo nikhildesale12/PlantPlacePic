@@ -160,9 +160,20 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                             editor1.putBoolean(Constants.KEY_IS_LOGIN,false);
                         }
                         editor1.commit();
-                        Intent intent = new Intent(SignInActivity.this,AboutActivity.class);
-                        startActivity(intent);
-                        finish();
+                        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE);
+                        boolean isShowScreen  = prefs.getBoolean(Constants.KEY_ONE_TIME_PAGE,true);
+                        if(isShowScreen) {
+                            SharedPreferences.Editor editor2 = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE).edit();
+                            editor2.putBoolean(Constants.KEY_ONE_TIME_PAGE, false);
+                            editor2.commit();
+                            Intent intent = new Intent(SignInActivity.this, AboutActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }else{
+                            Intent intent = new Intent(SignInActivity.this, Dashboard.class);
+                            startActivity(intent);
+                            finish();
+                        }
                     }else  if(response.body().getSuccess().toString().trim().equals("0")) {
                         if(dialog != null && dialog.isShowing()){
                             dialog.dismiss();

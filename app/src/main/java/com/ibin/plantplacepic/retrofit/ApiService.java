@@ -27,6 +27,13 @@ public interface ApiService {
             @Query("GOOG_ID") String GOOG_ID
     );
 
+    @GET(Constants.POST_FEEDBACK_DATA)
+    Call<LoginResponse> postFeedBackData(
+            @Query("USERNAME") String USERNAME,
+            @Query("COMMENT") String COMMENT,
+            @Query("RATING") String RATING
+    );
+
     @GET(Constants.REGISTER_SERVICE_URL)
     Call<LoginResponse> registerUserService(
             @Query("USER") String USER,
@@ -58,6 +65,19 @@ public interface ApiService {
     @GET(Constants.DOWNLOAD_DATA_SERVICE_URL)
     Call<InformationResponseBean> downloadDataById(
             @Query("USERID") String USERID
+    );
+
+//    @GET(Constants.DOWNLOAD_ALL_DATA_SERVICE_URL)
+//    Call<InformationResponseBean> downloadAllData(
+//    );
+
+    @GET(Constants.GET_ALL_DATA_SERVICE_URL)
+    Call<InformationResponseBean> getAllSpeciesDetail(
+    );
+
+    @GET(Constants.GET_DETAIL_BY_SPECIES_NAME)
+    Call<InformationResponseBean> getAllSpeciesDetailBySpeciesName(
+            @Query("SPECIES") String SPECIES
     );
 
     @GET(Constants.GET_COUNT_SERVICE_URL)

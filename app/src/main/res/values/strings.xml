@@ -13,6 +13,10 @@
     <string name="species_around_you">Species Around You</string>
     <string name="search_species_by_name">Search Species By Name</string>
     <string name="species_detail">Species Detail </string>
-    <!--<string name="google_maps_key">AIzaSyBMBlqdDPcTXZpAXffXPVNReyTe4JmjG9k</string>-->
+    <string name="feedback_activity">Feedback</string>
+    <!--<string name="google_maps_api_key">AIzaSyBMBlqdDPcTXZpAXffXPVNReyTe4JmjG9k</string>-->
+    <string name="google_map_key" templateMergeStrategy="preserve" translatable="false">
+    AIzaSyBMBlqdDPcTXZpAXffXPVNReyTe4JmjG9k
+</string>
 
 </resources>

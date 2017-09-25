@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.icu.text.IDNA;
 import android.net.Uri;
@@ -26,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,7 +69,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
     Context context ;
     private List<Information> dataListSameSpecies;
     DatabaseHelper databaseHelper;
+    String SearchByName = "";
     public static boolean moveFlag = false;
+
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView textSpecies;
         public TextView textTitle;
@@ -74,6 +80,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         public TextView textTag;
         public ImageView imageView ;
         public ImageView menuButton ;
+        public RelativeLayout recyclerItem;
 
         public MyViewHolder(View view) {
             super(view);
@@ -83,20 +90,26 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
             textTag = (TextView) view.findViewById(R.id.textTagReview);
             imageView = (ImageView) view.findViewById(R.id.imageViewReview);
             menuButton = (ImageView) view.findViewById(R.id.menuButton);
+            recyclerItem = (RelativeLayout) view.findViewById(R.id.recyclerItem);
         }
     }
 
 
-    public ReviewAdapter(List<Information> dataListSameSpecies, Context context) {
+    public ReviewAdapter(List<Information> dataListSameSpecies, Context context , String SearchByName) {
         this.dataListSameSpecies = dataListSameSpecies;
         this.context = context ;
+        this.SearchByName = SearchByName;
         moveFlag = false;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.review_details, parent, false);
+        View itemView = null;
+        if(SearchByName.equals("SearchByName")){
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_species_by_name_details, parent, false);
+        }else{
+            itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.review_details, parent, false);
+        }
         databaseHelper = DatabaseHelper.getDatabaseInstance(context);
         return new MyViewHolder(itemView);
     }
@@ -140,7 +153,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         imageFolderPath = Constants.IMAGE_DOWNLOAD_PATH;
         File file = new File(Constants.FOLDER_PATH + File.separator + review.getImages());
         if(file != null && file.exists()){
-            holder.imageView.setImageURI(Uri.fromFile(file));
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+            holder.imageView.setImageBitmap(bitmap);
+            //holder.imageView.setImageURI(Uri.fromFile(file));
         }else{
             Picasso.with(context)
                     .load(imageFolderPath+review.getImages())
@@ -163,56 +180,70 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
 //                intent.putExtra("imageName",dataListSameSpecies.get(position).getImages());
 //                intent.putExtra("tag",dataListSameSpecies.get(position).getTag());
 //                context.startActivity(intent);
-                Intent intent = new Intent(context, LargeZoomActivity.class);
-                Bundle data = new Bundle();
-                data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataListSameSpecies);
-                data.putInt("selectedPosition",position);
-                intent.putExtras(data);
-                context.startActivity(intent);
+                if(SearchByName.equals("SearchByName")){
+                    //not open large image
+                }else {
+                    Intent intent = new Intent(context, LargeZoomActivity.class);
+                    Bundle data = new Bundle();
+                    data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataListSameSpecies);
+                    data.putInt("selectedPosition", position);
+                    intent.putExtras(data);
+                    context.startActivity(intent);
+                }
             }
         });
 
-        holder.menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popup = new PopupMenu(context, holder.menuButton);
-                //inflating menu from xml resource
-                popup.inflate(R.menu.popupmenu);
-                //adding click listener
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
+        if(SearchByName.equals("SearchByName")) {
+            holder.recyclerItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(context, "posiTION : " + position + "Specis Name : " + dataListSameSpecies.get(position).getSpecies(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        if(!SearchByName.equals("SearchByName")) {
+            holder.menuButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popup = new PopupMenu(context, holder.menuButton);
+                    //inflating menu from xml resource
+                    popup.inflate(R.menu.popupmenu);
+                    //adding click listener
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
                             /*case R.id.action_view_image_popup:
                                 Intent intent = new Intent(context,LargeZoomActivity.class);
                                 intent.putExtra("imageName",dataListSameSpecies.get(position).getImages());
                                 intent.putExtra("tag",dataListSameSpecies.get(position).getTag());
                                 context.startActivity(intent);
                                 break;*/
-                            case R.id.action_delete_popup:
-                                //Toast.makeText(context,"delete",Toast.LENGTH_SHORT).show();
-                                callDeleteService(dataListSameSpecies.get(position).getUserId(),dataListSameSpecies.get(position).getImages(),position);
-                                break;
-                            case R.id.action_edit_popup:
-                                //Toast.makeText(context,"edit",Toast.LENGTH_SHORT).show();
-                                Intent i = new Intent(context, UpdateInfoActivity.class);
-                                i.putExtra("dataListUpdate",dataListSameSpecies.get(position));
-                                context.startActivity(i);
-                                //((Activity)context).finish();
-                                break;
-                            case R.id.action_move_popup:
-                                ///Toast.makeText(context,"move",Toast.LENGTH_SHORT).show();
-                                moveToFolderPopUp(position);
-                                break;
+                                case R.id.action_delete_popup:
+                                    //Toast.makeText(context,"delete",Toast.LENGTH_SHORT).show();
+                                    callDeleteService(dataListSameSpecies.get(position).getUserId(), dataListSameSpecies.get(position).getImages(), position);
+                                    break;
+                                case R.id.action_edit_popup:
+                                    //Toast.makeText(context,"edit",Toast.LENGTH_SHORT).show();
+                                    Intent i = new Intent(context, UpdateInfoActivity.class);
+                                    i.putExtra("dataListUpdate", dataListSameSpecies.get(position));
+                                    context.startActivity(i);
+                                    //((Activity)context).finish();
+                                    break;
+                                case R.id.action_move_popup:
+                                    ///Toast.makeText(context,"move",Toast.LENGTH_SHORT).show();
+                                    moveToFolderPopUp(position);
+                                    break;
+                            }
+                            return false;
                         }
-                        return false;
-                    }
-                });
-                //displaying the popup
-                popup.show();
+                    });
+                    //displaying the popup
+                    popup.show();
 
-            }
-        });
+                }
+            });
+        }
     }
 
     //target to save

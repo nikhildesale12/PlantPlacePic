@@ -28,4 +28,6 @@ public class DistributionFragment extends Fragment{
         return inflater.inflate(R.layout.fragment_distribution, container, false);
     }
 
+    public interface OnFragmentInteractionListner {
+    }
 }

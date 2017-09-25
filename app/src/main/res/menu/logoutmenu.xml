@@ -4,6 +4,21 @@
           android:showAsAction="never"
           android:title="Feedback"
           tools:ignore="AppCompatResource"/>-->
+    <item android:id="@+id/action_feedback"
+          android:showAsAction="never"
+          android:title="Feedback"
+          tools:ignore="AppCompatResource"/>
+
+    <item android:id="@+id/action_share"
+          android:showAsAction="never"
+          android:title="Share"
+          tools:ignore="AppCompatResource"/>
+
+    <item android:id="@+id/action_about"
+          android:showAsAction="never"
+          android:title="About"
+          tools:ignore="AppCompatResource"/>
+
     <item android:id="@+id/action_logout"
           android:showAsAction="never"
           android:title="Logout"

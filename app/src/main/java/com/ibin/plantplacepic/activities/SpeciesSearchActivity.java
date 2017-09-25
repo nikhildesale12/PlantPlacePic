@@ -1,6 +1,11 @@
 package com.ibin.plantplacepic.activities;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -23,9 +28,13 @@ public class SpeciesSearchActivity extends AppCompatActivity {
         buttonSpeciesAroundYou.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(SpeciesSearchActivity.this,SpeciesAroundYouActivity.class);
-                startActivity(intent);
-                //finish();
+                if(!isGPSEnabled()){
+                    showSettingsAlert();
+                }else {
+                    Intent intent = new Intent(SpeciesSearchActivity.this, SpeciesAroundYouActivity.class);
+                    startActivity(intent);
+                    //finish();
+                }
             }
         });
         buttonSpeciesByName.setOnClickListener(new View.OnClickListener() {
@@ -46,6 +55,28 @@ public class SpeciesSearchActivity extends AppCompatActivity {
         });
     }
 
+    private void showSettingsAlert(){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(SpeciesSearchActivity.this);
+        alertDialog.setTitle("GPS Is Disable");
+        alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog,int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        });
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        alertDialog.show();
+    }
+    protected boolean isGPSEnabled(){
+        LocationManager manager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        boolean GPSStatus = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        return GPSStatus;
+    }
     private void initViews() {
         buttonSpeciesAroundYou=(RelativeLayout)findViewById(R.id.buttonSpeciesAroundYou);
         buttonSpeciesByName=(RelativeLayout)findViewById(R.id.buttonSpeciesByName);

@@ -166,13 +166,12 @@
                 android:layout_height="wrap_content"
                 android:src="@mipmap/searchicon"
                 android:padding="15dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"/>
+                android:layout_centerVertical="true"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Search"
+                android:text="Distribution Search"
                 android:layout_centerVertical="true"
                 android:textSize="24sp"
                 android:textColor="@color/colorText"

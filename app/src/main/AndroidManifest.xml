@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- suppress ALL -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.ibin.plantplacepic">
+
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_LOGS"/>
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <meta-data
-        android:name="com.google.android.gms.version"
-        android:value="@integer/google_play_services_version"/>
-
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="@string/google_maps_key"/>
 
     <application
         android:name=".MyApplication"
@@ -30,6 +23,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key"/>
+
         <activity
             android:name=".activities.SignInActivity"
             android:screenOrientation="portrait">
@@ -108,21 +106,27 @@
             </intent-filter>
         </receiver>
         -->
-        <activity android:name=".activities.SpeciesSearchActivity"
-                  android:screenOrientation="portrait"
-                  android:label="@string/species_search_activity">
+        <activity
+            android:name=".activities.SpeciesSearchActivity"
+            android:label="@string/species_search_activity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.SpeciesAroundYouActivity"
-                  android:screenOrientation="portrait"
-                  android:label="@string/species_around_you">
+        <activity
+            android:name=".activities.SpeciesAroundYouActivity"
+            android:label="@string/species_around_you"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.SpeciesByNameActivity"
-                  android:screenOrientation="portrait"
-                  android:label="@string/search_species_by_name">
+        <activity
+            android:name=".activities.SpeciesByNameActivity"
+            android:label="@string/search_species_by_name"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.SpeciesInfoActivity"
-                  android:screenOrientation="portrait"
-                  android:label="@string/species_detail">
+        <activity
+            android:name=".activities.SpeciesInfoActivity"
+            android:label="@string/species_detail"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".activities.FeedbackActivity">
         </activity>
     </application>
 
