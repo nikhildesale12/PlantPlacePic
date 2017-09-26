@@ -16,20 +16,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
+import com.ibin.plantplacepic.bean.SpeciesPoints;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
 import com.ibin.plantplacepic.utility.GPSTracker;
@@ -43,6 +47,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMapReadyCallback {
     private GoogleMap mMap;
     Button mapSpeciesSarch;
+    private ClusterManager<SpeciesPoints> mClusterManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +69,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
     }
 
 
-    private void callServiceToGetSpeciesNames(final GoogleMap googleMap) {
+    private void callServiceToGetSpeciesNames(final ClusterManager<SpeciesPoints> mClusterManager,final GoogleMap googleMap) {
         final ProgressDialog dialog = new ProgressDialog(SpeciesAroundYouActivity.this);
         dialog.setMessage("Please Wait...");
         dialog.setIndeterminate(false);
@@ -88,9 +93,14 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                         && !response.body().getInformation().get(i).getLat().equals("") && !response.body().getInformation().get(i).getLng().equals("")){
                                     double latitude = Double.parseDouble(response.body().getInformation().get(i).getLat());
                                     double longitude = Double.parseDouble(response.body().getInformation().get(i).getLng());
-                                    googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(response.body().getInformation().get(i).getSpecies()));
+                                    //googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(response.body().getInformation().get(i).getSpecies()));
+
+                                    mClusterManager.addItem(new SpeciesPoints(latitude, longitude,response.body().getInformation().get(i).getSpecies() , ""));
                                 }
                             }
+                            mClusterManager.cluster();
+                            new RenderClusterInfoWindow(SpeciesAroundYouActivity.this,googleMap,mClusterManager);
+
                         }
                     }
                     if (response.body().getSuccess().toString().trim().equals("0")) {
@@ -124,7 +134,14 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
-
+        mMap.setBuildingsEnabled(true);
+        mMap.setIndoorEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setScrollGesturesEnabled(true);
+        mMap.getUiSettings().setZoomGesturesEnabled(true);
+        mMap.getUiSettings().setTiltGesturesEnabled(true);
+        mMap.getUiSettings().setRotateGesturesEnabled(true);
         // Get LocationManager object from System Service LOCATION_SERVICE
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         // Create a criteria object to retrieve provider
@@ -148,7 +165,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 double longitude = gps.getLongitude();
 
                 latLng = new LatLng(latitude, longitude);
-            }
+            } 
             googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
             // Show the current location in Google Map
@@ -156,13 +173,58 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
 
             // Zoom in the Google Map
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-            if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
-                callServiceToGetSpeciesNames(googleMap);
-            }
+
+            mClusterManager = new ClusterManager<>(this, googleMap);
+
+            googleMap.setOnCameraIdleListener(mClusterManager);
+            googleMap.setOnMarkerClickListener(mClusterManager);
+            googleMap.setOnInfoWindowClickListener(mClusterManager);
+            addSpeciesPointsItems(mClusterManager,googleMap);
+            //mClusterManager.cluster();
+
+//            if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
+//                callServiceToGetSpeciesNames(googleMap);
+//            }
+
+
+
         }
 //        googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!"));
     }
 
+    private void addSpeciesPointsItems(ClusterManager<SpeciesPoints> mClusterManager,GoogleMap googleMap) {
+        if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
+                callServiceToGetSpeciesNames(mClusterManager,googleMap);
+        }
+    }
+
+
+//    private void addPersonItems() {
+//        for (int i = 0; i < 3; i++) {
+//            mClusterManager.addItem(new SpeciesPoints(-26.187616, 28.079329, "PJ", "https://twitter.com/pjapplez"));
+//            mClusterManager.addItem(new SpeciesPoints(-26.207616, 28.079329, "PJ2", "https://twitter.com/pjapplez"));
+//            mClusterManager.addItem(new SpeciesPoints(-26.217616, 28.079329, "PJ3", "https://twitter.com/pjapplez"));
+//        }
+//    }
+
+    private class RenderClusterInfoWindow extends DefaultClusterRenderer<SpeciesPoints> {
+
+        RenderClusterInfoWindow(Context context, GoogleMap map, ClusterManager<SpeciesPoints> clusterManager) {
+            super(context, map, clusterManager);
+        }
+
+        @Override
+        protected void onClusterRendered(Cluster<SpeciesPoints> cluster, Marker marker) {
+            super.onClusterRendered(cluster, marker);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(SpeciesPoints item, MarkerOptions markerOptions) {
+            markerOptions.title(item.getName());
+
+            super.onBeforeClusterItemRendered(item, markerOptions);
+        }
+    }
 
     private void showSettingsAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(SpeciesAroundYouActivity.this);
