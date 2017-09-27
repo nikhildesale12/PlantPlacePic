@@ -16,6 +16,9 @@ import java.util.List;
 public class ViewPagerAdapter extends PagerAdapter {
 
     Context context ;
+    List<String> imageArray;
+    String IMAGEPATH = "";
+    ImageView imageView ;
     List<String> speciesList;
     String Information = "";
     public ViewPagerAdapter(Context mContext, List<String> speciesList, String fromSpeciesInformation) {

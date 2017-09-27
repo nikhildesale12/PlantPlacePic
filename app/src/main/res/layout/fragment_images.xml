@@ -1,13 +1,67 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.ibin.plantplacepic.fragment.ImagesFragment">
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/editbox_background_normal">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/textviewTotalImages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:textSize="20sp"
+        android:textColor="@color/colorPrimary"
+        android:text="Total Images found - 0"/>
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager_images"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textviewTotalImages"
+        android:layout_above="@+id/textviewScrollNext"/>
+
+
+    <TextView
+        android:id="@+id/textviewScrollNext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:textSize="14sp"
+        android:paddingLeft="15dp"
+        android:textColor="@android:color/white"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        android:text="Scroll for next image  >>>"/>
+
+    <!--<ImageView
+        android:id="@+id/imageViewButterflyImages"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:src="@mipmap/no_image"
+        android:layout_margin="5dp"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/textviewTotalImages"/>-->
+
+    <!--<HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hello Images Fragment"/>
+        android:layout_gravity="center_vertical"
+        android:layout_below="@+id/textviewTotalImages"
+        android:scrollbars="none" >
 
-</FrameLayout>
+        <LinearLayout
+            android:id="@+id/layoutLinearHorizontalView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" >
+        </LinearLayout>
+    </HorizontalScrollView>-->
+
+
+</RelativeLayout>

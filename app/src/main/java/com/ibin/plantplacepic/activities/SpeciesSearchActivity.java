@@ -19,6 +19,7 @@ public class SpeciesSearchActivity extends AppCompatActivity {
     RelativeLayout buttonSpeciesAroundYou;
     RelativeLayout buttonSpeciesByName;
     Button buttonBackSpeciesSearch;
+    public static String speciesImage="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,5 +82,12 @@ public class SpeciesSearchActivity extends AppCompatActivity {
         buttonSpeciesAroundYou=(RelativeLayout)findViewById(R.id.buttonSpeciesAroundYou);
         buttonSpeciesByName=(RelativeLayout)findViewById(R.id.buttonSpeciesByName);
         buttonBackSpeciesSearch=(Button)findViewById(R.id.buttonBackSpeciesSearch);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intentdASH = new Intent(this, Dashboard.class);
+        startActivity(intentdASH);
+        finish();
     }
 }

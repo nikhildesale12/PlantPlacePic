@@ -39,11 +39,13 @@ import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.activities.LargeZoomActivity;
 import com.ibin.plantplacepic.activities.ReviewMyUpload;
 import com.ibin.plantplacepic.activities.ReviewMyUploadTabActivity;
+import com.ibin.plantplacepic.activities.SpeciesInfoActivity;
 import com.ibin.plantplacepic.activities.UpdateInfoActivity;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.database.DatabaseHelper;
+import com.ibin.plantplacepic.fragment.ImagesFragment;
 import com.ibin.plantplacepic.fragment.SpeciesPhotoFragment;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
@@ -193,14 +195,17 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
             }
         });
 
-        if(SearchByName.equals("SearchByName")) {
+        if(SearchByName.equals("SearchByName"))
             holder.recyclerItem.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "posiTION : " + position + "Specis Name : " + dataListSameSpecies.get(position).getSpecies(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(context, "posiTION : " + position + "Specis Name : " + dataListSameSpecies.get(position).getSpecies(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(context, ImagesFragment.class);
+                    intent.putExtra("selectedPosition", position);
+                    intent.putExtra("Species Name", dataListSameSpecies.get(position).getImages());
+                    context.startActivity(intent);
                 }
             });
-        }
         if(!SearchByName.equals("SearchByName")) {
             holder.menuButton.setOnClickListener(new View.OnClickListener() {
                 @Override

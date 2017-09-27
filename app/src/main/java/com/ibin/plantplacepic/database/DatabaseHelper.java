@@ -294,4 +294,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return false;
     }
+    //get image from species name
+    public List<String> getImagesFromSpecies(String speciesImage) {
+        openDatabase();
+        List<String> imagesArray = new ArrayList<>();
+        String selectQuery = "SELECT " + COLUMN_INFO_IMAGES_URL + " FROM " + TABLE_INFORMATION_SAVE_TO_LATER + " WHERE " + COLUMN_INFO_IMAGES + "='" + speciesImage + "'";
+        Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                imagesArray.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        close();
+        return imagesArray;
+    }
 }

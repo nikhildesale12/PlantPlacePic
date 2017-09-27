@@ -30,6 +30,7 @@ public class SpeciesInfoActivity extends AppCompatActivity implements ImagesFrag
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
