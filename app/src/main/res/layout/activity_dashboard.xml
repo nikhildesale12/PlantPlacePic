@@ -13,6 +13,7 @@
         android:background="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="58dp"
+        app:titleTextAppearance="@style/Toolbar.TitleText"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
@@ -23,6 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textStyle="bold"
+        android:visibility="gone"
         android:textSize="@dimen/image_info_text_font_size"
         android:layout_below="@+id/toolbarDashboard"
         android:layout_marginTop="1dp"
@@ -49,6 +51,7 @@
             android:id="@+id/buttonReviewMyUploads"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_weight="0.22"
@@ -56,7 +59,7 @@
 
             <ImageView
                 android:id="@+id/iconDownload"
-                android:layout_width="110dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:padding="10dp"
@@ -98,7 +101,7 @@
 
             <ImageView
                 android:id="@+id/icongallary"
-                android:layout_width="110dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:src="@mipmap/galleryicon1"
                 android:padding="10dp"
@@ -109,7 +112,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Gallery"
+                android:text="Upload From Gallery"
                 android:layout_centerVertical="true"
                 android:textSize="24sp"
                 android:textColor="@color/colorText"
@@ -130,9 +133,9 @@
 
             <ImageView
                 android:id="@+id/iconCamara"
-                android:layout_width="110dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/cameraicon1"
+                android:src="@mipmap/cameraicon2"
                 android:padding="10dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
@@ -162,10 +165,10 @@
 
             <ImageView
                 android:id="@+id/iconSearch"
-                android:layout_width="110dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/searchicon"
-                android:padding="15dp"
+                android:src="@mipmap/search"
+                android:padding="9dp"
                 android:layout_centerVertical="true"/>
 
             <TextView

@@ -200,10 +200,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
                 @Override
                 public void onClick(View v) {
                     //Toast.makeText(context, "posiTION : " + position + "Specis Name : " + dataListSameSpecies.get(position).getSpecies(), Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(context, ImagesFragment.class);
+                    /*Intent intent = new Intent(context, ImagesFragment.class);
                     intent.putExtra("selectedPosition", position);
                     intent.putExtra("Species Name", dataListSameSpecies.get(position).getImages());
-                    context.startActivity(intent);
+                    context.startActivity(intent);*/
                 }
             });
         if(!SearchByName.equals("SearchByName")) {

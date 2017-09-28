@@ -99,8 +99,6 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         }else {
             initViews();
             topToolBar = (Toolbar)findViewById(R.id.toolbarDashboard);
-            setSupportActionBar(topToolBar);
-            topToolBar.setNavigationIcon(R.mipmap.userpic);
 
             SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
             userName  = prefs.getString(Constants.KEY_USERNAME, "Guest");
@@ -142,7 +140,11 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
 
             getUploadedCount(userId);
 
-            textUserName.setText("Welcome "+userName+" !");
+           // textUserName.setText("Welcome "+userName+" !");
+            setSupportActionBar(topToolBar);
+            getSupportActionBar().setTitle(userName);
+            topToolBar.setNavigationIcon(R.mipmap.userpic);
+
             buttonGallery.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -327,7 +329,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         return super.onOptionsItemSelected(item);
     }
 
-    private void getUploadedCount(String userId) {
+    private void getUploadedCount(final String userId) {
         if(Constants.isNetworkAvailable(Dashboard.this)){
             textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
             Gson gson = new GsonBuilder().setLenient().create();
@@ -338,6 +340,10 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     if(response != null && response.body() != null ){
+                        if(response.body().trim().equals("0")){
+                            databaseHelper.removeAllSaveDataFromTable();
+                        }
+                        Log.e("databaseHelper.getTotalUploadedData(userId)  :== ",""+databaseHelper.getTotalUploadedData(userId));
                         textUploadCount.setText(response.body());
                     }
                 }
@@ -347,6 +353,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                 }
             });
         }else{
+            //no internet
             textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
         }
     }

@@ -17,6 +17,28 @@
     </android.support.v7.widget.Toolbar>
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout"
+        android:layout_below="@+id/toolbarSpeciesAroundYou"
+        android:layout_alignLeft="@+id/toolbarSpeciesAroundYou"
+        android:layout_alignStart="@+id/toolbarSpeciesAroundYou">
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompletSpeciesSearch"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:paddingLeft="7dp"
+            android:background="@drawable/edittextbg"
+            android:hint="Search Species">
+        </AutoCompleteTextView>
+    </LinearLayout>
+
+
+    <LinearLayout
         android:visibility="gone"
         android:id="@+id/layout_button"
         android:layout_width="wrap_content"
@@ -37,8 +59,9 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
         tools:context="com.sing.mapexample.MapsActivity"
-        android:layout_below="@+id/layout_button"/>
+        android:layout_below="@+id/linearLayout"/>
 
 
 </RelativeLayout>

@@ -1,19 +1,21 @@
 {
   "project_info": {
-    "project_number": "27786769335",
-    "project_id": "firebase-plantplace"
+    "project_number": "191589877281",
+    "firebase_url": "https://plantplacerelease.firebaseio.com",
+    "project_id": "plantplacerelease",
+    "storage_bucket": "plantplacerelease.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:27786769335:android:8b1a156c6ad91d2a",
+        "mobilesdk_app_id": "1:191589877281:android:8b1a156c6ad91d2a",
         "android_client_info": {
           "package_name": "com.ibin.plantplacepic"
         }
       },
       "oauth_client": [
         {
-          "client_id": "27786769335-p0di695iob59gsur7p5tbvvmsc2ulemh.apps.googleusercontent.com",
+          "client_id": "191589877281-jrbidatr3aa9ooip7611v87ldh8jsjoo.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ibin.plantplacepic",
@@ -21,13 +23,25 @@
           }
         },
         {
-          "client_id": "27786769335-398jhojrht798enfs47mtnhng4o111jn.apps.googleusercontent.com",
+          "client_id": "191589877281-oiqfi36b7chvd8128j6rtf2b334arcrl.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "191589877281-5hqp1rtmrlipl8ebugufarjaumu8h8k1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ibin.plantplacepic",
+            "certificate_hash": "ca8ce752c3234328455031f260775cb5833ff7cd"
+          }
+        },
+        {
+          "client_id": "191589877281-1s53qclr540e9je90cmd9rk68h0kim0s.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyByFydZ8Omv77xqnvSF9t3fUUjUkhxH9GM"
+          "current_key": "AIzaSyAjkP3_mIqkTHPtS0KaJw9ZzbYuPWrVXQQ"
         }
       ],
       "services": {
@@ -35,11 +49,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "191589877281-oiqfi36b7chvd8128j6rtf2b334arcrl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

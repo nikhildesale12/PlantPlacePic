@@ -242,7 +242,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return speciesList;
     }
     /*Delete all table*/
-    public void removeAllTable() {
+    public void removeAllTableSaveToLater() {
         openDatabase();
         sqLiteDatabase.delete(TABLE_INFORMATION_SAVE_TO_LATER, null, null);
         close();

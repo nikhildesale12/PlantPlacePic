@@ -16,7 +16,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,11 +37,16 @@ import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.ibin.plantplacepic.R;
+import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
 import com.ibin.plantplacepic.bean.SpeciesPoints;
+import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
 import com.ibin.plantplacepic.utility.GPSTracker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,11 +57,64 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMapReadyCallback {
     private GoogleMap mMap;
     Button mapSpeciesSarch;
+    AutoCompleteTextView ACTtEnterSpeciesName;
+    public ArrayList<String> speciesList;
+    public ArrayList<Information> speciesList1;
+    Information info = new Information();
+    DatabaseHelper databaseHelper;
+    ArrayAdapter<String> adapter;
+    List<Information> mainDataList = null;
+
     private ClusterManager<SpeciesPoints> mClusterManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_species_around_you);
+
+        ACTtEnterSpeciesName=(AutoCompleteTextView)findViewById(R.id.autoCompletSpeciesSearch);
+        speciesList = new ArrayList<>();
+        mainDataList = new ArrayList<>();
+        databaseHelper = DatabaseHelper.getDatabaseInstance(SpeciesAroundYouActivity.this);
+
+        ACTtEnterSpeciesName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                view = getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                Toast.makeText(SpeciesAroundYouActivity.this,ACTtEnterSpeciesName.getText().toString(),Toast.LENGTH_SHORT).show();
+                if(mainDataList != null && mainDataList.size()>0){
+                    double latitude = 0;
+                    double longitude = 0;
+                    mClusterManager.clearItems();
+                    for (int i=0;i< mainDataList.size();i++){
+                        if(mainDataList.get(i).getSpecies().trim().equalsIgnoreCase(ACTtEnterSpeciesName.getText().toString().trim())){
+                            if(mainDataList.get(i).getLat() != null && mainDataList.get(i).getLng() != null
+                                    && !mainDataList.get(i).getLat().equals("0") && !mainDataList.get(i).getLat().equals("0.0")
+                                    && !mainDataList.get(i).getLng().equals("0") && !mainDataList.get(i).getLng().equals("0.0")
+                                    && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")) {
+                                latitude = Double.parseDouble(mainDataList.get(i).getLat());
+                                longitude = Double.parseDouble(mainDataList.get(i).getLng());
+                                //googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(response.body().getInformation().get(i).getSpecies()));
+                                String address = "";
+                                if(mainDataList.get(i).getAddress().trim().contains(",null")){
+                                    address = mainDataList.get(i).getAddress().trim().replace(",null","");
+                                }
+                                mClusterManager.addItem(new SpeciesPoints(latitude, longitude,mainDataList.get(i).getSpecies() , address));
+                            }
+                        }
+                    }
+                    LatLng latLng = new LatLng(latitude, longitude);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+
+                    mClusterManager.cluster();
+
+                }
+            }
+        });
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -86,6 +149,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 if (response != null && response.body() != null) {
                     if (response.body().getSuccess().toString().trim().equals("1")) {
                         if(response.body().getInformation() != null && response.body().getInformation().size()>0){
+                            mainDataList = response.body().getInformation();
                             for(int i = 0 ;i<response.body().getInformation().size();i++){
                                 if(response.body().getInformation().get(i).getLat() != null && response.body().getInformation().get(i).getLng() != null
                                         && !response.body().getInformation().get(i).getLat().equals("0") && !response.body().getInformation().get(i).getLat().equals("0.0")
@@ -94,13 +158,24 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                     double latitude = Double.parseDouble(response.body().getInformation().get(i).getLat());
                                     double longitude = Double.parseDouble(response.body().getInformation().get(i).getLng());
                                     //googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(response.body().getInformation().get(i).getSpecies()));
+                                    String address = "";
+                                    if(response.body().getInformation().get(i).getAddress().trim().contains(",null")){
+                                        address = response.body().getInformation().get(i).getAddress().trim().replace(",null","");
+                                    }
+                                    mClusterManager.addItem(new SpeciesPoints(latitude, longitude,response.body().getInformation().get(i).getSpecies() , address));
 
-                                    mClusterManager.addItem(new SpeciesPoints(latitude, longitude,response.body().getInformation().get(i).getSpecies() , ""));
+                                    if(!speciesList.contains(response.body().getInformation().get(i).getSpecies().trim())){
+                                        if(response.body().getInformation().get(i).getSpecies().trim().length()>0){
+                                            speciesList.add(response.body().getInformation().get(i).getSpecies().trim());
+                                        }
+                                    }
                                 }
                             }
                             mClusterManager.cluster();
                             new RenderClusterInfoWindow(SpeciesAroundYouActivity.this,googleMap,mClusterManager);
-
+                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(SpeciesAroundYouActivity.this,android.R.layout.simple_list_item_1, speciesList);
+                            ACTtEnterSpeciesName.setThreshold(1);
+                            ACTtEnterSpeciesName.setAdapter(adapter);
                         }
                     }
                     if (response.body().getSuccess().toString().trim().equals("0")) {

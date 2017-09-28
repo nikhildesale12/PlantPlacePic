@@ -40,7 +40,7 @@ public class ImagesFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View mainView = inflater.inflate(R.layout.fragment_images, container, false);
-        databaseHelper = DatabaseHelper.getDatabaseInstance(mContext);
+        /*databaseHelper = DatabaseHelper.getDatabaseInstance(mContext);
         imagesArray = databaseHelper.getImagesFromSpecies(SpeciesSearchActivity.speciesImage);
         final TextView totalCountText = (TextView) mainView.findViewById(R.id.textviewTotalImages);
         final TextView textViewScroll = (TextView) mainView.findViewById(R.id.textviewScrollNext);
@@ -78,7 +78,7 @@ public class ImagesFragment extends Fragment{
             @Override
             public void onPageScrollStateChanged(int i) {
             }
-        });
+        });*/
         return mainView;
     }
 

@@ -19,7 +19,7 @@ public class SpeciesSearchActivity extends AppCompatActivity {
     RelativeLayout buttonSpeciesAroundYou;
     RelativeLayout buttonSpeciesByName;
     Button buttonBackSpeciesSearch;
-    public static String speciesImage="";
+   // public static String speciesImage="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
