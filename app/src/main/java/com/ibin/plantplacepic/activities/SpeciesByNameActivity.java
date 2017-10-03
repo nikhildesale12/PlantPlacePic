@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -40,11 +41,10 @@ public class SpeciesByNameActivity extends AppCompatActivity {
     public RecyclerView recyclerView;
     public ReviewAdapter mAdapter;
     public static String speciesName="";
-    AutoCompleteTextView ACTtEnterSpeciesName;
+    AutoCompleteTextView autoEnterSpeciesName;
     public ArrayList<String> speciesList;
-    ArrayAdapter<String> adapter;
+    List<Information> mainDataList = null;
     DatabaseHelper databaseHelper;
-    RecyclerView recyclerViewSpecies;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,21 +52,31 @@ public class SpeciesByNameActivity extends AppCompatActivity {
         intitViews();
 //      SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
 //      userId = prefs.getString("USERID", "0");
-
+        mainDataList = new ArrayList<>();
         if (Constants.isNetworkAvailable(SpeciesByNameActivity.this)) {
            callServiceToGetSpeciesNames();
         }else {
                 speciesList = new ArrayList<>();
                 speciesList = databaseHelper.getSpeciesNames();
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,speciesList);
-                ACTtEnterSpeciesName.setThreshold(1);
-                ACTtEnterSpeciesName.setAdapter(adapter);
+                autoEnterSpeciesName.setThreshold(1);
+                autoEnterSpeciesName.setAdapter(adapter);
         }
 
-        ACTtEnterSpeciesName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        autoEnterSpeciesName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                callServiceToGetSpeciesDetailByName(ACTtEnterSpeciesName.getText().toString());
+               // callServiceToGetSpeciesDetailByName(ACTtEnterSpeciesName.getText().toString());
+//                view = getCurrentFocus();
+//                if (view != null) {
+//                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//                }
+                Intent intent=new Intent(SpeciesByNameActivity.this,SpeciesInfoActivity.class);
+                intent.putExtra("speciesNameSearch", autoEnterSpeciesName.getText().toString().trim());
+                intent.putParcelableArrayListExtra("mainDataList", (ArrayList<? extends Parcelable>) mainDataList);
+                startActivity(intent);
+
             }
         });
 
@@ -75,7 +85,6 @@ public class SpeciesByNameActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent=new Intent(SpeciesByNameActivity.this,SpeciesInfoActivity.class);
                 startActivity(intent);
-
             }
         });
         buttonBack.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +93,6 @@ public class SpeciesByNameActivity extends AppCompatActivity {
                 Intent i=new Intent(SpeciesByNameActivity.this,SpeciesSearchActivity.class);
                 startActivity(i);
                 finish();
-
             }
         });
     }
@@ -108,6 +116,7 @@ public class SpeciesByNameActivity extends AppCompatActivity {
                 if (response != null && response.body() != null) {
                     if (response.body().getSuccess().toString().trim().equals("1")) {
                         if(response.body().getInformation() != null && response.body().getInformation().size()>0){
+                            mainDataList = response.body().getInformation();
                             for(int i = 0 ;i<response.body().getInformation().size();i++){
                                 if(!speciesList.contains(response.body().getInformation().get(i).getSpecies().trim())){
                                    if(response.body().getInformation().get(i).getSpecies().trim().length()>0){
@@ -116,8 +125,8 @@ public class SpeciesByNameActivity extends AppCompatActivity {
                                }
                            }
                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(SpeciesByNameActivity.this,android.R.layout.simple_list_item_1, speciesList);
-                            ACTtEnterSpeciesName.setThreshold(1);
-                            ACTtEnterSpeciesName.setAdapter(adapter);
+                           autoEnterSpeciesName.setThreshold(1);
+                           autoEnterSpeciesName.setAdapter(adapter);
                         }
                     }
                     if (response.body().getSuccess().toString().trim().equals("0")) {
@@ -186,7 +195,7 @@ public class SpeciesByNameActivity extends AppCompatActivity {
         databaseHelper = DatabaseHelper.getDatabaseInstance(SpeciesByNameActivity.this);
         buttonSearch=(Button)findViewById(R.id.buttonSearch);
         buttonBack=(Button)findViewById(R.id.buttonBack);
-        ACTtEnterSpeciesName=(AutoCompleteTextView)findViewById(R.id.ACTtEnterSpeciesName);
+        autoEnterSpeciesName=(AutoCompleteTextView)findViewById(R.id.ACTtEnterSpeciesName);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view_all_species);
     }
 }

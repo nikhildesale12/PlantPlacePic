@@ -4,10 +4,12 @@
              android:layout_height="match_parent"
              tools:context="com.ibin.plantplacepic.fragment.DistributionFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <fragment
+        android:id="@+id/mapDistrubution"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hello Distribution Fragment"/>
+        tools:context="com.sing.mapexample.MapsActivity"
+        android:layout_below="@+id/linearLayout"/>
 
 </FrameLayout>

@@ -21,8 +21,6 @@ import com.ibin.plantplacepic.utility.Constants;
 import java.util.ArrayList;
 
 public class LargeZoomActivity extends AppCompatActivity {
-    String imageName = "";
-    String tag = "";
     ViewPager viewPager;
     int selectedPosition;
     ImageView swipeImage ;

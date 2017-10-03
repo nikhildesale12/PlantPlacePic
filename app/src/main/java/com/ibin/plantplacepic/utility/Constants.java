@@ -118,7 +118,4 @@ public class Constants {
     public static final String UPLOAD_FROM_GALLERY ="Gallery";
     public static final String UPLOAD_FROM_CAMERA ="Camera";
 
-    public static final String FROM_SPECIES_IMAGE = "fromSpeciesImage";
-    public static final String FROM_SPECIES_INFORMATION = "fromSpeciesInformation";
-    public static final String FROM_SPECIES_DISTRIBUTION = "fromSpeciesDistribution";
 }

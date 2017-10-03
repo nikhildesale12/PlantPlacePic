@@ -5,12 +5,6 @@
              android:layout_height="match_parent"
              tools:context="com.ibin.plantplacepic.fragment.InformationFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <!--<TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello Information Fragment"/>
--->
 
     <TextView
         android:id="@+id/textviewSpeciesInformation"
@@ -19,34 +13,18 @@
         android:layout_marginTop="15dp"
         android:layout_marginRight="15dp"
         android:layout_marginLeft="15dp"
-        android:textSize="30sp"
+        android:textSize="20dp"
         android:textColor="@color/colorPrimary"
         android:text="Species Information"/>
 
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager_images"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textviewSpeciesInformation"/>
-
-    <TextView
-        android:id="@+id/textViewSpeciesName"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_info_species"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_height="match_parent"
+        android:layout_alignRight="@+id/linearLayout"
+        android:layout_alignEnd="@+id/linearLayout"
+        android:layout_above="@+id/linearLayout2"
+        android:layout_margin="5dp"
         android:layout_below="@+id/textviewSpeciesInformation"/>
-
-    <TextView
-        android:id="@+id/textViewSpeciesAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:layout_below="@+id/textViewSpeciesName"/>
-
-
-
 
 </RelativeLayout>

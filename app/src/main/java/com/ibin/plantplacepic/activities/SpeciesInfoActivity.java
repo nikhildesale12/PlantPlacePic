@@ -1,17 +1,21 @@
 package com.ibin.plantplacepic.activities;
 
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.ibin.plantplacepic.R;
+import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.fragment.DistributionFragment;
 import com.ibin.plantplacepic.fragment.ImagesFragment;
 import com.ibin.plantplacepic.fragment.InformationFragment;
@@ -29,13 +33,20 @@ public class SpeciesInfoActivity extends AppCompatActivity implements ImagesFrag
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-
+    private String speciesToSearch ;
+    List<Information> mainDataList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_species_info);
-
+        mainDataList = new ArrayList<>();
+        if(getIntent() != null && getIntent().getStringExtra("speciesNameSearch") != null){
+            speciesToSearch = getIntent().getStringExtra("speciesNameSearch");
+        }
+        if(getIntent() != null && getIntent().getParcelableArrayListExtra("mainDataList") != null){
+            mainDataList = getIntent().getParcelableArrayListExtra("mainDataList");
+        }
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -47,11 +58,34 @@ public class SpeciesInfoActivity extends AppCompatActivity implements ImagesFrag
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     private void setupViewPager(ViewPager viewPager) {
+        Fragment imagesFragment = new ImagesFragment();
+        Fragment informationFragment = new InformationFragment();
+        Fragment distribution = new DistributionFragment();
+
+        Bundle data = new Bundle();
+        data.putParcelableArrayList("mainDataList", (ArrayList<? extends Parcelable>) mainDataList);
+        data.putString("selectedSpecies",speciesToSearch);
+        imagesFragment.setArguments(data);
+        informationFragment.setArguments(data);
+        distribution.setArguments(data);
+
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new ImagesFragment(), "Images");
-        adapter.addFragment(new InformationFragment(), "Information");
-        adapter.addFragment(new DistributionFragment(), "Distribution");
+
+        adapter.addFragment(imagesFragment, "Images");
+        adapter.addFragment(informationFragment, "Information");
+        adapter.addFragment(distribution, "Distribution");
         viewPager.setAdapter(adapter);
     }
 

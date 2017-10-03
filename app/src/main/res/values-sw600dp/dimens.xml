@@ -4,4 +4,6 @@
     <dimen name="button_height">60dp</dimen>
     <dimen name="title_font_size">30sp</dimen>
     <dimen name="species_folder_height">180dp</dimen>
+    <dimen name="custom_profile_image">55dp</dimen>
+    <dimen name="custom_profile_padding">2dp</dimen>
 </resources>

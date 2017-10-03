@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginBottom="1dp"
+            android:layout_marginBottom="2dp"
             android:layout_marginRight="6dp"
             android:text="SPECIES : Not Available"/>
 
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginBottom="1dp"
+            android:layout_marginBottom="2dp"
             android:layout_marginTop="2dp"
             android:text="TITLE : Not Available"/>
 
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginBottom="1dp"
+            android:layout_marginBottom="2dp"
             android:layout_marginTop="2dp"
             android:text="REMARK : Not Available"/>
 
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginBottom="1dp"
+            android:layout_marginBottom="2dp"
             android:layout_marginTop="2dp"
             android:text="TAG : Not Available"/>
     </LinearLayout>
@@ -62,6 +62,7 @@
         android:id="@+id/imageViewReview"
         android:layout_width="110dp"
         android:layout_height="110dp"
+        android:visibility="gone"
         android:padding="5dp"
         android:src="@mipmap/ic_launcher"
         android:layout_alignParentRight="true"/>

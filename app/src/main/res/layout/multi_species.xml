@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:background="@android:color/transparent">
+
+    <FrameLayout
+        android:id="@+id/mapPointFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/image"
+            android:src="@drawable/john"
+            android:padding="1dp"
+            android:layout_width="@dimen/custom_profile_image"
+            android:layout_height="@dimen/custom_profile_image"/>
+
+    </FrameLayout>
+
+
+    <TextView
+        android:id="@id/amu_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha=".9"
+        android:background="@drawable/round_shape_map"
+        android:textSize="12sp"
+        android:text="9"
+        android:textStyle="bold"
+        android:layout_alignRight="@+id/mapPointFrame"
+        android:layout_alignParentTop="true"/>
+</RelativeLayout>
