@@ -8,10 +8,13 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -361,37 +364,60 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         protected void onBeforeClusterRendered(Cluster<SpeciesPoints> cluster, MarkerOptions markerOptions) {
             // Draw multiple people.
             // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
-            List<Drawable> profilePhotos = new ArrayList<Drawable>(Math.min(4, cluster.getSize()));
-            int width = mDimension;
-            int height = mDimension;
+            final List<Drawable> profilePhotos = new ArrayList<Drawable>(Math.min(4, cluster.getSize()));
+            final int width = mDimension;
+            final int height = mDimension;
 
-            for (SpeciesPoints p : cluster.getItems()) {
-                Bitmap theBitmap= null;
+            for (final SpeciesPoints p : cluster.getItems()) {
                 // Draw 4 at most.
-                if (profilePhotos.size() == 4) break;
+                if (profilePhotos.size() == 4)
+                    break;
                 //Drawable drawable = getResources().getDrawable(p.profilePhoto);
-                try {
-                    theBitmap = Glide.
-                            with(SpeciesAroundYouActivity.this).
-                            load(Constants.IMAGE_DOWNLOAD_PATH+p.getImageName()).
-                            asBitmap().
-                            into(width, height). // Width and height
-                            get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-                Drawable drawable = new BitmapDrawable(getResources(), theBitmap);
-                drawable.setBounds(0, 0, width, height);
-                profilePhotos.add(drawable);
+                //                    theBitmap = Glide.
+//                            with(SpeciesAroundYouActivity.this).
+//                            load(Constants.IMAGE_DOWNLOAD_PATH+p.getImageName()).
+//                            asBitmap().
+//                            into(width, height). // Width and height
+//                            get();
+                new AsyncTask<Void, Void, Void>() {
+                    Bitmap theBitmap ;
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        Looper.prepare();
+                        try {
+                            theBitmap = Glide.
+                                with(SpeciesAroundYouActivity.this).
+                                load(Constants.IMAGE_DOWNLOAD_PATH+p.getImageName()).
+                                asBitmap().
+                                into(width, height). // Width and height
+                                get();
+                        } catch (final ExecutionException e) {
+                            Log.e("Exception", e.getMessage());
+                        } catch (final InterruptedException e) {
+                            Log.e("Exception", e.getMessage());
+                        }
+                        return null;
+                    }
+                    @Override
+                    protected void onPostExecute(Void dummy) {
+                        if (null != theBitmap) {
+                            // The full bitmap should be available here
+                            Drawable drawable = new BitmapDrawable(getResources(), theBitmap);
+                            drawable.setBounds(0, 0, width, height);
+                            profilePhotos.add(drawable);
+                            Log.d("Done", "Image loaded");
+                        };
+                    }
+                }.execute();
             }
-            MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
-            multiDrawable.setBounds(0, 0, width, height);
+            if(profilePhotos != null && profilePhotos.size()>0){
+                MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
+                multiDrawable.setBounds(0, 0, width, height);
 
-            mClusterImageView.setImageDrawable(multiDrawable);
-            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+                mClusterImageView.setImageDrawable(multiDrawable);
+                Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+            }
         }
 
         @Override
