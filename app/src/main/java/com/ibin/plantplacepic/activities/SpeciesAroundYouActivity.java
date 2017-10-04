@@ -383,7 +383,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                     Bitmap theBitmap ;
                     @Override
                     protected Void doInBackground(Void... params) {
-                        Looper.prepare();
+                        //Looper.prepare();
                         try {
                             theBitmap = Glide.
                                 with(SpeciesAroundYouActivity.this).
