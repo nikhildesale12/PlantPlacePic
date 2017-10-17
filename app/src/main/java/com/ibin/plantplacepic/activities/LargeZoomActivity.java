@@ -24,6 +24,7 @@ public class LargeZoomActivity extends AppCompatActivity {
     ViewPager viewPager;
     int selectedPosition;
     ImageView swipeImage ;
+    String fromActivity="";
     CustomPagerAdapterImage customPagerAdapterImage;
     ArrayList<Information> dataList = null;
     @Override
@@ -36,6 +37,7 @@ public class LargeZoomActivity extends AppCompatActivity {
         if(getIntent() != null){
             dataList = getIntent().getExtras().getParcelableArrayList("imageDataList");
             selectedPosition = getIntent().getExtras().getInt("selectedPosition");
+            fromActivity = getIntent().getExtras().getString("FromMap");
         }
         SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE);
         boolean isShowHint  = prefs.getBoolean(Constants.KEY_HINT_SWAP,true);

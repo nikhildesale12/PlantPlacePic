@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
 import com.ibin.plantplacepic.database.DatabaseHelper;
@@ -90,17 +92,21 @@ public class GetUploadedDataService extends Service{
                             informationList = new ArrayList<>();
                         }
                     } else if (response.body().getSuccess().toString().trim().equals("0")) {
-                        Constants.dispalyDialogInternet(getApplicationContext(),"Result","No Records Found",false,true);
+                        //Constants.dispalyDialogInternet(getApplicationContext(),"Result","No Records Found",false,true);
+                        Toast.makeText(getApplicationContext(),"No Records Found",Toast.LENGTH_SHORT).show();
                     } else {
-                        Constants.dispalyDialogInternet(getApplicationContext(),"Error","Technical Error !!!",false,true);
+                        //Constants.dispalyDialogInternet(getApplicationContext(),"Error","Technical Error !!!",false,true);
+                        Toast.makeText(getApplicationContext(),"Technical Error !!!",Toast.LENGTH_SHORT).show();
                     }
                 }else {
-                    Constants.dispalyDialogInternet(getApplicationContext(),"Error","Technical Error !!!",false,true);
+                    //Constants.dispalyDialogInternet(getApplicationContext(),"Error","Technical Error !!!",false,true);
+                    Toast.makeText(getApplicationContext(),"Technical Error !!!",Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
             public void onFailure(Call<InformationResponseBean> call, Throwable t) {
-                Constants.dispalyDialogInternet(getApplicationContext(),"Result",t.toString(),false,true);
+                //Constants.dispalyDialogInternet(getApplicationContext(),"Result",t.toString(),false,true);
+                Toast.makeText(getApplicationContext(),t.toString(),Toast.LENGTH_SHORT).show();
             }
         });
         stopSelf();

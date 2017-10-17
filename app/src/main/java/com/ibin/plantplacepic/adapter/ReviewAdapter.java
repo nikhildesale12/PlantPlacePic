@@ -55,6 +55,7 @@ import com.squareup.picasso.Target;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,26 +155,42 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         }*/
         imageFolderPath = Constants.IMAGE_DOWNLOAD_PATH;
         File file = new File(Constants.FOLDER_PATH + File.separator + review.getImages());
-        if(file != null && file.exists()){
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 2;
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
-            holder.imageView.setImageBitmap(bitmap);
-            //holder.imageView.setImageURI(Uri.fromFile(file));
-        }else{
-            Picasso.with(context)
-                    .load(imageFolderPath+review.getImages())
-                    .placeholder(R.drawable.pleasewait)   // optional
-                    .error(R.drawable.pleasewait)
-                    //.resize(200,200)             // optional
-                    .into(getTarget(review.getImages()));
-            Picasso.with(context)
-                    .load(imageFolderPath+review.getImages())
-                    .placeholder(R.drawable.pleasewait)   // optional
-                    .error(R.drawable.pleasewait)
-                    //.resize(200,200)             // optional
-                    .into(holder.imageView);
-        }
+//        if(file != null && file.exists()){
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inSampleSize = 8;
+//            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+
+//            Bitmap bitmap = getBitmap(file);
+//            holder.imageView.setImageBitmap(bitmap);
+
+//        }else{
+//            Picasso.with(context)
+//                    .load(imageFolderPath+review.getImages())
+//                    .placeholder(R.drawable.pleasewait)
+//                    .error(R.drawable.pleasewait)
+//                    .into(getTarget(review.getImages()));
+//            Glide.with(context)
+//                    .load(imageFolderPath+review.getImages())
+//                    .placeholder(R.drawable.pleasewait)
+//                    .error(R.drawable.pleasewait)
+//                    .thumbnail(0.5f)
+//                    .crossFade()
+//                    .into(holder.imageView);
+//        }
+
+        Glide.with(context)
+                .load(imageFolderPath+review.getImages())
+                .placeholder(R.drawable.pleasewait)
+                .error(R.drawable.pleasewait)
+                .thumbnail(0.5f)
+                .crossFade()
+                .into(holder.imageView);
+
+        Picasso.with(context)
+                .load(imageFolderPath+review.getImages())
+                .placeholder(R.drawable.pleasewait)
+                .error(R.drawable.pleasewait)
+                .into(getTarget(review.getImages()));
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -251,6 +268,84 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         }
     }
 
+
+    private Bitmap getBitmap(File path) {
+        String TAG = "";
+        Uri uri = Uri.fromFile(path);
+        InputStream in = null;
+        try {
+            final int IMAGE_MAX_SIZE = 1200000; // 1.2MP
+            in = context.getContentResolver().openInputStream(uri);
+
+            // Decode image size
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(in, null, options);
+            in.close();
+
+            // int scale = 1;
+//            while ((options.outWidth * options.outHeight) * (1 / Math.pow(scale, 2)) >
+//                    IMAGE_MAX_SIZE) {
+//                scale++;
+//            }
+//            Log.d(TAG, "scale = " + scale + ", orig-width: " + options.outWidth + ",orig-height: " + options.outHeight);
+
+            Bitmap resultBitmap = null;
+            in = context.getContentResolver().openInputStream(uri);
+            // scale to max possible inSampleSize that still yields an image
+            // larger than target
+            options = new BitmapFactory.Options();
+            options.inSampleSize = calculateInSampleSize(options,options.outWidth,options.outHeight);
+            resultBitmap = BitmapFactory.decodeStream(in, null, options);
+
+            // resize to desired dimensions
+            int height = resultBitmap.getHeight();
+            int width = resultBitmap.getWidth();
+            Log.d(TAG, "1th scale operation dimenions - width: " + width + ",height: " + height);
+
+            double y = Math.sqrt(IMAGE_MAX_SIZE
+                    / (((double) width) / height));
+            double x = (y / height) * width;
+
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(resultBitmap, (int) x,
+                    (int) y, true);
+            resultBitmap.recycle();
+            resultBitmap = scaledBitmap;
+
+            System.gc();
+            in.close();
+
+            Log.d(TAG, "bitmap size - width: " +resultBitmap.getWidth() + ", height: " +
+                    resultBitmap.getHeight());
+            return resultBitmap;
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage(),e);
+            return null;
+        }
+    }
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
     //target to save
     private static Target getTarget(final String imageName){
         Target target = new Target(){

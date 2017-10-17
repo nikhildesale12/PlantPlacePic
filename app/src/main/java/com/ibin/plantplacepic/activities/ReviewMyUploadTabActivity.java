@@ -87,7 +87,7 @@ public class ReviewMyUploadTabActivity extends AppCompatActivity implements Mate
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                //Toast.makeText(context, "Intent Detected hhhhNew....", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Intent Detected hhhhNew....", Toast.LENGTH_LONG).show();
                 if (intent.getExtras().getParcelableArrayList("reviewList") != null) {
                     reviewList = intent.getExtras().getParcelableArrayList("reviewList");
                     setupViewPager(viewPager);
@@ -288,5 +288,14 @@ public class ReviewMyUploadTabActivity extends AppCompatActivity implements Mate
             receiver = null;
         }
         super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+            receiver = null;
+        }
+        super.onStop();
     }
 }

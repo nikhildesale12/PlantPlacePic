@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.utility.Constants;
@@ -26,8 +27,11 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,23 +75,39 @@ public class UploadedPhotoAdapter extends SelectableAdapter<UploadedPhotoAdapter
         if (!rootDirectory.exists()) {
             rootDirectory.mkdir();
         }
-        File file = new File(Constants.FOLDER_PATH + File.separator + reviewList.get(position).getImages());
-        if(file != null && file.exists()){
-            //holder.imageView.setImageURI(Uri.fromFile(file));
-             new LoadImage(holder.imageView, file).execute();
-        }else{
-            Picasso.with(mContext)
-                    .load(imageFolderPath+reviewList.get(position).getImages())
-                    .placeholder(R.drawable.pleasewait)   // optional
-                    .error(R.drawable.pleasewait)
-                    //.resize(200,200)             // optional
-                    .into(getTarget(reviewList.get(position).getImages()));
-            Glide.with(mContext)
+
+        Glide.with(mContext)
                     .load(imageFolderPath+reviewList.get(position).getImages())
                     .placeholder(R.drawable.pleasewait)
                     .error(R.drawable.pleasewait)
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.imageView);
-        }
+
+        Picasso.with(mContext)
+                .load(imageFolderPath+reviewList.get(position).getImages())
+                .placeholder(R.drawable.pleasewait)   // optional
+                .error(R.drawable.pleasewait)
+                .into(getTarget(reviewList.get(position).getImages()));
+
+//        File file = new File(Constants.FOLDER_PATH + File.separator + reviewList.get(position).getImages());
+//        if(file != null && file.exists()){
+//            //holder.imageView.setImageURI(Uri.fromFile(file));
+//             new LoadImage(holder.imageView, file).execute();
+//        }else{
+//            Picasso.with(mContext)
+//                    .load(imageFolderPath+reviewList.get(position).getImages())
+//                    .placeholder(R.drawable.pleasewait)   // optional
+//                    .error(R.drawable.pleasewait)
+//                    //.resize(200,200)             // optional
+//                    .into(getTarget(reviewList.get(position).getImages()));
+//            Glide.with(mContext)
+//                    .load(imageFolderPath+reviewList.get(position).getImages())
+//                    .placeholder(R.drawable.pleasewait)
+//                    .error(R.drawable.pleasewait)
+//                    .into(holder.imageView);
+//        }
         holder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
 
       /*String tag = reviewList.get(position).getTag();
@@ -116,8 +136,16 @@ public class UploadedPhotoAdapter extends SelectableAdapter<UploadedPhotoAdapter
 
         @Override
         protected File doInBackground(Object... params) {
-            if(file.exists()){
-                return file;
+            if(file != null && imv != null && file.exists()){
+                imv.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Bitmap bitmap = getBitmap(file);
+                        imv.setImageBitmap(bitmap);
+                    }
+                });
+
+                //return file;
             }
             return null;
         }
@@ -125,26 +153,69 @@ public class UploadedPhotoAdapter extends SelectableAdapter<UploadedPhotoAdapter
         protected void onPostExecute(File file) {
             if(file != null && imv != null){
                 //imv.setImageURI(Uri.fromFile(file));
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 2;
-                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
-                imv.setImageBitmap(bitmap);
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inSampleSize = 5;
+//                options.inScaled = true;
+//                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+
+
             }
         }
     }
 
-    private Bitmap decodeSampledBitmapFromResource(Resources resources, int imageViewUploadedPhotoes, int reqWidth, int reqHeight) {
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(resources, imageViewUploadedPhotoes, options);
+    private Bitmap getBitmap(File path) {
+        String TAG = "";
+        Uri uri = Uri.fromFile(path);
+        InputStream in = null;
+        try {
+            final int IMAGE_MAX_SIZE = 1200000; // 1.2MP
+            in = mContext.getContentResolver().openInputStream(uri);
 
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+            // Decode image size
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(in, null, options);
+            in.close();
 
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeResource(resources, imageViewUploadedPhotoes, options);
+            // int scale = 1;
+//            while ((options.outWidth * options.outHeight) * (1 / Math.pow(scale, 2)) >
+//                    IMAGE_MAX_SIZE) {
+//                scale++;
+//            }
+//            Log.d(TAG, "scale = " + scale + ", orig-width: " + options.outWidth + ",orig-height: " + options.outHeight);
+
+            Bitmap resultBitmap = null;
+            in = mContext.getContentResolver().openInputStream(uri);
+            // scale to max possible inSampleSize that still yields an image
+            // larger than target
+            options = new BitmapFactory.Options();
+            options.inSampleSize = calculateInSampleSize(options,options.outWidth,options.outHeight);
+            resultBitmap = BitmapFactory.decodeStream(in, null, options);
+
+            // resize to desired dimensions
+            int height = resultBitmap.getHeight();
+            int width = resultBitmap.getWidth();
+            Log.d(TAG, "1th scale operation dimenions - width: " + width + ",height: " + height);
+
+            double y = Math.sqrt(IMAGE_MAX_SIZE
+                    / (((double) width) / height));
+            double x = (y / height) * width;
+
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(resultBitmap, (int) x,
+                    (int) y, true);
+            resultBitmap.recycle();
+            resultBitmap = scaledBitmap;
+
+            System.gc();
+            in.close();
+
+            Log.d(TAG, "bitmap size - width: " +resultBitmap.getWidth() + ", height: " +
+                    resultBitmap.getHeight());
+            return resultBitmap;
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage(),e);
+            return null;
+        }
     }
 
     public static int calculateInSampleSize(
@@ -153,16 +224,20 @@ public class UploadedPhotoAdapter extends SelectableAdapter<UploadedPhotoAdapter
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;
+
         if (height > reqHeight || width > reqWidth) {
+
             final int halfHeight = height / 2;
             final int halfWidth = width / 2;
+
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
                 inSampleSize *= 2;
             }
         }
+
         return inSampleSize;
     }
     //target to save
@@ -180,7 +255,7 @@ public class UploadedPhotoAdapter extends SelectableAdapter<UploadedPhotoAdapter
                             if(file != null && !file.exists()) {
                                 file.createNewFile();
                                 FileOutputStream ostream = new FileOutputStream(file);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, ostream);
                                 ostream.flush();
                                 ostream.close();
                             }

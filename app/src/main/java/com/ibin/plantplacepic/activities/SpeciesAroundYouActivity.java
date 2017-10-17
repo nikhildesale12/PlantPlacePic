@@ -26,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -51,7 +53,6 @@ import com.ibin.plantplacepic.utility.MultiDrawable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -237,15 +238,8 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 latLng = new LatLng(latitude, longitude);
             } 
             googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-            // Show the current location in Google Map
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            // Zoom in the Google Map
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(14));
-//            mClusterManager = new ClusterManager<>(this, googleMap);
-//            googleMap.setOnCameraIdleListener(mClusterManager);
-//            googleMap.setOnMarkerClickListener(mClusterManager);
-//            googleMap.setOnInfoWindowClickListener(mClusterManager);
-//            addSpeciesPointsItems(mClusterManager,googleMap);
 
             mClusterManager = new ClusterManager<SpeciesPoints>(this, mMap);
             mClusterManager.setRenderer(new SpeciesRenderer());
@@ -257,7 +251,6 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
             mClusterManager.setOnClusterItemClickListener(this);
             mClusterManager.setOnClusterItemInfoWindowClickListener(this);
             addSpeciesPointsItems(mClusterManager,googleMap);
-            //mClusterManager.cluster();
 
         }
     }
@@ -276,10 +269,8 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         for (ClusterItem item : cluster.getItems()) {
             builder.include(item.getPosition());
         }
-        // Get the LatLngBounds
         final LatLngBounds bounds = builder.build();
 
-        // Animate camera to the bounds
         try {
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
         } catch (Exception e) {
@@ -301,28 +292,11 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
 
     @Override
     public void onClusterItemInfoWindowClick(SpeciesPoints speciesPoints) {
-
+        Toast.makeText(this, speciesPoints.getImageName() , Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(SpeciesAroundYouActivity.this,LargeZoomActivity.class);
+        i.putExtra("FromMap","FromMap");
+        startActivity(i);
     }
-
-
-    /*private class RenderClusterInfoWindow extends DefaultClusterRenderer<SpeciesPoints> {
-
-        RenderClusterInfoWindow(Context context, GoogleMap map, ClusterManager<SpeciesPoints> clusterManager) {
-            super(context, map, clusterManager);
-        }
-
-        @Override
-        protected void onClusterRendered(Cluster<SpeciesPoints> cluster, Marker marker) {
-            super.onClusterRendered(cluster, marker);
-        }
-
-        @Override
-        protected void onBeforeClusterItemRendered(SpeciesPoints item, MarkerOptions markerOptions) {
-            markerOptions.title(item.getName());
-
-            super.onBeforeClusterItemRendered(item, markerOptions);
-        }
-    }*/
 
     private class SpeciesRenderer extends DefaultClusterRenderer<SpeciesPoints> {
         private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
@@ -372,44 +346,19 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 // Draw 4 at most.
                 if (profilePhotos.size() == 4)
                     break;
-                //Drawable drawable = getResources().getDrawable(p.profilePhoto);
-                //                    theBitmap = Glide.
-//                            with(SpeciesAroundYouActivity.this).
-//                            load(Constants.IMAGE_DOWNLOAD_PATH+p.getImageName()).
-//                            asBitmap().
-//                            into(width, height). // Width and height
-//                            get();
-                new AsyncTask<Void, Void, Void>() {
-                    Bitmap theBitmap ;
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        //Looper.prepare();
-                        try {
-                            theBitmap = Glide.
-                                with(SpeciesAroundYouActivity.this).
-                                load(Constants.IMAGE_DOWNLOAD_PATH+p.getImageName()).
-                                asBitmap().
-                                into(width, height). // Width and height
-                                get();
-                        } catch (final ExecutionException e) {
-                            Log.e("Exception", e.getMessage());
-                        } catch (final InterruptedException e) {
-                            Log.e("Exception", e.getMessage());
-                        }
-                        return null;
-                    }
-                    @Override
-                    protected void onPostExecute(Void dummy) {
-                        if (null != theBitmap) {
-                            // The full bitmap should be available here
-                            Drawable drawable = new BitmapDrawable(getResources(), theBitmap);
+
+                Glide.with(SpeciesAroundYouActivity.this)
+                    .load(Constants.IMAGE_DOWNLOAD_PATH+p.getImageName())
+                    .asBitmap()
+                    //.fitCenter() or .centerCrop() depending on what was the android:scaleType on the ImageView
+                    .into(new SimpleTarget<Bitmap>(width, height) {
+                        @Override public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            Drawable drawable = new BitmapDrawable(getResources(), resource);
                             drawable.setBounds(0, 0, width, height);
                             profilePhotos.add(drawable);
-                            Log.d("Done", "Image loaded");
-                        };
-                    }
-                }.execute();
-            }
+                        }
+                    });
+
             if(profilePhotos != null && profilePhotos.size()>0){
                 MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
                 multiDrawable.setBounds(0, 0, width, height);
@@ -418,6 +367,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
             }
+        }
         }
 
         @Override
