@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
@@ -292,9 +293,16 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
 
     @Override
     public void onClusterItemInfoWindowClick(SpeciesPoints speciesPoints) {
-        Toast.makeText(this, speciesPoints.getImageName() , Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, speciesPoints.getImageName() , Toast.LENGTH_SHORT).show();
         Intent i = new Intent(SpeciesAroundYouActivity.this,LargeZoomActivity.class);
-        i.putExtra("FromMap","FromMap");
+        List<Information> dataList = new ArrayList<>();
+        Information e = new Information();
+        e.setImages(speciesPoints.getImageName());
+        dataList.add(e);
+        Bundle data = new Bundle();
+        data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);
+        data.putString("FromMap","FromMap");
+        i.putExtras(data);
         startActivity(i);
     }
 

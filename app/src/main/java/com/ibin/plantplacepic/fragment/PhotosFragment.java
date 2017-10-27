@@ -242,24 +242,36 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
 
     @Override
     public void onItemClicked(int position) {
-        toggleSelection(position);
-        if(mAdapter != null) {
-            if (mAdapter.getSelectedItemCount() == 0) {
-                deleteMenu.setVisible(false);
-                moveMenu.setVisible(false);
-                viewMenu.setVisible(false);
-                editMenu.setVisible(false);
-            } else if (mAdapter.getSelectedItemCount() > 1) {
-                deleteMenu.setVisible(true);
-                moveMenu.setVisible(true);
-                viewMenu.setVisible(false);
-                editMenu.setVisible(false);
-            } else if (mAdapter.getSelectedItemCount() == 1) {
-                viewMenu.setVisible(true);
-                editMenu.setVisible(true);
-                deleteMenu.setVisible(true);
-                moveMenu.setVisible(true);
-            }
+//        toggleSelection(position);
+//        if(mAdapter != null) {
+//            if (mAdapter.getSelectedItemCount() == 0) {
+//                deleteMenu.setVisible(false);
+//                moveMenu.setVisible(false);
+//                viewMenu.setVisible(false);
+//                editMenu.setVisible(false);
+//            } else if (mAdapter.getSelectedItemCount() > 1) {
+//                deleteMenu.setVisible(true);
+//                moveMenu.setVisible(true);
+//                viewMenu.setVisible(false);
+//                editMenu.setVisible(false);
+//            } else if (mAdapter.getSelectedItemCount() == 1) {
+//                viewMenu.setVisible(true);
+//                editMenu.setVisible(true);
+//                deleteMenu.setVisible(true);
+//                moveMenu.setVisible(true);
+//            }
+//        }
+
+        if(getSelectedItems() != null && getSelectedItems().size() > 0) {
+            Intent intent = new Intent(context, LargeZoomActivity.class);
+            // intent.putExtra("imageName", dataList.get(getSelectedItems().get(0)).getImages());
+            // intent.putExtra("tag", dataList.get(getSelectedItems().get(0)).getTag());
+            Bundle data = new Bundle();
+            data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);
+            data.putInt("selectedPosition",getSelectedItems().get(0));
+            intent.putExtras(data);
+            context.startActivity(intent);
+            //((Activity)context).finish();
         }
     }
 

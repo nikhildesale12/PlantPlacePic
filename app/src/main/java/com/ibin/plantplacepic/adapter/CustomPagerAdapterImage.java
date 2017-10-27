@@ -1,5 +1,6 @@
 package com.ibin.plantplacepic.adapter;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -12,8 +13,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -39,6 +44,11 @@ public class CustomPagerAdapterImage extends PagerAdapter {
     Context context;
     LayoutInflater layoutInflater;
     ArrayList<Information> dataList = null;
+    ImageView buttonLike,buttonDisLike;
+    TextView buttonCommment;
+    private Dialog commentDialog;
+    LinearLayout likePanel;
+    TextView textLikeCount , textDisLikeCount;
     public CustomPagerAdapterImage(Context context, ArrayList<Information> dataList) {
         this.context = context;
         this.dataList = dataList;
@@ -59,6 +69,12 @@ public class CustomPagerAdapterImage extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View itemView = layoutInflater.inflate(R.layout.image_viewpager, container, false);
         TouchImageView imageView = (TouchImageView) itemView.findViewById(R.id.largeimage);
+        buttonCommment = (TextView) itemView.findViewById(R.id.buttonImageComment);
+        textLikeCount = (TextView) itemView.findViewById(R.id.like_count);
+        textDisLikeCount = (TextView) itemView.findViewById(R.id.dislike_count);
+        buttonLike = (ImageView) itemView.findViewById(R.id.buttonLike);
+        buttonDisLike = (ImageView) itemView.findViewById(R.id.buttonDislike);
+        likePanel = (LinearLayout) itemView.findViewById(R.id.likePanel);
        /* Glide.with(context)
                 .load(Constants.IMAGE_DOWNLOAD_PATH+dataList.get(position).getImages())
                 .placeholder(R.drawable.pleasewait)   // optional
@@ -96,6 +112,55 @@ public class CustomPagerAdapterImage extends PagerAdapter {
             }
         });
 
+        buttonLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(buttonDisLike.getDrawable().getConstantState() == context.getResources().getDrawable(R.drawable.dislike).getConstantState()) {
+                    if (buttonLike.getDrawable().getConstantState() == context.getResources().getDrawable(R.drawable.like_normal).getConstantState()) {
+                        int count = Integer.parseInt(textLikeCount.getText().toString()) + 1;
+                        buttonLike.setImageDrawable(context.getResources().getDrawable(R.drawable.like_selected));
+                        textLikeCount.setText("" + count);
+                    } else {
+                        int count = Integer.parseInt(textLikeCount.getText().toString()) - 1;
+                        buttonLike.setImageDrawable(context.getResources().getDrawable(R.drawable.like_normal));
+                        textLikeCount.setText("" + count);
+                    }
+                }
+            }
+        });
+        buttonDisLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(buttonLike.getDrawable().getConstantState() == context.getResources().getDrawable(R.drawable.like_normal).getConstantState()) {
+                    if (buttonDisLike.getDrawable().getConstantState() == context.getResources().getDrawable(R.drawable.dislike).getConstantState()) {
+                        buttonDisLike.setImageDrawable(context.getResources().getDrawable(R.drawable.dislike_selected));
+                        int count = Integer.parseInt(textDisLikeCount.getText().toString()) + 1;
+                        textDisLikeCount.setText("" + count);
+                    } else {
+                        int count = Integer.parseInt(textDisLikeCount.getText().toString()) - 1;
+                        buttonDisLike.setImageDrawable(context.getResources().getDrawable(R.drawable.dislike));
+                        textDisLikeCount.setText("" + count);
+                    }
+                }
+            }
+        });
+        buttonCommment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                commentDialog=new Dialog(context);
+                commentDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                commentDialog.setContentView(R.layout.popup_comment);
+                Button submitComment  = (Button) commentDialog.findViewById(R.id.submitComment);
+                final EditText editComment  = (EditText) commentDialog.findViewById(R.id.textComment);
+                submitComment.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(context, editComment.getText().toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                commentDialog.show();
+            }
+        });
         return itemView;
     }
 

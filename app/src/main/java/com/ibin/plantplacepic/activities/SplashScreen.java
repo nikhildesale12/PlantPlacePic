@@ -14,7 +14,7 @@ import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.utility.Constants;
 
 public class SplashScreen extends AppCompatActivity {
-    TextView versionName ;
+    TextView versionName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

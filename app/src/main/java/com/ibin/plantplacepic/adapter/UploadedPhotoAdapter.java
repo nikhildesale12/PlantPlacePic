@@ -42,7 +42,6 @@ public class UploadedPhotoAdapter extends SelectableAdapter<UploadedPhotoAdapter
     private Context mContext;
     private MyViewHolder.ClickListener clickListener;
 
-
     public UploadedPhotoAdapter(Context context, ArrayList<Information> reviewList,UploadedPhotoAdapter.MyViewHolder.ClickListener clickListener) {
         mContext = context;
         this.reviewList = reviewList;

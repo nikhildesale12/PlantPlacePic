@@ -1,35 +1,36 @@
 package com.ibin.plantplacepic.fragment;
 
-import android.content.Context;
-import android.location.Criteria;
-import android.location.LocationManager;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.ibin.plantplacepic.R;
+import com.ibin.plantplacepic.activities.LargeZoomActivity;
 import com.ibin.plantplacepic.activities.SpeciesAroundYouActivity;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.SpeciesPoints;
-import com.ibin.plantplacepic.utility.GPSTracker;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class DistributionFragment extends Fragment implements OnMapReadyCallback {
+public class DistributionFragment extends Fragment implements OnMapReadyCallback ,
+  ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints>
+{
 
     private GoogleMap mMap;
     ArrayList<Information> mainDataList = null;
@@ -120,6 +121,50 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
             mClusterManager.cluster();
 
         }
+    }
+
+    @Override
+    public boolean onClusterClick(Cluster<SpeciesPoints> cluster) {
+        String firstName = cluster.getItems().iterator().next().species;
+        //Toast.makeText(this, cluster.getSize() + " (including " + firstName + ")", Toast.LENGTH_SHORT).show();
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        for (ClusterItem item : cluster.getItems()) {
+            builder.include(item.getPosition());
+        }
+        final LatLngBounds bounds = builder.build();
+
+        try {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onClusterInfoWindowClick(Cluster<SpeciesPoints> cluster) {
+
+    }
+
+    @Override
+    public boolean onClusterItemClick(SpeciesPoints speciesPoints) {
+        return false;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(SpeciesPoints speciesPoints) {
+        //Toast.makeText(this, speciesPoints.getImageName() , Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(getContext(),LargeZoomActivity.class);
+        List<Information> dataList = new ArrayList<>();
+        Information e = new Information();
+        e.setImages(speciesPoints.getImageName());
+        dataList.add(e);
+        Bundle data = new Bundle();
+        data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);
+        data.putString("FromMap","FromMap");
+        i.putExtras(data);
+        startActivity(i);
     }
 
     public interface OnFragmentInteractionListner {

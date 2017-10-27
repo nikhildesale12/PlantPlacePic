@@ -267,7 +267,7 @@ public class ImageInfoActivity extends AppCompatActivity {
                                         android.R.layout.simple_dropdown_item_1line, dataListSpeciesNames);
                                 speciesSpinner.setAdapter(arrayAdapter);
                             }else{
-                                layoutSpeciesSpinner.setVisibility(View.GONE);
+                                //layoutSpeciesSpinner.setVisibility(View.GONE);
                             }
                         }
                     }
@@ -283,7 +283,7 @@ public class ImageInfoActivity extends AppCompatActivity {
                                         android.R.layout.simple_dropdown_item_1line, dataListSpeciesNames);
                                 speciesSpinner.setAdapter(arrayAdapter);
                             }else{
-                                layoutSpeciesSpinner.setVisibility(View.GONE);
+                                //layoutSpeciesSpinner.setVisibility(View.GONE);
                             }
                     }
                 }

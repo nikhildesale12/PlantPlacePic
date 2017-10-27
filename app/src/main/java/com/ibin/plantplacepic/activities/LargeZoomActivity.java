@@ -35,14 +35,16 @@ public class LargeZoomActivity extends AppCompatActivity {
         viewPager = (ViewPager)findViewById(R.id.viewPagerLargeImage);
         swipeImage = (ImageView)findViewById(R.id.swipeImage);
         if(getIntent() != null){
-            dataList = getIntent().getExtras().getParcelableArrayList("imageDataList");
-            selectedPosition = getIntent().getExtras().getInt("selectedPosition");
-            fromActivity = getIntent().getExtras().getString("FromMap");
+            if(getIntent().getExtras() != null){
+                dataList = getIntent().getExtras().getParcelableArrayList("imageDataList");
+                selectedPosition = getIntent().getExtras().getInt("selectedPosition");
+                fromActivity = getIntent().getExtras().getString("FromMap");
+            }
         }
         SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE);
         boolean isShowHint  = prefs.getBoolean(Constants.KEY_HINT_SWAP,true);
         if(isShowHint){
-            if(dataList.size()>1) {
+            if(dataList != null && dataList.size()>1) {
                 swipeImage.setVisibility(View.VISIBLE);
                 Target listObjetivo = new ViewTarget(R.id.swipeImage, this);
                 new ShowcaseView.Builder(this, false)
