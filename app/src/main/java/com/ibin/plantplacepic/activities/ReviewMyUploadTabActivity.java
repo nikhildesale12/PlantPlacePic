@@ -87,7 +87,7 @@ public class ReviewMyUploadTabActivity extends AppCompatActivity implements Mate
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Toast.makeText(context, "Intent Detected hhhhNew....", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Updating information...", Toast.LENGTH_LONG).show();
                 if (intent.getExtras().getParcelableArrayList("reviewList") != null) {
                     reviewList = intent.getExtras().getParcelableArrayList("reviewList");
                     setupViewPager(viewPager);

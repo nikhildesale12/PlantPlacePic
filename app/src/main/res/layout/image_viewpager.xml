@@ -21,12 +21,13 @@
         android:layout_height="0dp"
         android:background="#FFF"
         android:id="@+id/likePanel"
+        android:visibility="gone"
         android:layout_weight="10">
 
         <ImageView
             android:id="@+id/buttonLike"
             android:src="@drawable/like_normal"
-            android:layout_width="40dp"
+            android:layout_width="35dp"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="30dp"
             android:layout_height="40dp"/>
@@ -40,12 +41,13 @@
             android:background="@drawable/round_shape_map"
             android:textSize="12sp"
             android:text="0"
+            android:layout_marginTop="3dp"
             android:textStyle="bold"/>
 
 
         <ImageView
             android:id="@+id/buttonDislike"
-            android:layout_width="40dp"
+            android:layout_width="35dp"
             android:src="@drawable/dislike"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="5dp"
@@ -57,6 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha=".9"
+            android:layout_marginTop="3dp"
             android:layout_marginLeft="1dp"
             android:background="@drawable/round_shape_map"
             android:textSize="12sp"
@@ -67,7 +70,7 @@
             android:id="@+id/buttonImageComment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="30dp"
             android:background="@drawable/button_selector"
             android:text="Comment"
             android:padding="5dp"

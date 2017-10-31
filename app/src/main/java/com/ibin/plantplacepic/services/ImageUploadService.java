@@ -106,7 +106,7 @@ public class ImageUploadService extends Service{
                                     try {
                                         //File file1 = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+"compress"+".jpg");
                                         FileOutputStream out = new FileOutputStream(file);
-                                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, 40, out);
                                         out.flush();
                                         out.close();
                                     } catch (Exception e) {

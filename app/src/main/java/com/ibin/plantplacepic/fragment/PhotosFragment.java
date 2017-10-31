@@ -262,17 +262,15 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
 //            }
 //        }
 
-        if(getSelectedItems() != null && getSelectedItems().size() > 0) {
             Intent intent = new Intent(context, LargeZoomActivity.class);
             // intent.putExtra("imageName", dataList.get(getSelectedItems().get(0)).getImages());
             // intent.putExtra("tag", dataList.get(getSelectedItems().get(0)).getTag());
             Bundle data = new Bundle();
             data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);
-            data.putInt("selectedPosition",getSelectedItems().get(0));
+            data.putInt("selectedPosition",position);
             intent.putExtras(data);
             context.startActivity(intent);
             //((Activity)context).finish();
-        }
     }
 
     @Override
@@ -290,7 +288,7 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
                 viewMenu.setVisible(false);
                 editMenu.setVisible(false);
             } else if (mAdapter.getSelectedItemCount() == 1) {
-                viewMenu.setVisible(true);
+                viewMenu.setVisible(false);
                 editMenu.setVisible(true);
                 deleteMenu.setVisible(true);
                 moveMenu.setVisible(true);
@@ -342,13 +340,13 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
                     }
                     if(response != null && response.body() != null ){
                         if(response.body().getSuccess().toString().trim().equals("1")) {
-                            //Toast.makeText(context,"Deleted Successfully...",Toast.LENGTH_LONG).show();
+                            //Toast.makeText(context,"De    leted Successfully...",Toast.LENGTH_LONG).show();
                             if(i == size-1){
                                 Toast toast = Toast.makeText(context,"Deleted Successfully...", Toast.LENGTH_LONG);
                                 toast.setGravity(Gravity.CENTER, 0, 0);
                                 toast.show();
                                 Intent i = new Intent(context,ReviewMyUploadTabActivity.class);
-                                context.startActivity(i);
+                                 context.startActivity(i);
                                 ((Activity)context).finish();
                             }
                         }else  if(response.body().getSuccess().toString().trim().equals("0")) {
