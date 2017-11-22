@@ -1,47 +1,48 @@
 package com.ibin.plantplacepic.activities;
 
+import android.annotation.SuppressLint;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Looper;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
-import com.google.maps.android.ui.IconGenerator;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
@@ -50,7 +51,6 @@ import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
 import com.ibin.plantplacepic.utility.GPSTracker;
-import com.ibin.plantplacepic.utility.MultiDrawable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,12 +61,21 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMapReadyCallback , ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints>{
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
+public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMapReadyCallback, ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints>{
     private GoogleMap mMap;
     Button mapSpeciesSarch;
-    AutoCompleteTextView actoEnterSpeciesName;
+    AutoCompleteTextView ACTtEnterSpeciesName;
     public ArrayList<String> speciesList;
+    public ArrayList<Information> speciesList1;
+    Information info = new Information();
     DatabaseHelper databaseHelper;
+    ArrayAdapter<String> adapter;
     List<Information> mainDataList = null;
 
     private ClusterManager<SpeciesPoints> mClusterManager;
@@ -75,12 +84,13 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_species_around_you);
 
-        actoEnterSpeciesName=(AutoCompleteTextView)findViewById(R.id.autoCompletSpeciesSearch);
+
+        ACTtEnterSpeciesName=(AutoCompleteTextView)findViewById(R.id.autoCompletSpeciesSearch);
         speciesList = new ArrayList<>();
         mainDataList = new ArrayList<>();
         databaseHelper = DatabaseHelper.getDatabaseInstance(SpeciesAroundYouActivity.this);
 
-        actoEnterSpeciesName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ACTtEnterSpeciesName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 view = getCurrentFocus();
@@ -88,22 +98,17 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
-                Toast.makeText(SpeciesAroundYouActivity.this,actoEnterSpeciesName.getText().toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(SpeciesAroundYouActivity.this,ACTtEnterSpeciesName.getText().toString(),Toast.LENGTH_SHORT).show();
                 if(mainDataList != null && mainDataList.size()>0){
                     double latitude = 0;
                     double longitude = 0;
                     mClusterManager.clearItems();
-
-                    //mClusterManager = new ClusterManager<SpeciesPoints>(SpeciesAroundYouActivity.this, mMap);
-                    //mClusterManager.setRenderer(new SpeciesRenderer());
-
                     for (int i=0;i< mainDataList.size();i++){
-                        if(mainDataList.get(i).getSpecies().trim().equalsIgnoreCase(actoEnterSpeciesName.getText().toString().trim())){
+                        if(mainDataList.get(i).getSpecies().trim().equalsIgnoreCase(ACTtEnterSpeciesName.getText().toString().trim())){
                             if(mainDataList.get(i).getLat() != null && mainDataList.get(i).getLng() != null
                                     && !mainDataList.get(i).getLat().equals("0") && !mainDataList.get(i).getLat().equals("0.0")
                                     && !mainDataList.get(i).getLng().equals("0") && !mainDataList.get(i).getLng().equals("0.0")
                                     && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")) {
-
                                 latitude = Double.parseDouble(mainDataList.get(i).getLat());
                                 longitude = Double.parseDouble(mainDataList.get(i).getLng());
                                 //googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(response.body().getInformation().get(i).getSpecies()));
@@ -111,14 +116,14 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                 if(mainDataList.get(i).getAddress().trim().contains(",null")){
                                     address = mainDataList.get(i).getAddress().trim().replace(",null","");
                                 }
-                                //mClusterManager.addItem(new SpeciesPoints(latitude, longitude,mainDataList.get(i).getSpecies() , address , R.drawable.iconleaf));
-                                mClusterManager.addItem(new SpeciesPoints(latitude, longitude,mainDataList.get(i).getSpecies() , address ,mainDataList.get(i).getImages()));
+                                mClusterManager.addItem(new SpeciesPoints(latitude, longitude,mainDataList.get(i).getSpecies() , address,mainDataList.get(i).getImages()));
                             }
                         }
                     }
                     LatLng latLng = new LatLng(latitude, longitude);
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(12));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+
                     mClusterManager.cluster();
 
                 }
@@ -139,7 +144,6 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
             }
         });
     }
-
 
     private void callServiceToGetSpeciesNames(final ClusterManager<SpeciesPoints> mClusterManager,final GoogleMap googleMap) {
         final ProgressDialog dialog = new ProgressDialog(SpeciesAroundYouActivity.this);
@@ -171,7 +175,8 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                     if(response.body().getInformation().get(i).getAddress().trim().contains(",null")){
                                         address = response.body().getInformation().get(i).getAddress().trim().replace(",null","");
                                     }
-                                    mClusterManager.addItem(new SpeciesPoints(latitude, longitude,response.body().getInformation().get(i).getSpecies() , address ,response.body().getInformation().get(i).getImages()));
+                                    mClusterManager.addItem(new SpeciesPoints(latitude, longitude,response.body().getInformation().get(i).getSpecies() , address , response.body().getInformation().get(i).getImages()));
+
                                     if(!speciesList.contains(response.body().getInformation().get(i).getSpecies().trim())){
                                         if(response.body().getInformation().get(i).getSpecies().trim().length()>0){
                                             speciesList.add(response.body().getInformation().get(i).getSpecies().trim());
@@ -180,10 +185,10 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                 }
                             }
                             mClusterManager.cluster();
-                            //new RenderClusterInfoWindow(SpeciesAroundYouActivity.this,googleMap,mClusterManager);
+                            new RenderClusterInfoWindow(SpeciesAroundYouActivity.this,googleMap,mClusterManager);
                             ArrayAdapter<String> adapter = new ArrayAdapter<String>(SpeciesAroundYouActivity.this,android.R.layout.simple_list_item_1, speciesList);
-                            actoEnterSpeciesName.setThreshold(1);
-                            actoEnterSpeciesName.setAdapter(adapter);
+                            ACTtEnterSpeciesName.setThreshold(1);
+                            ACTtEnterSpeciesName.setAdapter(adapter);
                         }
                     }
                     if (response.body().getSuccess().toString().trim().equals("0")) {
@@ -195,6 +200,9 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
             }
             @Override
             public void onFailure(Call<InformationResponseBean> call, Throwable t) {
+                if (dialog != null && dialog.isShowing()) {
+                    dialog.dismiss();
+                }
                 //Log.d("resp
 //                if (dialog != null && dialog.isShowing()) {
 //                    dialog.dismiss();
@@ -209,58 +217,89 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         super.onResume();
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setBuildingsEnabled(true);
-        mMap.setIndoorEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setScrollGesturesEnabled(true);
-        mMap.getUiSettings().setZoomGesturesEnabled(true);
-        mMap.getUiSettings().setTiltGesturesEnabled(true);
-        mMap.getUiSettings().setRotateGesturesEnabled(true);
+        if(android.os.Build.VERSION.SDK_INT >= Constants.API_LEVEL_23){
+            if(checkPermission()){
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setZoomControlsEnabled(true);
+                mMap.setBuildingsEnabled(true);
+                mMap.setIndoorEnabled(true);
+                mMap.getUiSettings().setCompassEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                mMap.getUiSettings().setScrollGesturesEnabled(true);
+                mMap.getUiSettings().setZoomGesturesEnabled(true);
+                mMap.getUiSettings().setTiltGesturesEnabled(true);
+                mMap.getUiSettings().setRotateGesturesEnabled(true);
+                // Get LocationManager object from System Service LOCATION_SERVICE
+                LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                // Create a criteria object to retrieve provider
+                Criteria criteria = new Criteria();
+                // Get the name of the best provider
+                String provider = locationManager.getBestProvider(criteria, true);
+                // Get Current Location
+//        Location myLocation = locationManager.getLastKnownLocation(provider);
+//        double latitude = myLocation.getLatitude();
+//        double longitude = myLocation.getLongitude();
+//        LatLng latLng = new LatLng(latitude, longitude);
 
-        GPSTracker gps = null;
-        LatLng latLng = null;
-        if(!isGPSEnabled()){
-            showSettingsAlert();
-        }else{
-            gps = new GPSTracker(SpeciesAroundYouActivity.this);
-            if(gps.canGetLocation()) {
-                double latitude = gps.getLatitude();
-                double longitude = gps.getLongitude();
+                GPSTracker gps = null;
+                LatLng latLng = null;
+                if(!isGPSEnabled()){
+                    showSettingsAlert();
+                }else{
+                    gps = new GPSTracker(SpeciesAroundYouActivity.this);
+                    if(gps.canGetLocation()) {
+                        double latitude = gps.getLatitude();
+                        double longitude = gps.getLongitude();
 
-                latLng = new LatLng(latitude, longitude);
-            } 
-            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+                        latLng = new LatLng(latitude, longitude);
+                    }
+                    googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            mClusterManager = new ClusterManager<SpeciesPoints>(this, mMap);
-            mClusterManager.setRenderer(new SpeciesRenderer());
-            mMap.setOnCameraIdleListener(mClusterManager);
-            mMap.setOnMarkerClickListener(mClusterManager);
-            mMap.setOnInfoWindowClickListener(mClusterManager);
-            mClusterManager.setOnClusterClickListener(this);
-            mClusterManager.setOnClusterInfoWindowClickListener(this);
-            mClusterManager.setOnClusterItemClickListener(this);
-            mClusterManager.setOnClusterItemInfoWindowClickListener(this);
-            addSpeciesPointsItems(mClusterManager,googleMap);
+                    // Show the current location in Google Map
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
+                    // Zoom in the Google Map
+                    googleMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+
+                    mClusterManager = new ClusterManager<>(this, googleMap);
+
+                    googleMap.setOnCameraIdleListener(mClusterManager);
+                    googleMap.setOnMarkerClickListener(mClusterManager);
+                    googleMap.setOnInfoWindowClickListener(mClusterManager);
+                    addSpeciesPointsItems(mClusterManager,googleMap);
+                    //mClusterManager.cluster();
+//            if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
+//                callServiceToGetSpeciesNames(googleMap);
+//            }
+                }
+//        googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!"));
+            }else {
+                requestPermission();
+            }
         }
     }
 
     private void addSpeciesPointsItems(ClusterManager<SpeciesPoints> mClusterManager,GoogleMap googleMap) {
         if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
-                callServiceToGetSpeciesNames(mClusterManager,googleMap);
+            callServiceToGetSpeciesNames(mClusterManager,googleMap);
         }
     }
+
+
+//    private void addPersonItems() {
+//        for (int i = 0; i < 3; i++) {
+//            mClusterManager.addItem(new SpeciesPoints(-26.187616, 28.079329, "PJ", "https://twitter.com/pjapplez"));
+//            mClusterManager.addItem(new SpeciesPoints(-26.207616, 28.079329, "PJ2", "https://twitter.com/pjapplez"));
+//            mClusterManager.addItem(new SpeciesPoints(-26.217616, 28.079329, "PJ3", "https://twitter.com/pjapplez"));
+//        }
+//    }
 
     @Override
     public boolean onClusterClick(Cluster<SpeciesPoints> cluster) {
@@ -306,85 +345,24 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         startActivity(i);
     }
 
-    private class SpeciesRenderer extends DefaultClusterRenderer<SpeciesPoints> {
-        private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
-        private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
-        private final ImageView mImageView;
-        private final ImageView mClusterImageView;
-        private final int mDimension;
+    private class RenderClusterInfoWindow extends DefaultClusterRenderer<SpeciesPoints> {
 
-        public SpeciesRenderer() {
-            super(getApplicationContext(), mMap, mClusterManager);
-
-            View multiProfile = getLayoutInflater().inflate(R.layout.multi_species, null);
-            mClusterIconGenerator.setContentView(multiProfile);
-            mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
-
-            mImageView = new ImageView(getApplicationContext());
-            mDimension = (int) getResources().getDimension(R.dimen.custom_profile_image);
-            mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
-            int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
-            mImageView.setPadding(padding, padding, padding, padding);
-            mIconGenerator.setContentView(mImageView);
+        RenderClusterInfoWindow(Context context, GoogleMap map, ClusterManager<SpeciesPoints> clusterManager) {
+            super(context, map, clusterManager);
         }
 
         @Override
-        protected void onBeforeClusterItemRendered(SpeciesPoints speciesPoints, MarkerOptions markerOptions) {
-            // Draw a single person.
-            // Set the info window to show their name.
-            //mImageView.setImageResource(speciesPoints.profilePhoto);
-            Glide.with(SpeciesAroundYouActivity.this)
-                    .load(Constants.IMAGE_DOWNLOAD_PATH+speciesPoints.getImageName())
-                    .placeholder(R.mipmap.mapicon)
-                    .error(R.mipmap.mapicon)
-                    .into(mImageView);
-            Bitmap icon = mIconGenerator.makeIcon();
-            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(speciesPoints.getTitle());
+        protected void onClusterRendered(Cluster<SpeciesPoints> cluster, Marker marker) {
+            super.onClusterRendered(cluster, marker);
         }
 
         @Override
-        protected void onBeforeClusterRendered(Cluster<SpeciesPoints> cluster, MarkerOptions markerOptions) {
-            // Draw multiple people.
-            // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
-            final List<Drawable> profilePhotos = new ArrayList<Drawable>(Math.min(4, cluster.getSize()));
-            final int width = mDimension;
-            final int height = mDimension;
+        protected void onBeforeClusterItemRendered(SpeciesPoints item, MarkerOptions markerOptions) {
+            markerOptions.title(item.getTitle());
 
-            for (final SpeciesPoints p : cluster.getItems()) {
-                // Draw 4 at most.
-                if (profilePhotos.size() == 4)
-                    break;
-
-                Glide.with(SpeciesAroundYouActivity.this)
-                    .load(Constants.IMAGE_DOWNLOAD_PATH+p.getImageName())
-                    .asBitmap()
-                    //.fitCenter() or .centerCrop() depending on what was the android:scaleType on the ImageView
-                    .into(new SimpleTarget<Bitmap>(width, height) {
-                        @Override public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            Drawable drawable = new BitmapDrawable(getResources(), resource);
-                            drawable.setBounds(0, 0, width, height);
-                            profilePhotos.add(drawable);
-                        }
-                    });
-
-            if(profilePhotos != null && profilePhotos.size()>0){
-                MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
-                multiDrawable.setBounds(0, 0, width, height);
-
-                mClusterImageView.setImageDrawable(multiDrawable);
-                Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
-                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
-            }
-        }
-        }
-
-        @Override
-        protected boolean shouldRenderAsCluster(Cluster cluster) {
-            // Always render clusters.
-            return cluster.getSize() > 1;
+            super.onBeforeClusterItemRendered(item, markerOptions);
         }
     }
-
 
     private void showSettingsAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(SpeciesAroundYouActivity.this);
@@ -408,5 +386,45 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         boolean GPSStatus = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         return GPSStatus;
     }
+
+
+    /** Permission code starts*/
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(SpeciesAroundYouActivity.this, new String[]
+                {
+                        ACCESS_FINE_LOCATION,
+                        ACCESS_COARSE_LOCATION
+                }, Constants.REQUESTPERMISSIONCODE);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case Constants.REQUESTPERMISSIONCODE:
+                if (grantResults.length > 0) {
+                    boolean AccessFineLocationPermission = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean AccessCoarseLocPermission = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    boolean InternetPermission = grantResults[2] == PackageManager.PERMISSION_GRANTED;
+                    boolean WriteInternalStoragePermission = grantResults[3] == PackageManager.PERMISSION_GRANTED;
+                    boolean ReadInternalStoragePermission = grantResults[4] == PackageManager.PERMISSION_GRANTED;
+                    if (AccessFineLocationPermission && AccessCoarseLocPermission && InternetPermission && WriteInternalStoragePermission && ReadInternalStoragePermission) {
+                    }
+                    else {
+                        Toast toast = Toast.makeText(SpeciesAroundYouActivity.this,"Permission Denied,Accept it to use application", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.show();
+                        finish();
+                    }
+                }
+                break;
+        }
+    }
+    public boolean checkPermission() {
+        int FirstPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_FINE_LOCATION);
+        int SecondPermissionResult = ContextCompat.checkSelfPermission(getApplicationContext(), ACCESS_COARSE_LOCATION);
+
+        return FirstPermissionResult == PackageManager.PERMISSION_GRANTED &&
+                SecondPermissionResult == PackageManager.PERMISSION_GRANTED ;
+    }
+    /**Permission code end*/
 
 }

@@ -16,10 +16,10 @@
     <TextView
         android:id="@+id/textViewSpeciesName"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textSize="@dimen/image_info_text_font_size"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
         android:gravity="center"
-        android:padding="5dp"
+        android:padding="2dp"
         android:textColor="#000"
         android:textStyle="bold"
         android:background="@color/colorgray"

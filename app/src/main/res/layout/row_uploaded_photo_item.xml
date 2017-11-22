@@ -9,19 +9,19 @@
         android:layout_height="@dimen/species_folder_height"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        android:src="@mipmap/ic_launcher_round" />
+        android:src="@mipmap/ic_launcher_round"/>
 
     <RelativeLayout
         android:id="@+id/selected_overlay"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/imageViewUploadedPhotoes"
         android:layout_centerHorizontal="true"
-        android:background="#80000000"
-        android:visibility="gone">
+        android:background="#80000000">
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:src="@drawable/checkinside"/>
 

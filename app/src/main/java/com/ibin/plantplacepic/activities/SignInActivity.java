@@ -1,3 +1,4 @@
+
 package com.ibin.plantplacepic.activities;
 
 import android.app.ProgressDialog;
@@ -29,6 +30,10 @@ import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
+
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -62,8 +67,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         initViews();
         if(android.os.Build.VERSION.SDK_INT >= Constants.API_LEVEL_23){
             if(checkPermission()){
-            }else {
-                requestPermission();
+                }else {
+                    requestPermission();
             }
         }
         keepMeSignin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -138,7 +143,14 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 //        Gson gson = new GsonBuilder()
 //                .setLenient()
 //                .create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
+                .build();
         ApiService service = retrofit.create(ApiService.class);
         Call<LoginResponse> call = service.loginService(USER,PASS,GOOG_ID);
         call.enqueue(new Callback<LoginResponse>() {
@@ -185,6 +197,11 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                         }
                         Constants.dispalyDialogInternet(SignInActivity.this,"Error","Technical Error !!!",false,false);
                     }
+                }else{
+                    if(dialog != null && dialog.isShowing()){
+                        dialog.dismiss();
+                    }
+                    Constants.dispalyDialogInternet(SignInActivity.this,"Error","Technical Error !!!",false,false);
                 }
             }
             @Override

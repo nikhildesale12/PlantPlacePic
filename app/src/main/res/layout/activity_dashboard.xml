@@ -85,7 +85,7 @@
                 android:layout_marginTop="1dp"
                 android:background="@drawable/round_shape"
                 android:text="0"
-                android:textSize="@dimen/image_info_text_font_size"
+                android:textSize="12sp"
                 android:textStyle="bold"/>
         </RelativeLayout>
 

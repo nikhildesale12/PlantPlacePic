@@ -52,9 +52,9 @@ public class UploadedSpeciesAdapter extends SelectableAdapter<UploadedSpeciesAda
             if(reviewList.get(position).getSpecies() != null && reviewList.get(position).getSpecies().length()>0){
                 holder.textViewSpeciesName.setText(reviewList.get(position).getSpecies());
                 Picasso.with(mContext)
-                        .load(R.mipmap.albamicon)
-                        .placeholder(R.mipmap.albamicon)   // optional
-                        .error(R.mipmap.albamicon)
+                        .load(R.drawable.foldericon1)
+                        .placeholder(R.drawable.foldericon1)   // optional
+                        .error(R.drawable.foldericon1)
                         //.resize(200,200)             // optional
                         .into(holder.imageViewUploadedSpecies);
                 holder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);

@@ -63,12 +63,27 @@
                     android:layout_marginTop="5dp"
                     android:background="@drawable/edittextbg">
 
-                    <Spinner
-                        android:id="@+id/spinnerSpecies"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/image_info_edittext_height"
-                        android:background="@drawable/edittextbg">
-                    </Spinner>
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <Spinner
+                            android:id="@+id/spinnerSpecies"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/image_info_edittext_height"
+                            android:background="@drawable/edittextbg">
+                        </Spinner>
+
+                        <TextView
+                            android:id="@+id/speciesNotLoadedUpdate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:visibility="gone"
+                            android:layout_centerVertical="true"
+                            android:text="Species not loaded"/>
+
+                    </RelativeLayout>
 
                     <ImageView
                         android:layout_alignParentRight="true"
@@ -109,7 +124,7 @@
                 android:layout_height="@dimen/image_info_edittext_height"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/edittextbg"
-                android:hint="Title of photo"
+                android:hint="Common name"
                 android:textSize="@dimen/image_info_text_font_size"
                 android:paddingLeft="10dp"
                 android:singleLine="true"/>
@@ -131,7 +146,7 @@
                 android:layout_height="@dimen/image_info_edittext_height"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/edittextbg"
-                android:hint="Enter Address"
+                android:hint="Location"
                 android:textSize="@dimen/image_info_text_font_size"
                 android:paddingLeft="10dp"
                 android:singleLine="true"/>
@@ -169,7 +184,6 @@
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="11dp"
         android:layout_marginLeft="11dp"
         android:layout_marginRight="11dp"
         fab:menu_animationDelayPerItem="55"
@@ -243,6 +257,7 @@
         android:layout_alignRight="@+id/material_design_android_floating_action_menu_update"
         android:layout_marginRight="28dp"
         android:text="TAG"
+        android:visibility="gone"
         android:textColor="@android:color/white"
         android:textStyle="bold"/>
 </RelativeLayout>

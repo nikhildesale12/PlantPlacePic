@@ -68,7 +68,7 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
     MenuItem deleteMenu;
     MenuItem editMenu;
     MenuItem moveMenu;
-    MenuItem viewMenu;
+    //MenuItem viewMenu;
     private SparseBooleanArray selectedItems ;
     DatabaseHelper databaseHelper;
 
@@ -115,7 +115,7 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
             textMsg.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             mAdapter = new UploadedPhotoAdapter(context, dataList,this);
-            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(context,3);
+            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(context,4);
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.addItemDecoration(new ItemOffsetDecoration(context, R.dimen.item_offset));
@@ -180,19 +180,19 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_view_img) {
-            if(getSelectedItems() != null && getSelectedItems().size() > 0) {
-                Intent intent = new Intent(context, LargeZoomActivity.class);
-               // intent.putExtra("imageName", dataList.get(getSelectedItems().get(0)).getImages());
-               // intent.putExtra("tag", dataList.get(getSelectedItems().get(0)).getTag());
-                Bundle data = new Bundle();
-                data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);
-                data.putInt("selectedPosition",getSelectedItems().get(0));
-                intent.putExtras(data);
-                context.startActivity(intent);
-                //((Activity)context).finish();
-            }
-        }
+//        if (id == R.id.action_view_img) {
+//            if(getSelectedItems() != null && getSelectedItems().size() > 0) {
+//                Intent intent = new Intent(context, LargeZoomActivity.class);
+//               // intent.putExtra("imageName", dataList.get(getSelectedItems().get(0)).getImages());
+//               // intent.putExtra("tag", dataList.get(getSelectedItems().get(0)).getTag());
+//                Bundle data = new Bundle();
+//                data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);
+//                data.putInt("selectedPosition",getSelectedItems().get(0));
+//                intent.putExtras(data);
+//                context.startActivity(intent);
+//                //((Activity)context).finish();
+//            }
+//        }
         if (id == R.id.action_delete) {
             if(getSelectedItems() != null && getSelectedItems().size() > 0) {
                 for (int i = 0; i < getSelectedItems().size(); i++) {
@@ -221,7 +221,7 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
     @Override
     public void onPrepareOptionsMenu(Menu menu)
     {
-        viewMenu = menu.findItem(R.id.action_view_img);
+        //viewMenu = menu.findItem(R.id.action_view_img);
         deleteMenu = menu.findItem(R.id.action_delete);
         editMenu = menu.findItem(R.id.action_edit);
         moveMenu = menu.findItem(R.id.action_move);
@@ -229,7 +229,7 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
             if(mAdapter.getSelectedItemCount() == 0){
                 deleteMenu.setVisible(false);
                 moveMenu.setVisible(false);
-                viewMenu.setVisible(false);
+                //viewMenu.setVisible(false);
                 editMenu.setVisible(false);
             }
         }
@@ -280,15 +280,15 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
             if (mAdapter.getSelectedItemCount() == 0) {
                 deleteMenu.setVisible(false);
                 moveMenu.setVisible(false);
-                viewMenu.setVisible(false);
+                //viewMenu.setVisible(false);
                 editMenu.setVisible(false);
             } else if (mAdapter.getSelectedItemCount() > 1) {
                 deleteMenu.setVisible(true);
                 moveMenu.setVisible(true);
-                viewMenu.setVisible(false);
+                //viewMenu.setVisible(false);
                 editMenu.setVisible(false);
             } else if (mAdapter.getSelectedItemCount() == 1) {
-                viewMenu.setVisible(false);
+                //viewMenu.setVisible(false);
                 editMenu.setVisible(true);
                 deleteMenu.setVisible(true);
                 moveMenu.setVisible(true);

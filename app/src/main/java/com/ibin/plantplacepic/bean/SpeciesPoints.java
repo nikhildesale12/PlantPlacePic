@@ -13,7 +13,7 @@ public class SpeciesPoints implements com.google.maps.android.clustering.Cluster
     public SpeciesPoints(double lat, double lng, String species, String address,String imageName) {
         this.species = species;
         this.address = address;
-        this.imageName = imageName;
+       this.imageName = imageName;
         mPosition = new LatLng(lat, lng);
     }
 

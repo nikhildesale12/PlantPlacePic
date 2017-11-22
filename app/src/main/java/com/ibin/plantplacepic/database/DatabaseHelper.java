@@ -169,6 +169,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 dataList.add(sr);
             } while (cursor.moveToNext());
         }
+        cursor.close();
         close();
         return dataList;
     }
@@ -273,22 +274,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<SubmitRequest> submitRequestList = getImageInfoToUpload(submitRequest.getUserId());
         if(submitRequestList != null && submitRequestList.size() > 0){
             for (int i =0;i<submitRequestList.size();i++){
-                if(  submitRequestList.get(i).getImageName().equals(submitRequest.getImageName())
-                 &&  submitRequestList.get(i).getUserId().equals(submitRequest.getUserId())
-                 &&  submitRequestList.get(i).getImageUrl().equals(submitRequest.getImageUrl())
-                 &&  submitRequestList.get(i).getSpecies().equals(submitRequest.getSpecies())
-                 &&  submitRequestList.get(i).getRemark().equals(submitRequest.getRemark())
-                 &&  submitRequestList.get(i).getTag().equals(submitRequest.getTag())
-                 &&  submitRequestList.get(i).getStatus().equals(submitRequest.getStatus())
-                 &&  submitRequestList.get(i).getTitle().equals(submitRequest.getTitle())
-                 &&  submitRequestList.get(i).getLatitude().equals(submitRequest.getLatitude())
-                 &&  submitRequestList.get(i).getLongitude().equals(submitRequest.getLongitude())
-                 &&  submitRequestList.get(i).getAddress().equals(submitRequest.getAddress())
-                 &&  submitRequestList.get(i).getCrop().equals(submitRequest.getCrop())
-                 &&  submitRequestList.get(i).getTime().equals(submitRequest.getTime())
-                 &&  submitRequestList.get(i).getUploadedFrom().equals(submitRequest.getUploadedFrom()))
-                {
-                    return true;
+                if(submitRequestList.get(i) != null){
+                    if(  submitRequestList.get(i).getImageName().equals(submitRequest.getImageName())
+                            &&  submitRequestList.get(i).getUserId().equals(submitRequest.getUserId())
+                            &&  submitRequestList.get(i).getImageUrl().equals(submitRequest.getImageUrl())
+                            &&  submitRequestList.get(i).getSpecies().equals(submitRequest.getSpecies())
+                            &&  submitRequestList.get(i).getTime().equals(submitRequest.getTime()))
+                    {
+                        return true;
+                    }
                 }
             }
         }

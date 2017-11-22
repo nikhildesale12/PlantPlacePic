@@ -3,6 +3,9 @@ package com.ibin.plantplacepic.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +25,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -34,13 +38,18 @@ import com.ibin.plantplacepic.fragment.SpeciesPhotoFragment;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -68,6 +77,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
     private String serverFolderPath = "";
     private String serverFolderPathFrom="";
     String userId= "0";
+    TextView speciesNotLoadedUpdate;
     Information updateBean;
     Spinner speciesSpinner;
     LinearLayout layoutSpeciesSpinnerUpdate;
@@ -116,11 +126,34 @@ public class UpdateInfoActivity extends AppCompatActivity {
                 textTeg.setVisibility(View.GONE);
             }
             imageFolderPath = Constants.IMAGE_DOWNLOAD_PATH;
-            Picasso.with(UpdateInfoActivity.this)
-                    .load(imageFolderPath+updateBean.getImages())
-                    .placeholder(R.drawable.pleasewait)   // optional
-                    .error(R.drawable.pleasewait)
-                    .into(captureImage);
+//            Picasso.with(UpdateInfoActivity.this)
+//                    .load(imageFolderPath+updateBean.getImages())
+//                    .placeholder(R.drawable.pleasewait)   // optional
+//                    .error(R.drawable.pleasewait)
+//                    .into(captureImage);
+            File file = new File(imageFolderPath+updateBean.getImages());
+            if(file != null && file.exists()){
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 8;
+                // Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+
+                Bitmap bmt = getBitmap(file);
+                captureImage.setImageBitmap(bmt);
+
+            }else{
+                Picasso.with(UpdateInfoActivity.this)
+                        .load(imageFolderPath+updateBean.getImages())
+                        .placeholder(R.drawable.pleasewait)
+                        .error(R.drawable.pleasewait)
+                        .into(getTarget(imageFolderPath+updateBean.getImages()));
+                Glide.with(UpdateInfoActivity.this)
+                        .load(imageFolderPath+updateBean.getImages())
+                        .placeholder(R.drawable.pleasewait)
+                        .error(R.drawable.pleasewait)
+                        .thumbnail(0.5f)
+                        .crossFade()
+                        .into(captureImage);
+            }
             if(updateBean.getTitle() != null && updateBean.getTitle().length() >0){
                 titleEditText.setText(updateBean.getTitle());
             }
@@ -180,8 +213,10 @@ public class UpdateInfoActivity extends AppCompatActivity {
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
                     android.R.layout.simple_dropdown_item_1line, SpeciesPhotoFragment.dataListSpeciesNames);
             speciesSpinner.setAdapter(arrayAdapter);
+            speciesNotLoadedUpdate.setVisibility(View.GONE);
         }else{
-            layoutSpeciesSpinnerUpdate.setVisibility(View.GONE);
+            //layoutSpeciesSpinnerUpdate.setVisibility(View.GONE);
+            speciesNotLoadedUpdate.setVisibility(View.VISIBLE);
         }
 
         speciesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -198,12 +233,132 @@ public class UpdateInfoActivity extends AppCompatActivity {
         });
     }
 
+    //target to save
+    private static Target getTarget(final String imageName){
+        Target target = new Target(){
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        //File file = new File(Environment.getExternalStorageDirectory().getPath() + "/" + url);
+                        File rootDirectory = new File(Constants.FOLDER_PATH);
+                        if (!rootDirectory.exists()) {
+                            rootDirectory.mkdir();
+                        }
+                        File file = new File(Constants.FOLDER_PATH + File.separator + imageName);
+                        try {
+                            if(file != null && !file.exists()) {
+                                file.createNewFile();
+                                FileOutputStream ostream = new FileOutputStream(file);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, ostream);
+                                ostream.flush();
+                                ostream.close();
+                            }
+                        } catch (IOException e) {
+                            Log.e("IOException", e.getLocalizedMessage());
+                        }
+                    }
+                }).start();
+
+            }
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
+        return target;
+    }
+
+    private Bitmap getBitmap(File path) {
+        String TAG = "";
+        Uri uri = Uri.fromFile(path);
+        InputStream in = null;
+        try {
+            final int IMAGE_MAX_SIZE = 1200000; // 1.2MP
+            in = getContentResolver().openInputStream(uri);
+
+            // Decode image size
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(in, null, options);
+            in.close();
+
+            // int scale = 1;
+//            while ((options.outWidth * options.outHeight) * (1 / Math.pow(scale, 2)) >
+//                    IMAGE_MAX_SIZE) {
+//                scale++;
+//            }
+//            Log.d(TAG, "scale = " + scale + ", orig-width: " + options.outWidth + ",orig-height: " + options.outHeight);
+
+            Bitmap resultBitmap = null;
+            in = getContentResolver().openInputStream(uri);
+            // scale to max possible inSampleSize that still yields an image
+            // larger than target
+            options = new BitmapFactory.Options();
+            options.inSampleSize = calculateInSampleSize(options,options.outWidth,options.outHeight);
+            resultBitmap = BitmapFactory.decodeStream(in, null, options);
+
+            // resize to desired dimensions
+            int height = resultBitmap.getHeight();
+            int width = resultBitmap.getWidth();
+            Log.d(TAG, "1th scale operation dimenions - width: " + width + ",height: " + height);
+
+            double y = Math.sqrt(IMAGE_MAX_SIZE
+                    / (((double) width) / height));
+            double x = (y / height) * width;
+
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(resultBitmap, (int) x,
+                    (int) y, true);
+            resultBitmap.recycle();
+            resultBitmap = scaledBitmap;
+
+            System.gc();
+            in.close();
+
+            Log.d(TAG, "bitmap size - width: " +resultBitmap.getWidth() + ", height: " +
+                    resultBitmap.getHeight());
+            return resultBitmap;
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage(),e);
+            return null;
+        }
+    }
+
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
     private void UpdateImageServiceCall() {
         if(speciesEditText.getText().toString().length()>0) {
             String TITLE = titleEditText.getText().toString();
             String SPECIES = speciesEditText.getText().toString();
             String REMARK = remarkEditText.getText().toString();
-            String USERID = updateBean.getUserId();
             String IMAGE = updateBean.getImages();
             String ADDRESS = cityEditText.getText().toString();
         /*when tag is same no need to move image*/
@@ -215,7 +370,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
                 Gson gson = new GsonBuilder().setLenient().create();
                 Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
                 ApiService service = retrofit.create(ApiService.class);
-                Call<LoginResponse> call = service.dataUpdateService(USERID, IMAGE, SPECIES, REMARK, TAG, TITLE, serverFolderPath, serverFolderPathFrom, ADDRESS);
+                Call<LoginResponse> call = service.dataUpdateService(userId, IMAGE, SPECIES, REMARK, TAG, TITLE, serverFolderPath, serverFolderPathFrom, ADDRESS);
                 call.enqueue(new Callback<LoginResponse>() {
                     @Override
                     public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
@@ -254,6 +409,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
         }
     }
     private void initViews() {
+        speciesNotLoadedUpdate = (TextView) findViewById(R.id.speciesNotLoadedUpdate);
         speciesSpinner = (Spinner) findViewById(R.id.spinnerSpecies);
         layoutSpeciesSpinnerUpdate = (LinearLayout) findViewById(R.id.layoutSpeciesSpinnerUpdate);
         updateBean = new Information();

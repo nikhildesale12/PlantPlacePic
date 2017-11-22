@@ -75,6 +75,7 @@ public class ImageInfoActivity extends AppCompatActivity {
     private double longitude =0;
     private String address="" ;
     private String cropStatus="";
+    TextView speciesNotLoaded;
     private String currentDateTimeString ="";
     String userId= "0";
     Spinner speciesSpinner;
@@ -95,16 +96,17 @@ public class ImageInfoActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_image_info);
         initViews();
+        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
+        userId = prefs.getString("USERID", "0");
         if (Constants.isNetworkAvailable(ImageInfoActivity.this)) {
             layoutSpeciesSpinner.setVisibility(View.VISIBLE);
             callServiceToGetSpeciesNames(userId);
         }else{
             //layoutSpeciesSpinner.setVisibility(View.GONE);
+            speciesNotLoaded.setVisibility(View.VISIBLE);
         }
         //cityEditText.setThreshold(3);
         cityEditText.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.list_text_item));
-        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
-        userId = prefs.getString("USERID", "0");
         Intent intent = getIntent();
         submitRequest = new SubmitRequest();
         Log.d(" Constants.countSelectedPhotoFromGallery "," Constants.countSelectedPhotoFromGallery : "+Constants.countSelectedPhotoFromGallery);
@@ -266,15 +268,18 @@ public class ImageInfoActivity extends AppCompatActivity {
                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ImageInfoActivity.this,
                                         android.R.layout.simple_dropdown_item_1line, dataListSpeciesNames);
                                 speciesSpinner.setAdapter(arrayAdapter);
+                                speciesNotLoaded.setVisibility(View.GONE);
                             }else{
                                 //layoutSpeciesSpinner.setVisibility(View.GONE);
+                                speciesNotLoaded.setVisibility(View.VISIBLE);
                             }
                         }
                     }
                     if (response.body().getSuccess().toString().trim().equals("0")) {
-                            layoutSpeciesSpinner.setVisibility(View.GONE);
+                            //layoutSpeciesSpinner.setVisibility(View.GONE);
+                            speciesNotLoaded.setVisibility(View.VISIBLE);
                             if(uploadedSpecies.length() > 0){
-                                dataListSpeciesNames.add(0,"Select Species");
+                                dataListSpeciesNames.add(0,"Select Folder");
                                 dataListSpeciesNames.add(uploadedSpecies);
                             }
                             if(dataListSpeciesNames.size() > 1){
@@ -282,8 +287,10 @@ public class ImageInfoActivity extends AppCompatActivity {
                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ImageInfoActivity.this,
                                         android.R.layout.simple_dropdown_item_1line, dataListSpeciesNames);
                                 speciesSpinner.setAdapter(arrayAdapter);
+                                speciesNotLoaded.setVisibility(View.GONE);
                             }else{
                                 //layoutSpeciesSpinner.setVisibility(View.GONE);
+                                speciesNotLoaded.setVisibility(View.VISIBLE);
                             }
                     }
                 }
@@ -294,6 +301,7 @@ public class ImageInfoActivity extends AppCompatActivity {
 //                if (dialog != null && dialog.isShowing()) {
 //                    dialog.dismiss();
 //                }
+                speciesNotLoaded.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -323,13 +331,17 @@ public class ImageInfoActivity extends AppCompatActivity {
             submitReq.setUploadedFrom(uploadFrom);
             //call Service and pass data
             if (Constants.isNetworkAvailable(ImageInfoActivity.this)) {
-                Toast.makeText(ImageInfoActivity.this, "Uploading Data...", Toast.LENGTH_LONG).show();
-                Intent intentService = new Intent(this, ImageUploadService.class);
-                //intentService.putExtra("submitRequest", submitReq);
-                List<SubmitRequest> submitReqList = new ArrayList<>();
-                submitReqList.add(submitReq);
-                intentService.putExtra("submitRequest", (Serializable) submitReqList);
-                startService(intentService);
+                if(userId.equals("0")){
+                    Constants.dispalyDialogInternet(ImageInfoActivity.this,"Invalid User","Please login again to upload information",false,false);
+                }else {
+                    Toast.makeText(ImageInfoActivity.this, "Uploading Data...", Toast.LENGTH_LONG).show();
+                    Intent intentService = new Intent(this, ImageUploadService.class);
+                    //intentService.putExtra("submitRequest", submitReq);
+                    List<SubmitRequest> submitReqList = new ArrayList<>();
+                    submitReqList.add(submitReq);
+                    intentService.putExtra("submitRequest", (Serializable) submitReqList);
+                    startService(intentService);
+                }
             } else {
                 //save in local db
                 Toast.makeText(ImageInfoActivity.this, "Internet Unavailable,Data will automatically upload once device connect to internet ...", Toast.LENGTH_LONG).show();
@@ -475,6 +487,7 @@ public class ImageInfoActivity extends AppCompatActivity {
         remarkEditText=(EditText)findViewById(R.id.remarkEditText);
         cityEditText=(AutoCompleteTextView) findViewById(R.id.cityEditText);
         databaseHelper = DatabaseHelper.getDatabaseInstance(getApplicationContext());
+        speciesNotLoaded = (TextView) findViewById(R.id.speciesNotLoaded);
     }
 
     @Override
@@ -622,5 +635,10 @@ public class ImageInfoActivity extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
+        userId = prefs.getString("USERID", "0");
+    }
 }

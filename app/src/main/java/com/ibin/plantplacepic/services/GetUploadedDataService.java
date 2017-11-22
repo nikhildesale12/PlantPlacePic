@@ -16,6 +16,9 @@ import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,7 +41,14 @@ public class GetUploadedDataService extends Service{
     public int onStartCommand(Intent intent, int flags, int startId) {
         databaseHelper = DatabaseHelper.getDatabaseInstance(getApplicationContext());
         // Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+//        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+//                .readTimeout(60, TimeUnit.SECONDS)
+//                .connectTimeout(60, TimeUnit.SECONDS)
+//                .build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+//                .client(okHttpClient)
+                .build();
         ApiService service = retrofit.create(ApiService.class);
         SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
         String userId = prefs.getString(Constants.KEY_USERID, "0");

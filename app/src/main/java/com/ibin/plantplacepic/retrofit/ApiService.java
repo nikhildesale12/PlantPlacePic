@@ -81,7 +81,7 @@ public interface ApiService {
     );
 
     @GET(Constants.GET_COUNT_SERVICE_URL)
-    Call<String> getUplodCount(
+    Call<LoginResponse> getUplodCount(
             @Query("USERID") String USERID
     );
 

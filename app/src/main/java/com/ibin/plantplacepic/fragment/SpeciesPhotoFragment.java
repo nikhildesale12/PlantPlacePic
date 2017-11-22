@@ -124,7 +124,7 @@ public class SpeciesPhotoFragment extends Fragment implements UploadedSpeciesAda
             textMsg.setVisibility(View.GONE);
             recyclerViewSpecies.setVisibility(View.VISIBLE);
             mAdapter = new UploadedSpeciesAdapter(context, dataListWithAllSpecies,this);
-            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(context,3);
+            RecyclerView.LayoutManager layoutManager = new GridLayoutManager(context,4);
             recyclerViewSpecies.setLayoutManager(layoutManager);
             recyclerViewSpecies.setItemAnimator(new DefaultItemAnimator());
             recyclerViewSpecies.addItemDecoration(new ItemOffsetDecoration(context, R.dimen.item_offset));

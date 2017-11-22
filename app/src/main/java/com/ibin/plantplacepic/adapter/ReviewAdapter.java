@@ -155,42 +155,42 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         }*/
         imageFolderPath = Constants.IMAGE_DOWNLOAD_PATH;
         File file = new File(Constants.FOLDER_PATH + File.separator + review.getImages());
-//        if(file != null && file.exists()){
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inSampleSize = 8;
-//            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+        if(file != null && file.exists()){
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 8;
+           // Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
 
-//            Bitmap bitmap = getBitmap(file);
-//            holder.imageView.setImageBitmap(bitmap);
+            Bitmap bmt = getBitmap(file);
+            holder.imageView.setImageBitmap(bmt);
 
-//        }else{
-//            Picasso.with(context)
-//                    .load(imageFolderPath+review.getImages())
-//                    .placeholder(R.drawable.pleasewait)
-//                    .error(R.drawable.pleasewait)
-//                    .into(getTarget(review.getImages()));
-//            Glide.with(context)
-//                    .load(imageFolderPath+review.getImages())
-//                    .placeholder(R.drawable.pleasewait)
-//                    .error(R.drawable.pleasewait)
-//                    .thumbnail(0.5f)
-//                    .crossFade()
-//                    .into(holder.imageView);
-//        }
+        }else{
+            Picasso.with(context)
+                    .load(imageFolderPath+review.getImages())
+                    .placeholder(R.drawable.pleasewait)
+                    .error(R.drawable.pleasewait)
+                    .into(getTarget(review.getImages()));
+            Glide.with(context)
+                    .load(imageFolderPath+review.getImages())
+                    .placeholder(R.drawable.pleasewait)
+                    .error(R.drawable.pleasewait)
+                    .thumbnail(0.5f)
+                    .crossFade()
+                    .into(holder.imageView);
+        }
 
-        Glide.with(context)
-                .load(imageFolderPath+review.getImages())
-                .placeholder(R.drawable.pleasewait)
-                .error(R.drawable.pleasewait)
-                .thumbnail(0.5f)
-                .crossFade()
-                .into(holder.imageView);
-
-        Picasso.with(context)
-                .load(imageFolderPath+review.getImages())
-                .placeholder(R.drawable.pleasewait)
-                .error(R.drawable.pleasewait)
-                .into(getTarget(review.getImages()));
+//        Glide.with(context)
+//                .load(imageFolderPath+review.getImages())
+//                .placeholder(R.drawable.pleasewait)
+//                .error(R.drawable.pleasewait)
+//                .thumbnail(0.5f)
+//                .crossFade()
+//                .into(holder.imageView);
+//
+//        Picasso.with(context)
+//                .load(imageFolderPath+review.getImages())
+//                .placeholder(R.drawable.pleasewait)
+//                .error(R.drawable.pleasewait)
+//                .into(getTarget(review.getImages()));
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -365,7 +365,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
                             if(file != null && !file.exists()) {
                                 file.createNewFile();
                                 FileOutputStream ostream = new FileOutputStream(file);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, ostream);
                                 ostream.flush();
                                 ostream.close();
                             }

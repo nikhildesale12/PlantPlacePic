@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
@@ -12,6 +13,9 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.activities.Dashboard;
 import com.ibin.plantplacepic.activities.SignInActivity;
@@ -19,6 +23,8 @@ import com.ibin.plantplacepic.activities.SignInActivity;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by NN on 27/05/2017.
@@ -77,7 +83,7 @@ public class Constants {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
     /*No Internet Connection*/
-    public static void dispalyDialogInternet(final Context context , String title, String message, boolean cancelDialog , final boolean isFinish) {
+    public static void dispalyDialogInternet(final Context context , final String title, String message, boolean cancelDialog , final boolean isFinish) {
         final Dialog interrnetConnection = new Dialog(context);
         interrnetConnection.requestWindowFeature(Window.FEATURE_NO_TITLE);
         interrnetConnection.setContentView(R.layout.dialog_popup);
@@ -94,6 +100,25 @@ public class Constants {
                 if(isFinish){
                     Intent i = new Intent(context, Dashboard.class);
                     context.startActivity(i);
+                    ((Activity)context).finish();
+                }
+                else if("Upgrade Application".equals(title)){
+                    ((Activity)context).finish();
+//                    Intent i = new Intent(Intent.ACTION_SEND);
+//                    i.setType("text/plain");
+//                    i.putExtra(Intent.EXTRA_SUBJECT, "My application name");
+//                    String sAux = "\nLet me recommend you this application\n\n";
+//                    sAux = sAux + "https://play.google.com/store/apps/details?id=com.ibin.plantplacepic&hl=en \n\n";
+//                    i.putExtra(Intent.EXTRA_TEXT, sAux);
+//                    context.startActivity(Intent.createChooser(i, "choose one"));
+                }else if("Invalid User".equals(title)){
+                    SharedPreferences.Editor editor = context.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE).edit();
+                    editor.clear();
+                    editor.commit();
+                    Intent intent = new Intent(context, SignInActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                     ((Activity)context).finish();
                 }
             }

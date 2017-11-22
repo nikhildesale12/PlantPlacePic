@@ -4,7 +4,8 @@
     <dimen name="image_info_edittext_height">30dp</dimen>
     <dimen name="button_height">40dp</dimen>
     <dimen name="title_font_size">22sp</dimen>
-    <dimen name="species_folder_height">120dp</dimen>
+    <dimen name="species_folder_height_old">120dp</dimen>
+    <dimen name="species_folder_height">90dp</dimen>
     <dimen name="custom_profile_image">55dp</dimen>
     <dimen name="custom_profile_padding">1dp</dimen>
 

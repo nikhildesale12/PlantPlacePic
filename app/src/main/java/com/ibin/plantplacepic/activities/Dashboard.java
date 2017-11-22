@@ -42,6 +42,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibin.plantplacepic.BuildConfig;
 import com.ibin.plantplacepic.R;
+import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.SubmitRequest;
 import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
@@ -82,6 +83,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     private String personPhotoUrl;
     double latitude ;
     double longitude ;
+    String uploadedCount="";
     Toolbar topToolBar;
     private String finalAddress ;
     DatabaseHelper databaseHelper;
@@ -92,18 +94,27 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
+        initViews();
+        //textUploadCount.setVisibility(View.INVISIBLE);
         if (getIntent() != null && getIntent().getBooleanExtra("EXIT", false)) {
             Dashboard.this.finish();
             System.exit(1);
         }else {
-            initViews();
             topToolBar = (Toolbar)findViewById(R.id.toolbarDashboard);
 
             SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
             userName  = prefs.getString(Constants.KEY_USERNAME, "Guest");
             userId = prefs.getString(Constants.KEY_USERID, "0");
             personPhotoUrl = prefs.getString(Constants.KEY_PHOTO, "");
+
+            if(getIntent() != null && getIntent().getStringExtra("uploadedCount") != null){
+                textUploadCount.setVisibility(View.VISIBLE);
+                uploadedCount =  getIntent().getStringExtra("uploadedCount");
+                textUploadCount.setText(uploadedCount);
+            }else{
+                textUploadCount.setVisibility(View.VISIBLE);
+                textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
+            }
 
             Target target = new Target() {
                 @Override
@@ -138,7 +149,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                         .into(target);
             }
 
-            getUploadedCount(userId);
+            //getUploadedCount(userId);
 
            // textUserName.setText("Welcome "+userName+" !");
             setSupportActionBar(topToolBar);
@@ -230,9 +241,13 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                 List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(userId);
                 Log.d("List : ","List : "+dataList.size());
                 if(dataList!=null && dataList.size()>0){
-                    Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
-                    intentService.putExtra("submitRequest", (Serializable) dataList);
-                    startService(intentService);
+                    if(userId.equals("0")){
+                        Constants.dispalyDialogInternet(Dashboard.this,"Invalid User","Please login again to upload information",false,false);
+                    }else{
+                        Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
+                        intentService.putExtra("submitRequest", (Serializable) dataList);
+                        startService(intentService);
+                    }
                    /* for(int i=0;i<dataList.size();i++){
                         SubmitRequest  submitRequest = new SubmitRequest();
                         submitRequest.setUserId(dataList.get(i).getUserId());
@@ -331,25 +346,29 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
 
     private void getUploadedCount(final String userId) {
         if(Constants.isNetworkAvailable(Dashboard.this)){
-            textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
             Gson gson = new GsonBuilder().setLenient().create();
             Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
             ApiService service = retrofit.create(ApiService.class);
-            Call<String> call = service.getUplodCount(userId);
-            call.enqueue(new Callback<String>() {
+            Call<LoginResponse> call = service.getUplodCount(userId);
+            call.enqueue(new Callback<LoginResponse>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                     if(response != null && response.body() != null ){
-                        if(response.body().trim().equals("0")){
+                        if(response != null && response.body() != null && response.body().getSuccess().equals(1) ){
                             databaseHelper.removeAllSaveDataFromTable();
+                            textUploadCount.setVisibility(View.VISIBLE);
+                            textUploadCount.setText(response.body().getCount());
                         }
-                        Log.e("databaseHelper.getTotalUploadedData(userId)  :== ",""+databaseHelper.getTotalUploadedData(userId));
-                        textUploadCount.setText(response.body());
+                    }else{
+                        textUploadCount.setVisibility(View.VISIBLE);
+                        textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
                     }
                 }
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
-                    textUploadCount.setText("0");
+                public void onFailure(Call<LoginResponse> call, Throwable t) {
+                    //textUploadCount.setText("0");
+                    textUploadCount.setVisibility(View.VISIBLE);
+                    textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
                 }
             });
         }else{
@@ -370,10 +389,10 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             rootDirectory.mkdir();
         }
         if (Environment.MEDIA_MOUNTED.equals(state)) {
-            mFileTemp = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+currentDateTimeString+".jpeg");
+            mFileTemp = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+currentDateTimeString+"_"+userId+".jpeg");
         }
         else {
-            mFileTemp = new File(getFilesDir(), Constants.IMAGE_NAME+currentDateTimeString+".jpeg");
+            mFileTemp = new File(getFilesDir(), Constants.IMAGE_NAME+currentDateTimeString+"_"+userId+".jpeg");
         }
         /*Uri.fromFile(mFileTemp)*/
         Uri photoURI = null;
@@ -423,7 +442,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                     dialog.setIndeterminate(false);
                     dialog.setCancelable(false);
                     dialog.show();*/
-                   File file = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+currentDateTimeString+".jpeg");
+                   File file = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+currentDateTimeString+"_"+userId+".jpeg");
                    try {
                        if(file != null){
                            gps = new GPSTracker(Dashboard.this);
@@ -444,7 +463,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
 //                               //compress Image
 //                               BitmapFactory.Options options = new BitmapFactory.Options();
 //                               options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//                               Bitmap bitmap = BitmapFactory.decodeFile(Constants.FOLDER_PATH + File.separator + Constants.IMAGE_NAME + currentDateTimeString + ".jpeg", options);
+//                               Bitmap bitmap = BitmapFactory.decodeFile(Constants.FOLDER_PATH + File.separator + Constants.IMAGE_NAME + currentDateTimeString +"_"+userId+ ".jpeg", options);
 //                               Matrix matrix = new Matrix();
 //                               //matrix.postRotate(90);
 //                               Bitmap finalBitmap = Bitmap.createBitmap(bitmap, 0, 0,
@@ -500,7 +519,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                                intentData.putExtra("currentDateTimeString",currentDateTimeString);*/
                                SubmitRequest sr = new SubmitRequest();
                                sr.setImageUrl(Uri.fromFile(file).getPath());
-                               sr.setImageName(Constants.IMAGE_NAME + currentDateTimeString + ".jpeg");
+                               sr.setImageName(Constants.IMAGE_NAME + currentDateTimeString +"_"+userId+ ".jpeg");
                                sr.setAddress(finalAddress);
                                sr.setLatitude(String.valueOf(latitude));
                                sr.setLongitude(String.valueOf(longitude));

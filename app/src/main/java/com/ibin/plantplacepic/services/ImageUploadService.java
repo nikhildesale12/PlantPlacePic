@@ -2,11 +2,14 @@ package com.ibin.plantplacepic.services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -85,37 +88,49 @@ public class ImageUploadService extends Service{
                 if(Constants.isNetworkAvailable(getApplicationContext())){
                     for(int i=0;i<submitRequestList.size();i++){
                         SubmitRequest submitRequest = submitRequestList.get(i);
-                        if(submitRequest.getImageUrl() != null && (submitRequest.getStatus() == null || submitRequest.getStatus() != null && submitRequest.getStatus().equals("false"))){
-                            submitRequest.setStatus("true");
-                            submitRequest.setIsSaveInLocal("NO");
+                        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
+                        final String USERID = prefs.getString(Constants.KEY_USERID, "0");
+                        if(!USERID.equals("0")){
+                            if(submitRequest.getImageUrl() != null && (submitRequest.getStatus() == null || submitRequest.getStatus() != null && submitRequest.getStatus().equals("false"))){
+                                submitRequest.setStatus("true");
+                                submitRequest.setIsSaveInLocal("NO");
                             /*compress starts*/
-                            File file = new File(submitRequest.getImageUrl());
-                            if(file != null) {
-                                if (file.length() / 1024 > 2048) {
+                                File file = new File(submitRequest.getImageUrl());
+                                if(file != null) {
                                     BitmapFactory.Options options = new BitmapFactory.Options();
                                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                                    Bitmap bitmap = BitmapFactory.decodeFile(submitRequest.getImageUrl(), options);
-                                    Matrix matrix = new Matrix();
-                                    //matrix.postRotate(90);
-                                    Bitmap finalBitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                                            bitmap.getWidth(), bitmap.getHeight(),
-                                            matrix, true);
-                                    if (file.exists()) {
-                                        file.delete();
-                                    }
-                                    try {
-                                        //File file1 = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+"compress"+".jpg");
-                                        FileOutputStream out = new FileOutputStream(file);
-                                        finalBitmap.compress(Bitmap.CompressFormat.JPEG, 40, out);
-                                        out.flush();
-                                        out.close();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                                    if(submitRequest.getImageUrl() != null){
+                                        Bitmap bitmap = BitmapFactory.decodeFile(submitRequest.getImageUrl(), options);
+                                        Matrix matrix = new Matrix();
+                                        if(bitmap != null) {
+                                            //matrix.postRotate(90);
+                                            Bitmap finalBitmap = Bitmap.createBitmap(bitmap, 0, 0,
+                                                    bitmap.getWidth(), bitmap.getHeight(),
+                                                    matrix, true);
+                                            if (file.exists()) {
+                                                file.delete();
+                                            }
+                                            try {
+                                                //File file1 = new File(Constants.FOLDER_PATH, Constants.IMAGE_NAME+"compress"+".jpg");
+                                                FileOutputStream out = new FileOutputStream(file);
+                                                finalBitmap.compress(Bitmap.CompressFormat.JPEG, 40, out);
+                                                out.flush();
+                                                out.close();
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                         /*compress end*/
+                                            new UploadFileToServer(submitRequest).executeOnExecutor(sExecutor);
+                                        }
+                                    }else{
+                                        stopSelf();
+                                        Toast.makeText(getApplicationContext(),"Error while uploading image please try again",Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                                /*compress end*/
-                                new UploadFileToServer(submitRequest).executeOnExecutor(sExecutor);
                             }
+                        }else{
+                            stopSelf();
+                            Toast.makeText(getApplicationContext(),"Error while uploading data, please login again and upload",Toast.LENGTH_SHORT).show();
                         }
                     }
                 } else {
@@ -132,6 +147,7 @@ public class ImageUploadService extends Service{
      * Uploading the file to server
      * */
     private class UploadFileToServer extends AsyncTask<Void, Integer, String> {
+        boolean alreadySave = false;
         SubmitRequest submitRequest = new SubmitRequest();
         private UploadFileToServer(SubmitRequest submitRqt) {
             submitRequest = submitRqt;
@@ -160,7 +176,7 @@ public class ImageUploadService extends Service{
                 connection = url.openConnection();
                 httpConn = (HttpURLConnection) connection;
                 httpConn.setRequestProperty("Content-Type", "multipart/form-data; boundary="+boundary);
-                httpConn.setConnectTimeout(60000);
+                httpConn.setConnectTimeout(50000);
                 httpConn.setRequestMethod("POST");
                 httpConn.setDoInput(true);
                 httpConn.setDoOutput(true);
@@ -195,14 +211,24 @@ public class ImageUploadService extends Service{
             }
             catch (MalformedURLException e)
             {
+                saveInLocalForLaterUpload(submitRequest);
+                alreadySave = true;
                 e.printStackTrace();
             }
             catch (IOException e)
             {
+                alreadySave = true;
+                saveInLocalForLaterUpload(submitRequest);
+                showErrorToast();
+                if(e.toString().contains("failed to connect to ibin.plantplacepicture.com")){
+                    result = "failed to connect to ibin.plantplacepicture.com";
+                }
                 e.printStackTrace();
             }
             catch (Exception e)
             {
+                alreadySave = true;
+                saveInLocalForLaterUpload(submitRequest);
                 e.printStackTrace();
             }
             finally
@@ -223,12 +249,23 @@ public class ImageUploadService extends Service{
                 if(submitRequest.getIsSaveInLocal() != null && submitRequest.getIsSaveInLocal().equals("NO")){
                     Log.d("ImageUploadService", "Already in DB");
                 }else{
-                    saveInLocalForLaterUpload(submitRequest);
+                    if(!alreadySave){
+                        saveInLocalForLaterUpload(submitRequest);
+                    }
                 }
-
             }
             super.onPostExecute(result);
         }
+    }
+
+    private void showErrorToast() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(),"Failed to connect to ibin.plantplacepicture.com , Data will upload automatically later",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void saveInLocalForLaterUpload(SubmitRequest submitRequest){
@@ -246,7 +283,9 @@ public class ImageUploadService extends Service{
         Log.d("In callRetrofitToSaveDataServer","In callRetrofitToSaveDataServer");
         Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         ApiService service = retrofit.create(ApiService.class);
-        final String USERID = submitRequest.getUserId();
+        //final String USERID = submitRequest.getUserId();
+        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
+        final String USERID = prefs.getString(Constants.KEY_USERID, "0");
         String IMAGE = submitRequest.getImageName();
         String TIME = submitRequest.getTime();
         String SPECIES = submitRequest.getSpecies();

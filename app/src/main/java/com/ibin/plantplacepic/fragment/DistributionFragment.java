@@ -1,8 +1,11 @@
 package com.ibin.plantplacepic.fragment;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.InflateException;
@@ -28,15 +31,15 @@ import com.ibin.plantplacepic.bean.SpeciesPoints;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DistributionFragment extends Fragment implements OnMapReadyCallback ,
-  ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints>
-{
+public class DistributionFragment extends Fragment implements OnMapReadyCallback,
+        ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints> {
 
     private GoogleMap mMap;
     ArrayList<Information> mainDataList = null;
     String selectedSpecies = "";
     private static View view;
     private ClusterManager<SpeciesPoints> mClusterManager;
+
     public DistributionFragment() {
         // Required empty public constructor
     }
@@ -61,7 +64,7 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
         }
 
         mainDataList = new ArrayList<>();
-        if (getArguments() != null){
+        if (getArguments() != null) {
             mainDataList = getArguments().getParcelableArrayList("mainDataList");
             selectedSpecies = getArguments().getString("selectedSpecies");
         }
@@ -77,7 +80,17 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
         mMap = googleMap;
         //LatLng sydney = new LatLng(-34, 151);
         //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-       // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setBuildingsEnabled(true);

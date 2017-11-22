@@ -132,6 +132,11 @@ public class SignUpActivity extends AppCompatActivity {
                         }
                         Constants.dispalyDialogInternet(SignUpActivity.this,"Error","Technical Error !!!",false,false);
                     }
+                }else{
+                    if (dialog != null && dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                    Constants.dispalyDialogInternet(SignUpActivity.this,"Error","Technical Error !!!",false,false);
                 }
             }
             @Override

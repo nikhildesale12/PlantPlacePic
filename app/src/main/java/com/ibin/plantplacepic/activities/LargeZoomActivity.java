@@ -45,35 +45,35 @@ public class LargeZoomActivity extends AppCompatActivity {
         boolean isShowHint  = prefs.getBoolean(Constants.KEY_HINT_SWAP,true);
         if(isShowHint){
             if(dataList != null && dataList.size()>1) {
-                swipeImage.setVisibility(View.VISIBLE);
-                Target listObjetivo = new ViewTarget(R.id.swipeImage, this);
-                new ShowcaseView.Builder(this, false)
-                        .setTarget(listObjetivo)
-                        .setContentTitle("Swipe left or right to view more images")
-                        .setContentText("You can view next image on swipe")
-                        .setStyle(2)
-                        .singleShot(1)
-                        .hideOnTouchOutside()
-                        .setShowcaseEventListener(new OnShowcaseEventListener() {
-                            @Override
-                            public void onShowcaseViewHide(ShowcaseView showcaseView) {
-                                swipeImage.setVisibility(View.GONE);
-                                SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE).edit();
-                                editor1.putBoolean(Constants.KEY_HINT_SWAP, false);
-                                editor1.commit();
-                            }
-
-                            @Override
-                            public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
-
-                            }
-
-                            @Override
-                            public void onShowcaseViewShow(ShowcaseView showcaseView) {
-
-                            }
-                        })
-                        .build();
+//                swipeImage.setVisibility(View.VISIBLE);
+//                Target listObjetivo = new ViewTarget(R.id.swipeImage, this);
+//                new ShowcaseView.Builder(LargeZoomActivity.this, false)
+//                        .setTarget(listObjetivo)
+//                        .setContentTitle("Swipe left or right to view more images")
+//                        .setContentText("You can view next image on swipe")
+//                        .setStyle(2)
+//                        .singleShot(1)
+//                        .hideOnTouchOutside()
+//                        .setShowcaseEventListener(new OnShowcaseEventListener() {
+//                            @Override
+//                            public void onShowcaseViewHide(ShowcaseView showcaseView) {
+//                                swipeImage.setVisibility(View.GONE);
+//                                SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE).edit();
+//                                editor1.putBoolean(Constants.KEY_HINT_SWAP, false);
+//                                editor1.commit();
+//                            }
+//
+//                            @Override
+//                            public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onShowcaseViewShow(ShowcaseView showcaseView) {
+//
+//                            }
+//                        })
+//                        .build();
             }
 
         }else{

@@ -123,7 +123,7 @@ public class UploadedPhotoAdapter extends SelectableAdapter<UploadedPhotoAdapter
         }*/
     }
 
-    class LoadImage extends AsyncTask<Object, Void, File> {
+    /*class LoadImage extends AsyncTask<Object, Void, File> {
 
         private ImageView imv;
         private File file = null;
@@ -160,7 +160,7 @@ public class UploadedPhotoAdapter extends SelectableAdapter<UploadedPhotoAdapter
 
             }
         }
-    }
+    }*/
 
     private Bitmap getBitmap(File path) {
         String TAG = "";
@@ -254,7 +254,7 @@ public class UploadedPhotoAdapter extends SelectableAdapter<UploadedPhotoAdapter
                             if(file != null && !file.exists()) {
                                 file.createNewFile();
                                 FileOutputStream ostream = new FileOutputStream(file);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, ostream);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, ostream);
                                 ostream.flush();
                                 ostream.close();
                             }
