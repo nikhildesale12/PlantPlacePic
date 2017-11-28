@@ -44,9 +44,10 @@ public class SpeciesInfoActivity extends AppCompatActivity implements ImagesFrag
         if(getIntent() != null && getIntent().getStringExtra("speciesNameSearch") != null){
             speciesToSearch = getIntent().getStringExtra("speciesNameSearch");
         }
-        if(getIntent() != null && getIntent().getParcelableArrayListExtra("mainDataList") != null){
+        /*if(getIntent() != null && getIntent().getParcelableArrayListExtra("mainDataList") != null){
             mainDataList = getIntent().getParcelableArrayListExtra("mainDataList");
-        }
+        }*/
+        mainDataList = SpeciesByNameActivity.mainDataList;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -82,7 +83,6 @@ public class SpeciesInfoActivity extends AppCompatActivity implements ImagesFrag
         distribution.setArguments(data);
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-
         adapter.addFragment(imagesFragment, "Images");
         adapter.addFragment(informationFragment, "Information");
         adapter.addFragment(distribution, "Distribution");

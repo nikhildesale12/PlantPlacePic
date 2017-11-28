@@ -155,15 +155,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         }*/
         imageFolderPath = Constants.IMAGE_DOWNLOAD_PATH;
         File file = new File(Constants.FOLDER_PATH + File.separator + review.getImages());
-        if(file != null && file.exists()){
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 8;
-           // Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
-
-            Bitmap bmt = getBitmap(file);
-            holder.imageView.setImageBitmap(bmt);
-
-        }else{
+//        if(file != null && file.exists()){
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inSampleSize = 8;
+//           // Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+//
+//            Bitmap bmt = getBitmap(file);
+//            holder.imageView.setImageBitmap(bmt);
+//
+//        }else{
             Picasso.with(context)
                     .load(imageFolderPath+review.getImages())
                     .placeholder(R.drawable.pleasewait)
@@ -176,7 +176,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
                     .thumbnail(0.5f)
                     .crossFade()
                     .into(holder.imageView);
-        }
+//        }
 
 //        Glide.with(context)
 //                .load(imageFolderPath+review.getImages())
@@ -280,15 +280,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
             // Decode image size
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            options.inScaled = true;
             BitmapFactory.decodeStream(in, null, options);
             in.close();
-
-            // int scale = 1;
-//            while ((options.outWidth * options.outHeight) * (1 / Math.pow(scale, 2)) >
-//                    IMAGE_MAX_SIZE) {
-//                scale++;
-//            }
-//            Log.d(TAG, "scale = " + scale + ", orig-width: " + options.outWidth + ",orig-height: " + options.outHeight);
 
             Bitmap resultBitmap = null;
             in = context.getContentResolver().openInputStream(uri);
@@ -505,7 +500,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
         folderPopup.show();
     }
 
-    private void moveImageServiceCall(String userId, String imageName, String fromSpecies, String toSpecies, final int positionSpec) {
+    private void moveImageServiceCall(final String userId, final String imageName, final String fromSpecies, final String toSpecies, final int positionSpec) {
         if(Constants.isNetworkAvailable(context)){
             Log.d("In moveImageServiceCall","In moveImageServiceCall");
             final ProgressDialog dialog = new ProgressDialog(context);
@@ -533,7 +528,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
                             //move in local db
-                            //databaseHelper.moveSpeciesLocal(ImageName,userId);
+                            int result = databaseHelper.moveFolderInLocal(userId,imageName,fromSpecies,toSpecies);
                             Intent i = new Intent(context,ReviewMyUploadTabActivity.class);
                             context.startActivity(i);
                             ((Activity)context).finish();

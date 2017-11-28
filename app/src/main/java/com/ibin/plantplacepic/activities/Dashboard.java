@@ -81,11 +81,11 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     private String userName ;
     private String userId ;
     private String personPhotoUrl;
-    double latitude ;
-    double longitude ;
+    double latitude =0;
+    double longitude =0;
     String uploadedCount="";
     Toolbar topToolBar;
-    private String finalAddress ;
+    private String finalAddress = "";
     DatabaseHelper databaseHelper;
     //private ImageView profilePic;
     private GoogleApiClient mGoogleApiClient;
@@ -109,8 +109,12 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
 
             if(getIntent() != null && getIntent().getStringExtra("uploadedCount") != null){
                 textUploadCount.setVisibility(View.VISIBLE);
-                uploadedCount =  getIntent().getStringExtra("uploadedCount");
-                textUploadCount.setText(uploadedCount);
+                 uploadedCount =  getIntent().getStringExtra("uploadedCount");
+                 if(uploadedCount.equals("BYSERVICE")){
+                     getUploadedCount(userId);
+                 }else {
+                     textUploadCount.setText(uploadedCount);
+                 }
             }else{
                 textUploadCount.setVisibility(View.VISIBLE);
                 textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
@@ -355,7 +359,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                 public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                     if(response != null && response.body() != null ){
                         if(response != null && response.body() != null && response.body().getSuccess().equals(1) ){
-                            databaseHelper.removeAllSaveDataFromTable();
+                            //databaseHelper.removeAllSaveDataFromTable();
                             textUploadCount.setVisibility(View.VISIBLE);
                             textUploadCount.setText(response.body().getCount());
                         }

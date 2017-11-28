@@ -43,7 +43,7 @@ public class SpeciesByNameActivity extends AppCompatActivity {
     public static String speciesName="";
     AutoCompleteTextView autoEnterSpeciesName;
     public ArrayList<String> speciesList;
-    List<Information> mainDataList = null;
+    public static List<Information> mainDataList = null;
     DatabaseHelper databaseHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class SpeciesByNameActivity extends AppCompatActivity {
 //                }
                 Intent intent=new Intent(SpeciesByNameActivity.this,SpeciesInfoActivity.class);
                 intent.putExtra("speciesNameSearch", autoEnterSpeciesName.getText().toString().trim());
-                intent.putParcelableArrayListExtra("mainDataList", (ArrayList<? extends Parcelable>) mainDataList);
+                //intent.putParcelableArrayListExtra("mainDataList", (ArrayList<? extends Parcelable>) mainDataList);
                 startActivity(intent);
 
             }

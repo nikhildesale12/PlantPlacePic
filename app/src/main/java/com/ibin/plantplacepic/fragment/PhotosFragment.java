@@ -411,7 +411,7 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
     }
 
 
-    private void moveImageServiceCall(String userId, String imageName, String fromSpecies, String toSpecies, final int positionSpec, final int i, final int size) {
+    private void moveImageServiceCall(final String userId, final String imageName, final String fromSpecies, final String toSpecies, final int positionSpec, final int i, final int size) {
         if(Constants.isNetworkAvailable(context)){
             Log.d("In moveImageServiceCall","In moveImageServiceCall");
             final ProgressDialog dialog = new ProgressDialog(context);
@@ -435,6 +435,8 @@ public class PhotosFragment extends Fragment implements UploadedPhotoAdapter.MyV
                                 Toast toast = Toast.makeText(context, "Move Successfully...", Toast.LENGTH_LONG);
                                 toast.setGravity(Gravity.CENTER, 0, 0);
                                 toast.show();
+                                //move in local db
+                                int result = databaseHelper.moveFolderInLocal(userId,imageName,fromSpecies,toSpecies);
                                 Intent i = new Intent(context, ReviewMyUploadTabActivity.class);
                                 context.startActivity(i);
                                 ((Activity) context).finish();

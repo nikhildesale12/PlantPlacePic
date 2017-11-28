@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -69,83 +70,85 @@ public class SplashScreen extends AppCompatActivity {
         final boolean login = sharedPreferences.getBoolean(Constants.KEY_IS_LOGIN, false);
         final String userId = sharedPreferences.getString(Constants.KEY_USERID, "0");
         if(Constants.isNetworkAvailable(SplashScreen.this)){
-            SplashTask myAsyncTasks = new SplashTask();
-            myAsyncTasks.execute(userId);
-                            //final Gson gson = new GsonBuilder().setLenient().create();
-//                            final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-//                                    .readTimeout(15, TimeUnit.SECONDS)
-//                                    .connectTimeout(15, TimeUnit.SECONDS)
-//                                    .build();
-//                            Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
-////                                    .addConverterFactory(GsonConverterFactory.create(gson))
-//                                    .addConverterFactory(GsonConverterFactory.create())
-//                                    .client(okHttpClient)
-//                                    .build();
-//                            ApiService service = retrofit.create(ApiService.class);
-//                            Call<LoginResponse> call = service.getUplodCount(userId);
-//                            call.enqueue(new Callback<LoginResponse>() {
-//                                @Override
-//                                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-//                                            if(response != null && response.body() != null && response.body().getSuccess() == 1){
-//                                                if(response.body().getResult().trim().equals(version)){
-//                                                    if (login) {
-//                                                        if(response.body().getCount().trim().equals("0")){
-//                                                            databaseHelper.removeAllSaveDataFromTable();
-//                                                        }
-//                                                        uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
-//                                                        if(userId.equals("0")){
-//                                                            Intent i = new Intent(SplashScreen.this,SignInActivity.class);
-//                                                            i.putExtra("uploadedCount",uploadedCount);
-//                                                            startActivity(i);
-//                                                            finish();
-//                                                        }else {
-//                                                            uploadedCount = response.body().getCount();
-//                                                            Intent i = new Intent(SplashScreen.this, Dashboard.class);
-//                                                            i.putExtra("uploadedCount", uploadedCount);
-//                                                            startActivity(i);
-//                                                            finish();
-//                                                        }
-//                                                    }else{
-//                                                        uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
-//                                                        if(userId.equals("0")){
-//                                                            Intent i = new Intent(SplashScreen.this,SignInActivity.class);
-//                                                            i.putExtra("uploadedCount",uploadedCount);
-//                                                            startActivity(i);
-//                                                            finish();
-//                                                        }else {
-//                                                            Intent i = new Intent(SplashScreen.this, Dashboard.class);
-//                                                            i.putExtra("uploadedCount", uploadedCount);
-//                                                            startActivity(i);
-//                                                            finish();
-//                                                        }
-//                                                    }
-//                                                }else{
-//                                                    Constants.dispalyDialogInternet(SplashScreen.this,"Upgrade Application","New update "+response.body().getResult()+" is available , Please update it from playstore",false,false);
-//                                                }
-//                                    } else {
-//                                        uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
-//                                        Intent i = new Intent(SplashScreen.this,SignInActivity.class);
-//                                        i.putExtra("uploadedCount",uploadedCount);
-//                                        startActivity(i);
-//                                        finish();
-//                                    }
+//            SplashTask myAsyncTasks = new SplashTask();
+//            myAsyncTasks.execute(userId);
+                            //final Gson gson = new GsonBuilder().setLenient().create]();
+                     final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .readTimeout(15, TimeUnit.SECONDS)
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .build();
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
+//                                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(okHttpClient)
+                    .build();
+            ApiService service = retrofit.create(ApiService.class);
+            Call<LoginResponse> call = service.getUplodCount(userId);
+            call.enqueue(new Callback<LoginResponse>() {
+                @Override
+                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                    if(response != null && response.body() != null && response.body().getSuccess() == 1){
+                        if(response.body().getResult().trim().equals(version)){
+                            if (login) {
+                                if(response.body().getCount().trim().equals("0")){
+                                    databaseHelper.removeAllSaveDataFromTable();
+                                    uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
+                                }else{
+                                    uploadedCount = response.body().getCount();
+                                }
+                                if(userId.equals("0")){
+                                    Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+                                    i.putExtra("uploadedCount",uploadedCount);
+                                    startActivity(i);
+                                    finish();
+                                }else {
+                                    uploadedCount = response.body().getCount();
+                                    Intent i = new Intent(SplashScreen.this, Dashboard.class);
+                                    i.putExtra("uploadedCount", uploadedCount);
+                                    startActivity(i);
+                                    finish();
+                                }
+                            }else{
+                                uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
+//                                if(userId.equals("0")){
+                                    Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+                                    i.putExtra("uploadedCount",uploadedCount);
+                                    startActivity(i);
+                                    finish();
+//                                }else {
+//                                    Intent i = new Intent(SplashScreen.this, Dashboard.class);
+//                                    i.putExtra("uploadedCount", uploadedCount);
+//                                    startActivity(i);
+//                                    finish();
 //                                }
-//                                @Override
-//                                public void onFailure(Call<LoginResponse> call, Throwable t) {
-//                                    uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
-//                                    if(userId.equals("0")){
-//                                        Intent i = new Intent(SplashScreen.this,SignInActivity.class);
-//                                        i.putExtra("uploadedCount",uploadedCount);
-//                                        startActivity(i);
-//                                        finish();
-//                                    }else {
-//                                        Intent i = new Intent(SplashScreen.this, Dashboard.class);
-//                                        i.putExtra("uploadedCount", uploadedCount);
-//                                        startActivity(i);
-//                                        finish();
-//                                    }
-//                                }
-//                            });
+                            }
+                        }else{
+                            Constants.dispalyDialogInternet(SplashScreen.this,"Upgrade Application","New update "+response.body().getResult()+" is available , Please update it from playstore",false,false);
+                        }
+                    } else {
+                        uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
+                        Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+                        i.putExtra("uploadedCount",uploadedCount);
+                        startActivity(i);
+                        finish();
+                    }
+                }
+                @Override
+                public void onFailure(Call<LoginResponse> call, Throwable t) {
+                    uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
+                    if(userId.equals("0")){
+                        Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+                        i.putExtra("uploadedCount",uploadedCount);
+                        startActivity(i);
+                        finish();
+                    }else {
+                        Intent i = new Intent(SplashScreen.this, Dashboard.class);
+                        i.putExtra("uploadedCount", uploadedCount);
+                        startActivity(i);
+                        finish();
+                    }
+                }
+            });
         }else{
             //Internet not available
             uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
@@ -183,14 +186,21 @@ public class SplashScreen extends AppCompatActivity {
                 URL url;
                 HttpURLConnection urlConnection = null;
                 try {
-                    url = new URL("http://ibin.plantplacepicture.com/plantplace/getUploadCount.php");
+                    String finalUrl = "http://plantplacepicture.com/plantplace/getUploadedCount.php?USERID="+userid;
+                    url = new URL(finalUrl);
                     urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setDoOutput(true);
-                    urlConnection.setRequestMethod("GET");
+                    urlConnection.setDoOutput(false);
+                    //urlConnection.setRequestMethod("GET");
+                    urlConnection.setRequestProperty("Accept","*/*");
                     urlConnection.setConnectTimeout(60000);
-                    urlConnection.setRequestProperty("USERID",userid );
+                    //urlConnection.setRequestProperty("USERID",userid );
                     urlConnection.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded");
-                    InputStream in = urlConnection.getInputStream();
+                    InputStream in =  null;
+                    int status = urlConnection.getResponseCode();
+                    if (status != HttpURLConnection.HTTP_OK)
+                        in = urlConnection.getErrorStream();
+                    else
+                        in = urlConnection.getInputStream();
                     InputStreamReader isw = new InputStreamReader(in);
                     int data = isw.read();
                     while (data != -1) {

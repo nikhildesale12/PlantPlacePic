@@ -39,8 +39,10 @@ public class Constants {
     public static final String IMAGE_NAME = "Upload_" ;
     public static final String FOLDER_PATH = Environment.getExternalStorageDirectory() + File.separator + "PLANTPLACE" ;
     //public static final String BASE_URL = "http://test.xamarin-tools.com";
-    public static final String BASE_URL = "http://ibin.plantplacepicture.com";
-    public static final String FILE_UPLOAD_URL = "http://ibin.plantplacepicture.com/plantplace/fileUpload.php";
+    //public static final String BASE_URL = "http://ibin.plantplacepicture.com";
+    public static final String BASE_URL =  "http://plantplacepicture.com";
+//    public static final String FILE_UPLOAD_URL = "http://ibin.plantplacepicture.com/plantplace/fileUpload.php";
+    public static final String FILE_UPLOAD_URL = "http://plantplacepicture.com/plantplace/fileUpload.php";
     public static final String LOGIN_SERVICE_URL = "/plantplace/loginService.php";
     public static final String REGISTER_SERVICE_URL = "/plantplace/signupService.php";
     public static final String UPLOAD_SERVICE_URL = "/plantplace/fileUpload.php";
@@ -54,7 +56,7 @@ public class Constants {
     public static final String GET_DETAIL_BY_SPECIES_NAME = "/plantplace/getSpeciesDataByName.php";
     public static final String GET_COUNT_SERVICE_URL = "/plantplace/getUploadCount.php";
     public static final String DELET_DATA_SERVICE_URL = "/plantplace/deleteData.php";
-    public static final String IMAGE_DOWNLOAD_PATH = "http://ibin.plantplacepicture.com/plantplace/UploadedImages/";
+    public static final String IMAGE_DOWNLOAD_PATH = "http://plantplacepicture.com/plantplace/UploadedImages/";
 //    public static final String IMAGE_DOWNLOAD_PATH_TAG_TREE = "http://test.xamarin-tools.com/UploadedTree/";
 //    public static final String IMAGE_DOWNLOAD_PATH_TAG_FRUIT = "http://test.xamarin-tools.com/UploadedFruit/";
 //    public static final String IMAGE_DOWNLOAD_PATH_TAG_LEAF = "http://test.xamarin-tools.com/UploadedLeaf/";

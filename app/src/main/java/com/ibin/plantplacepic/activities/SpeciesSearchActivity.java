@@ -51,7 +51,7 @@ public class SpeciesSearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent1=new Intent(SpeciesSearchActivity.this,Dashboard.class);
                 startActivity(intent1);
-                //finish();
+                finish();
             }
         });
     }

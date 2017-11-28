@@ -72,10 +72,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
     Button mapSpeciesSarch;
     AutoCompleteTextView ACTtEnterSpeciesName;
     public ArrayList<String> speciesList;
-    public ArrayList<Information> speciesList1;
-    Information info = new Information();
     DatabaseHelper databaseHelper;
-    ArrayAdapter<String> adapter;
     List<Information> mainDataList = null;
 
     private ClusterManager<SpeciesPoints> mClusterManager;
@@ -217,7 +214,6 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         super.onResume();
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -273,7 +269,12 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                     googleMap.setOnCameraIdleListener(mClusterManager);
                     googleMap.setOnMarkerClickListener(mClusterManager);
                     googleMap.setOnInfoWindowClickListener(mClusterManager);
+                    mClusterManager.setOnClusterClickListener(this);
+                    mClusterManager.setOnClusterInfoWindowClickListener(this);
+                    mClusterManager.setOnClusterItemClickListener(this);
+                    mClusterManager.setOnClusterItemInfoWindowClickListener(this);
                     addSpeciesPointsItems(mClusterManager,googleMap);
+
                     //mClusterManager.cluster();
 //            if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
 //                callServiceToGetSpeciesNames(googleMap);
@@ -304,7 +305,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
     @Override
     public boolean onClusterClick(Cluster<SpeciesPoints> cluster) {
         String firstName = cluster.getItems().iterator().next().species;
-        //Toast.makeText(this, cluster.getSize() + " (including " + firstName + ")", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, cluster.getSize() + " (including " + firstName + ")", Toast.LENGTH_SHORT).show();
         LatLngBounds.Builder builder = LatLngBounds.builder();
         for (ClusterItem item : cluster.getItems()) {
             builder.include(item.getPosition());
@@ -312,7 +313,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         final LatLngBounds bounds = builder.build();
 
         try {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -332,7 +333,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
 
     @Override
     public void onClusterItemInfoWindowClick(SpeciesPoints speciesPoints) {
-        //Toast.makeText(this, speciesPoints.getImageName() , Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, speciesPoints.getImageName() , Toast.LENGTH_SHORT).show();
         Intent i = new Intent(SpeciesAroundYouActivity.this,LargeZoomActivity.class);
         List<Information> dataList = new ArrayList<>();
         Information e = new Information();

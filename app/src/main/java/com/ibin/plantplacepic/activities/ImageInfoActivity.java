@@ -149,7 +149,7 @@ public class ImageInfoActivity extends AppCompatActivity {
         }
         if(uploadFrom.equals(Constants.UPLOAD_FROM_GALLERY)){
             cityEditText.setVisibility(View.VISIBLE);
-        }else if(uploadFrom.equals(Constants.UPLOAD_FROM_CAMERA) && latitude == 0 && longitude == 0){
+        }else if(uploadFrom.equals(Constants.UPLOAD_FROM_CAMERA) && (latitude == 0 || longitude == 0)){
             cityEditText.setVisibility(View.VISIBLE);
         }else{
             cityEditText.setVisibility(View.GONE);

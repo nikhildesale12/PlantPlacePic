@@ -86,11 +86,13 @@ public class UpdateInfoActivity extends AppCompatActivity {
     com.github.clans.fab.FloatingActionButton floatingActionButtonFruit;
     com.github.clans.fab.FloatingActionButton floatingActionButtonLeaf;
     com.github.clans.fab.FloatingActionButton floatingActionButtonTree;
+    DatabaseHelper databaseHelper ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_info);
         initViews();
+        databaseHelper = DatabaseHelper.getDatabaseInstance(UpdateInfoActivity.this);
         cityEditText.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.list_text_item));
         SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
         userId = prefs.getString("USERID", "0");
@@ -356,11 +358,11 @@ public class UpdateInfoActivity extends AppCompatActivity {
 
     private void UpdateImageServiceCall() {
         if(speciesEditText.getText().toString().length()>0) {
-            String TITLE = titleEditText.getText().toString();
-            String SPECIES = speciesEditText.getText().toString();
-            String REMARK = remarkEditText.getText().toString();
-            String IMAGE = updateBean.getImages();
-            String ADDRESS = cityEditText.getText().toString();
+            final String TITLE = titleEditText.getText().toString();
+            final String SPECIES = speciesEditText.getText().toString();
+            final String REMARK = remarkEditText.getText().toString();
+            final String IMAGE = updateBean.getImages();
+            final String ADDRESS = cityEditText.getText().toString();
         /*when tag is same no need to move image*/
             if (TAG.equals(updateBean.getTag())) {
                 serverFolderPath = "";
@@ -376,6 +378,8 @@ public class UpdateInfoActivity extends AppCompatActivity {
                     public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                         if (response != null && response.body() != null) {
                             if (response.body().getSuccess().toString().trim().equals("1")) {
+                                //update it in local db
+                                int updateResult = databaseHelper.updateInfoInLocal(userId, IMAGE, SPECIES, REMARK, TAG, TITLE, serverFolderPath, serverFolderPathFrom, ADDRESS);
                                 Toast.makeText(UpdateInfoActivity.this, "Data will update soon...", Toast.LENGTH_LONG).show();
                                 Intent intentdASH = new Intent(UpdateInfoActivity.this, Dashboard.class);
                                 startActivity(intentdASH);

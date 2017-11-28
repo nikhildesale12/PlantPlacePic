@@ -19,6 +19,7 @@ public class TermsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intentTerms = new Intent(TermsActivity.this,Dashboard.class);
+                intentTerms.putExtra("uploadedCount","BYSERVICE");
                 startActivity(intentTerms);
                 finish();
             }

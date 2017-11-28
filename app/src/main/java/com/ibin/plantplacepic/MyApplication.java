@@ -10,7 +10,7 @@ import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
 
 @ReportsCrashes(
-        formUri = "http://ibin.plantplacepicture.com/logs/acra.php",
+        formUri = "http://plantplacepicture.com/logs/acra.php",
         reportType = HttpSender.Type.FORM,
         httpMethod = HttpSender.Method.POST,
         customReportContent = {
@@ -27,6 +27,6 @@ public class MyApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-       // ACRA.init(this);
+        ACRA.init(this);
     }
 }
