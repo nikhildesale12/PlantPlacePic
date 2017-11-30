@@ -11,11 +11,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
@@ -23,6 +26,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -222,7 +226,7 @@ public class ImageInfoActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position != 0){
-                    speciesEditText.setText(parent.getItemAtPosition(position).toString());
+                    speciesEditText.setText(parent.getAdapter().getItem(position).toString());
                 }
             }
             @Override
@@ -265,9 +269,12 @@ public class ImageInfoActivity extends AppCompatActivity {
                             }
                             if(dataListSpeciesNames.size() > 1){
                                 layoutSpeciesSpinner.setVisibility(View.VISIBLE);
-                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ImageInfoActivity.this,
-                                        android.R.layout.simple_dropdown_item_1line, dataListSpeciesNames);
-                                speciesSpinner.setAdapter(arrayAdapter);
+                                SpinnerCustomAdapter adapter;
+                                //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ImageInfoActivity.this,
+                                //         android.R.layout.simple_list_item_1, dataListSpeciesNames);
+                                //speciesSpinner.setAdapter(arrayAdapter);
+                                adapter = new SpinnerCustomAdapter(ImageInfoActivity.this,dataListSpeciesNames);
+                                speciesSpinner.setAdapter(adapter);
                                 speciesNotLoaded.setVisibility(View.GONE);
                             }else{
                                 //layoutSpeciesSpinner.setVisibility(View.GONE);
@@ -285,7 +292,7 @@ public class ImageInfoActivity extends AppCompatActivity {
                             if(dataListSpeciesNames.size() > 1){
                                 layoutSpeciesSpinner.setVisibility(View.VISIBLE);
                                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ImageInfoActivity.this,
-                                        android.R.layout.simple_dropdown_item_1line, dataListSpeciesNames);
+                                        android.R.layout.simple_list_item_1, dataListSpeciesNames);
                                 speciesSpinner.setAdapter(arrayAdapter);
                                 speciesNotLoaded.setVisibility(View.GONE);
                             }else{
@@ -304,6 +311,42 @@ public class ImageInfoActivity extends AppCompatActivity {
                 speciesNotLoaded.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+
+
+    public class SpinnerCustomAdapter extends BaseAdapter {
+        Context context;
+        LayoutInflater inflter;
+        ArrayList<String> dataListSpeciesNames;
+
+        public SpinnerCustomAdapter(Context applicationContext,ArrayList<String> dataListSpeciesNames) {
+            this.context = applicationContext;
+            this.dataListSpeciesNames = dataListSpeciesNames;
+//            inflter = (LayoutInflater.from(applicationContext));
+            inflter = (LayoutInflater)applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public int getCount() {
+            return dataListSpeciesNames.size();
+        }
+
+        public Object getItem(int position) {
+            return dataListSpeciesNames.get(position);
+        }
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            convertView = inflter.inflate(R.layout.custom_spinner_items, null);
+            TextView names = (TextView) convertView.findViewById(R.id.textViewSpinnerItem);
+            names.setText(dataListSpeciesNames.get(position));
+            return convertView;
+        }
     }
 
     private void UploadImageServiceCall(){

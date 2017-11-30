@@ -100,7 +100,7 @@
                         <Spinner
                             android:id="@+id/spinnerSpeciesInfo"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/image_info_edittext_height"
+                            android:layout_height="40dp"
                             android:background="@drawable/edittextbg">
                         </Spinner>
 
@@ -140,7 +140,7 @@
                 android:layout_height="@dimen/image_info_edittext_height"
                 android:textSize="@dimen/image_info_text_font_size"
                 android:background="@drawable/edittextbg"
-                android:hint="Species *"
+                android:hint="Scientific name*"
                 android:layout_marginTop="3dp"
                 android:paddingLeft="10dp"
                 android:singleLine="true"

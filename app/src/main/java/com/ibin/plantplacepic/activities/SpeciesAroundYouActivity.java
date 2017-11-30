@@ -67,7 +67,7 @@ import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMapReadyCallback, ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints>{
+public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener,ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints>{
     private GoogleMap mMap;
     Button mapSpeciesSarch;
     AutoCompleteTextView ACTtEnterSpeciesName;
@@ -75,7 +75,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
     DatabaseHelper databaseHelper;
     List<Information> mainDataList = null;
 
-    private ClusterManager<SpeciesPoints> mClusterManager;
+//    private ClusterManager<SpeciesPoints> mClusterManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +99,8 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 if(mainDataList != null && mainDataList.size()>0){
                     double latitude = 0;
                     double longitude = 0;
-                    mClusterManager.clearItems();
+//                    mClusterManager.clearItems();
+                    mMap.clear();
                     for (int i=0;i< mainDataList.size();i++){
                         if(mainDataList.get(i).getSpecies().trim().equalsIgnoreCase(ACTtEnterSpeciesName.getText().toString().trim())){
                             if(mainDataList.get(i).getLat() != null && mainDataList.get(i).getLng() != null
@@ -108,12 +109,17 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                     && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")) {
                                 latitude = Double.parseDouble(mainDataList.get(i).getLat());
                                 longitude = Double.parseDouble(mainDataList.get(i).getLng());
-                                //googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(response.body().getInformation().get(i).getSpecies()));
-                                String address = "";
-                                if(mainDataList.get(i).getAddress().trim().contains(",null")){
-                                    address = mainDataList.get(i).getAddress().trim().replace(",null","");
-                                }
-                                mClusterManager.addItem(new SpeciesPoints(latitude, longitude,mainDataList.get(i).getSpecies() , address,mainDataList.get(i).getImages()));
+
+                                mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                        .snippet(mainDataList.get(i).getAddress())
+                                        .title(mainDataList.get(i).getSpecies()))
+                                        .setTag(mainDataList.get(i).getImages());
+                                mMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.this);
+//                                String address = "";
+//                                if(mainDataList.get(i).getAddress().trim().contains(",null")){
+//                                    address = mainDataList.get(i).getAddress().trim().replace(",null","");
+//                                }
+//                                mClusterManager.addItem(new SpeciesPoints(latitude, longitude,mainDataList.get(i).getSpecies() , address,mainDataList.get(i).getImages()));
                             }
                         }
                     }
@@ -121,7 +127,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
 
-                    mClusterManager.cluster();
+//                    mClusterManager.cluster();
 
                 }
             }
@@ -140,11 +146,12 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 startActivity(intent2);
             }
         });
+
     }
 
-    private void callServiceToGetSpeciesNames(final ClusterManager<SpeciesPoints> mClusterManager,final GoogleMap googleMap) {
+    private void callServiceToGetSpeciesNames(final GoogleMap googleMap) {
         final ProgressDialog dialog = new ProgressDialog(SpeciesAroundYouActivity.this);
-        dialog.setMessage("Please Wait...");
+        dialog.setMessage("Please Wait`...");
         dialog.setIndeterminate(false);
         dialog.setCancelable(false);
         dialog.show();
@@ -167,13 +174,18 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                         && !response.body().getInformation().get(i).getLat().equals("") && !response.body().getInformation().get(i).getLng().equals("")){
                                     double latitude = Double.parseDouble(response.body().getInformation().get(i).getLat());
                                     double longitude = Double.parseDouble(response.body().getInformation().get(i).getLng());
-                                    //googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(response.body().getInformation().get(i).getSpecies()));
-                                    String address = "";
+
+                                    googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                            .snippet(response.body().getInformation().get(i).getAddress())
+                                            .title(response.body().getInformation().get(i).getSpecies()))
+                                             .setTag(response.body().getInformation().get(i).getImages());
+                                    googleMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.this);
+                                    /*String address = "";
                                     if(response.body().getInformation().get(i).getAddress().trim().contains(",null")){
                                         address = response.body().getInformation().get(i).getAddress().trim().replace(",null","");
                                     }
                                     mClusterManager.addItem(new SpeciesPoints(latitude, longitude,response.body().getInformation().get(i).getSpecies() , address , response.body().getInformation().get(i).getImages()));
-
+*/
                                     if(!speciesList.contains(response.body().getInformation().get(i).getSpecies().trim())){
                                         if(response.body().getInformation().get(i).getSpecies().trim().length()>0){
                                             speciesList.add(response.body().getInformation().get(i).getSpecies().trim());
@@ -181,8 +193,8 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                     }
                                 }
                             }
-                            mClusterManager.cluster();
-                            new RenderClusterInfoWindow(SpeciesAroundYouActivity.this,googleMap,mClusterManager);
+//                            mClusterManager.cluster();
+//                            new RenderClusterInfoWindow(SpeciesAroundYouActivity.this,googleMap,mClusterManager);
                             ArrayAdapter<String> adapter = new ArrayAdapter<String>(SpeciesAroundYouActivity.this,android.R.layout.simple_list_item_1, speciesList);
                             ACTtEnterSpeciesName.setThreshold(1);
                             ACTtEnterSpeciesName.setAdapter(adapter);
@@ -200,6 +212,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 if (dialog != null && dialog.isShowing()) {
                     dialog.dismiss();
                 }
+                Toast.makeText(SpeciesAroundYouActivity.this,"Unable to load data,Please try again",Toast.LENGTH_LONG).show();
                 //Log.d("resp
 //                if (dialog != null && dialog.isShowing()) {
 //                    dialog.dismiss();
@@ -239,10 +252,10 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 // Get the name of the best provider
                 String provider = locationManager.getBestProvider(criteria, true);
                 // Get Current Location
-//        Location myLocation = locationManager.getLastKnownLocation(provider);
-//        double latitude = myLocation.getLatitude();
-//        double longitude = myLocation.getLongitude();
-//        LatLng latLng = new LatLng(latitude, longitude);
+    //        Location myLocation = locationManager.getLastKnownLocation(provider);
+    //        double latitude = myLocation.getLatitude();
+    //        double longitude = myLocation.getLongitude();
+    //        LatLng latLng = new LatLng(latitude, longitude);
 
                 GPSTracker gps = null;
                 LatLng latLng = null;
@@ -264,21 +277,21 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                     // Zoom in the Google Map
                     googleMap.animateCamera(CameraUpdateFactory.zoomTo(14));
 
-                    mClusterManager = new ClusterManager<>(this, googleMap);
+//                    mClusterManager = new ClusterManager<>(this, googleMap);
 
-                    googleMap.setOnCameraIdleListener(mClusterManager);
-                    googleMap.setOnMarkerClickListener(mClusterManager);
-                    googleMap.setOnInfoWindowClickListener(mClusterManager);
-                    mClusterManager.setOnClusterClickListener(this);
-                    mClusterManager.setOnClusterInfoWindowClickListener(this);
-                    mClusterManager.setOnClusterItemClickListener(this);
-                    mClusterManager.setOnClusterItemInfoWindowClickListener(this);
-                    addSpeciesPointsItems(mClusterManager,googleMap);
+//                    googleMap.setOnCameraIdleListener(mClusterManager);
+//                    googleMap.setOnMarkerClickListener(mClusterManager);
+//                    googleMap.setOnInfoWindowClickListener(mClusterManager);
+//                    mClusterManager.setOnClusterClickListener(this);
+//                    mClusterManager.setOnClusterInfoWindowClickListener(this);
+//                    mClusterManager.setOnClusterItemClickListener(this);
+//                    mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+//                    addSpeciesPointsItems(mClusterManager,googleMap);
 
                     //mClusterManager.cluster();
-//            if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
-//                callServiceToGetSpeciesNames(googleMap);
-//            }
+            if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
+                callServiceToGetSpeciesNames(googleMap);
+            }
                 }
 //        googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!"));
             }else {
@@ -287,11 +300,11 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         }
     }
 
-    private void addSpeciesPointsItems(ClusterManager<SpeciesPoints> mClusterManager,GoogleMap googleMap) {
+    /*private void addSpeciesPointsItems(ClusterManager<SpeciesPoints> mClusterManager,GoogleMap googleMap) {
         if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
-            callServiceToGetSpeciesNames(mClusterManager,googleMap);
+            callServiceToGetSpeciesNames(googleMap);
         }
-    }
+    }*/
 
 
 //    private void addPersonItems() {
@@ -304,7 +317,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
 
     @Override
     public boolean onClusterClick(Cluster<SpeciesPoints> cluster) {
-        String firstName = cluster.getItems().iterator().next().species;
+//        String firstName = cluster.getItems().iterator().next().species;
 //        Toast.makeText(this, cluster.getSize() + " (including " + firstName + ")", Toast.LENGTH_SHORT).show();
         LatLngBounds.Builder builder = LatLngBounds.builder();
         for (ClusterItem item : cluster.getItems()) {
@@ -338,6 +351,21 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         List<Information> dataList = new ArrayList<>();
         Information e = new Information();
         e.setImages(speciesPoints.getImageName());
+        dataList.add(e);
+        Bundle data = new Bundle();
+        data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);
+        data.putString("FromMap","FromMap");
+        i.putExtras(data);
+        startActivity(i);
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        //Toast.makeText(this, ""+marker.getTag() , Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(SpeciesAroundYouActivity.this,LargeZoomActivity.class);
+        List<Information> dataList = new ArrayList<>();
+        Information e = new Information();
+        e.setImages((String) marker.getTag());
         dataList.add(e);
         Bundle data = new Bundle();
         data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);

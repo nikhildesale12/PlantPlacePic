@@ -11,10 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
@@ -212,9 +215,11 @@ public class UpdateInfoActivity extends AppCompatActivity {
         if(SpeciesPhotoFragment.dataListSpeciesNames != null && SpeciesPhotoFragment.dataListSpeciesNames.size()>0)
         {
             layoutSpeciesSpinnerUpdate.setVisibility(View.VISIBLE);
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_dropdown_item_1line, SpeciesPhotoFragment.dataListSpeciesNames);
-            speciesSpinner.setAdapter(arrayAdapter);
+//            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+//                    android.R.layout.simple_dropdown_item_1line, SpeciesPhotoFragment.dataListSpeciesNames);
+//            speciesSpinner.setAdapter(arrayAdapter);
+            SpinnerCustomAdapter adapter = new SpinnerCustomAdapter(UpdateInfoActivity.this,SpeciesPhotoFragment.dataListSpeciesNames);
+            speciesSpinner.setAdapter(adapter);
             speciesNotLoadedUpdate.setVisibility(View.GONE);
         }else{
             //layoutSpeciesSpinnerUpdate.setVisibility(View.GONE);
@@ -225,7 +230,8 @@ public class UpdateInfoActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position != 0){
-                    speciesEditText.setText(parent.getItemAtPosition(position).toString());
+//                    speciesEditText.setText(parent.getItemAtPosition(position).toString());
+                    speciesEditText.setText(parent.getAdapter().getItem(position).toString());
                 }
             }
             @Override
@@ -536,5 +542,39 @@ public class UpdateInfoActivity extends AppCompatActivity {
         }
     }
     /*place coed end*/
+
+    public class SpinnerCustomAdapter extends BaseAdapter {
+        Context context;
+        LayoutInflater inflter;
+        ArrayList<String> dataListSpeciesNames;
+
+        public SpinnerCustomAdapter(Context applicationContext,ArrayList<String> dataListSpeciesNames) {
+            this.context = applicationContext;
+            this.dataListSpeciesNames = dataListSpeciesNames;
+//            inflter = (LayoutInflater.from(applicationContext));
+            inflter = (LayoutInflater)applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public int getCount() {
+            return dataListSpeciesNames.size();
+        }
+
+        public Object getItem(int position) {
+            return dataListSpeciesNames.get(position);
+        }
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            convertView = inflter.inflate(R.layout.custom_spinner_items, null);
+            TextView names = (TextView) convertView.findViewById(R.id.textViewSpinnerItem);
+            names.setText(dataListSpeciesNames.get(position));
+            return convertView;
+        }
+    }
 
 }

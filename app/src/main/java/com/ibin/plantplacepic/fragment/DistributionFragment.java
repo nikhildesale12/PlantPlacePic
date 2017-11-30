@@ -19,6 +19,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
@@ -31,14 +33,14 @@ import com.ibin.plantplacepic.bean.SpeciesPoints;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DistributionFragment extends Fragment implements OnMapReadyCallback,
+public class DistributionFragment extends Fragment implements OnMapReadyCallback,GoogleMap.OnInfoWindowClickListener,
         ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints> {
 
     private GoogleMap mMap;
     ArrayList<Information> mainDataList = null;
     String selectedSpecies = "";
     private static View view;
-    private ClusterManager<SpeciesPoints> mClusterManager;
+    //private ClusterManager<SpeciesPoints> mClusterManager;
 
     public DistributionFragment() {
         // Required empty public constructor
@@ -105,10 +107,10 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
         if(mainDataList != null && mainDataList.size()>0){
             double latitude = 0;
             double longitude = 0;
-            mClusterManager = new ClusterManager<>(getContext(), googleMap);
-            googleMap.setOnCameraIdleListener(mClusterManager);
-            googleMap.setOnMarkerClickListener(mClusterManager);
-            googleMap.setOnInfoWindowClickListener(mClusterManager);
+//            mClusterManager = new ClusterManager<>(getContext(), googleMap);
+//            googleMap.setOnCameraIdleListener(mClusterManager);
+//            googleMap.setOnMarkerClickListener(mClusterManager);
+//            googleMap.setOnInfoWindowClickListener(mClusterManager);
 
             for (int i=0;i< mainDataList.size();i++){
                 if(mainDataList.get(i).getSpecies().trim().equalsIgnoreCase(selectedSpecies)){
@@ -118,12 +120,17 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
                             && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")) {
                         latitude = Double.parseDouble(mainDataList.get(i).getLat());
                         longitude = Double.parseDouble(mainDataList.get(i).getLng());
-                        //googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(response.body().getInformation().get(i).getSpecies()));
-                        String address = "";
-                        if(mainDataList.get(i).getAddress().trim().contains(",null")){
-                            address = mainDataList.get(i).getAddress().trim().replace(",null","");
-                        }
-                        mClusterManager.addItem(new SpeciesPoints(latitude, longitude,mainDataList.get(i).getSpecies() , address ,mainDataList.get(i).getImages()));
+                        googleMap.addMarker(new MarkerOptions()
+                                .snippet(mainDataList.get(i).getAddress())
+                                .position(new LatLng(latitude, longitude))
+                                .title(mainDataList.get(i).getSpecies()))
+                                .setTag(mainDataList.get(i).getImages());
+                        googleMap.setOnInfoWindowClickListener(this);
+//                        String address = "";
+//                        if(mainDataList.get(i).getAddress().trim().contains(",null")){
+//                            address = mainDataList.get(i).getAddress().trim().replace(",null","");
+//                        }
+//                        mClusterManager.addItem(new SpeciesPoints(latitude, longitude,mainDataList.get(i).getSpecies() , address ,mainDataList.get(i).getImages()));
                     }
                 }
             }
@@ -131,7 +138,7 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
 
-            mClusterManager.cluster();
+//            mClusterManager.cluster();
 
         }
     }
@@ -172,6 +179,20 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
         List<Information> dataList = new ArrayList<>();
         Information e = new Information();
         e.setImages(speciesPoints.getImageName());
+        dataList.add(e);
+        Bundle data = new Bundle();
+        data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);
+        data.putString("FromMap","FromMap");
+        i.putExtras(data);
+        startActivity(i);
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Intent i = new Intent(getContext(),LargeZoomActivity.class);
+        List<Information> dataList = new ArrayList<>();
+        Information e = new Information();
+        e.setImages((String) marker.getTag());
         dataList.add(e);
         Bundle data = new Bundle();
         data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);
