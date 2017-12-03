@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.ibin.plantplacepic.R;
+import com.ibin.plantplacepic.utility.Constants;
 
 public class SpeciesSearchActivity extends AppCompatActivity {
 
@@ -50,6 +51,7 @@ public class SpeciesSearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent1=new Intent(SpeciesSearchActivity.this,Dashboard.class);
+                intent1.putExtra("uploadedCount", Constants.FROM_);
                 startActivity(intent1);
                 finish();
             }
@@ -87,6 +89,7 @@ public class SpeciesSearchActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intentdASH = new Intent(this, Dashboard.class);
+        intentdASH.putExtra("uploadedCount", Constants.FROM_);
         startActivity(intentdASH);
         finish();
     }

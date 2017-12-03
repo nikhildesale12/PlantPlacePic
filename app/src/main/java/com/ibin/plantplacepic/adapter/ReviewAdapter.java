@@ -120,22 +120,22 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         Information review = dataListSameSpecies.get(position);
-        if(review.getSpecies().length()>0){
+        if(review.getSpecies() != null && review.getSpecies().length()>0){
             holder.textSpecies.setText("SPECIES : "+review.getSpecies());
         }else{
             holder.textSpecies.setText("SPECIES : NA");
         }
-        if(review.getRemark().length()>0){
+        if(review.getRemark() != null && review.getRemark().length()>0){
             holder.textRemark.setText("REMARK : "+review.getRemark());
         }else{
             holder.textRemark.setText("REMARK : NA");
         }
-        if(review.getTitle().length()>0){
+        if(review.getTitle() != null && review.getTitle().length()>0){
             holder.textTitle.setText("TITLE : "+review.getTitle());
         }else{
             holder.textTitle.setText("TITLE : NA");
         }
-        if(review.getTag().length()>0){
+        if(review.getTag() != null && review.getTag().length()>0){
             holder.textTag.setText("TAG : "+review.getTag());
         }else{
             holder.textTag.setText("TAG : NA");

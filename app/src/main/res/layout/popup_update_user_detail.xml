@@ -110,7 +110,7 @@
             android:layout_width="0dp"
             android:layout_weight="0.5"
             android:layout_height="35dp"
-            android:text="Cancle"
+            android:text="Cancel"
             android:background="@color/colorPrimary"
             android:textColor="#FFFFFF"
             android:layout_marginRight="2dp"
