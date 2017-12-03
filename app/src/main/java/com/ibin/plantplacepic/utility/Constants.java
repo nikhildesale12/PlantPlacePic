@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Environment;
 import android.view.View;
 import android.view.Window;
@@ -41,7 +42,7 @@ public class Constants {
     //public static final String BASE_URL = "http://test.xamarin-tools.com";
     //public static final String BASE_URL = "http://ibin.plantplacepicture.com";
     public static final String BASE_URL =  "http://plantplacepicture.com";
-//    public static final String FILE_UPLOAD_URL = "http://ibin.plantplacepicture.com/plantplace/fileUpload.php";
+    //public static final String FILE_UPLOAD_URL = "http://ibin.plantplacepicture.com/plantplace/fileUpload.php";
     public static final String FILE_UPLOAD_URL = "http://plantplacepicture.com/plantplace/fileUpload.php";
     public static final String LOGIN_SERVICE_URL = "/plantplace/loginService.php";
     public static final String REGISTER_SERVICE_URL = "/plantplace/signupService.php";
@@ -58,6 +59,7 @@ public class Constants {
     public static final String DELET_DATA_SERVICE_URL = "/plantplace/deleteData.php";
     public static final String UPDATE_USER_DEATAIL_SERVICE_URL = "/plantplace/updateUserInfo.php";
     public static final String USER_PROFILE_SERVICE_URL = "/plantplace/getUserProfile.php";
+    public static final String CHECK_VERSION_SERVICE_URL = "/plantplace/appVersionCheck.php";
     public static final String IMAGE_DOWNLOAD_PATH = "http://plantplacepicture.com/plantplace/UploadedImages/";
 //    public static final String IMAGE_DOWNLOAD_PATH_TAG_TREE = "http://test.xamarin-tools.com/UploadedTree/";
 //    public static final String IMAGE_DOWNLOAD_PATH_TAG_FRUIT = "http://test.xamarin-tools.com/UploadedFruit/";
@@ -114,6 +116,12 @@ public class Constants {
                     ((Activity)context).finish();
                 }
                 else if("Upgrade Application".equals(title)){
+                    final String appPackageName = context.getPackageName(); // getPackageName() from Context or Activity object
+                    try {
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                    }
                     ((Activity)context).finish();
 //                    Intent i = new Intent(Intent.ACTION_SEND);
 //                    i.setType("text/plain");

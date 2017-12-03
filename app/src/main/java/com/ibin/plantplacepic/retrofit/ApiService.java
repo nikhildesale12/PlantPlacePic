@@ -126,4 +126,7 @@ public interface ApiService {
     Call<UserDetailResponseBean> getUserProfile(
             @Query("userId") String USERID
     );
+    @GET(Constants.CHECK_VERSION_SERVICE_URL)
+    Call<LoginResponse> getAppVersion(
+    );
 }
