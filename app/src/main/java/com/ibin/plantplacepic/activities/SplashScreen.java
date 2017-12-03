@@ -58,7 +58,7 @@ public class SplashScreen extends AppCompatActivity {
         Thread init = new Thread() {
             public void run() {
             try {
-                sleep(1000);
+                sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -69,6 +69,12 @@ public class SplashScreen extends AppCompatActivity {
         final SharedPreferences sharedPreferences = SplashScreen.this.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
         final boolean login = sharedPreferences.getBoolean(Constants.KEY_IS_LOGIN, false);
         final String userId = sharedPreferences.getString(Constants.KEY_USERID, "0");
+        if(userId.equals("0")){
+            Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+            i.putExtra("uploadedCount",uploadedCount);
+            startActivity(i);
+            finish();
+        }else
         if(Constants.isNetworkAvailable(SplashScreen.this)){
 //            SplashTask myAsyncTasks = new SplashTask();
 //            myAsyncTasks.execute(userId);

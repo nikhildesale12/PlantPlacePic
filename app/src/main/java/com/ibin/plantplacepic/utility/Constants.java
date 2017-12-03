@@ -56,6 +56,8 @@ public class Constants {
     public static final String GET_DETAIL_BY_SPECIES_NAME = "/plantplace/getSpeciesDataByName.php";
     public static final String GET_COUNT_SERVICE_URL = "/plantplace/getUploadCount.php";
     public static final String DELET_DATA_SERVICE_URL = "/plantplace/deleteData.php";
+    public static final String UPDATE_USER_DEATAIL_SERVICE_URL = "/plantplace/updateUserInfo.php";
+    public static final String USER_PROFILE_SERVICE_URL = "/plantplace/getUserProfile.php";
     public static final String IMAGE_DOWNLOAD_PATH = "http://plantplacepicture.com/plantplace/UploadedImages/";
 //    public static final String IMAGE_DOWNLOAD_PATH_TAG_TREE = "http://test.xamarin-tools.com/UploadedTree/";
 //    public static final String IMAGE_DOWNLOAD_PATH_TAG_FRUIT = "http://test.xamarin-tools.com/UploadedFruit/";
@@ -71,13 +73,20 @@ public class Constants {
 //    public static final String SERVER_FOLDER_PATH_FLOWER = "UploadedFlower";
     public static final String SERVER_FOLDER_PATH_ALL = "UploadedImages";
     public static final String MY_PREFS_LOGIN = "loginPref";
+    public static final String MY_PREFS_USER_INFO = "userInfo";
     public static final String MY_PREFS_SWIPE = "myPrefSwipe";
     public static final String KEY_IS_LOGIN =  "login";
     public static final String KEY_USERNAME = "USERNAME";
     public static final String KEY_USERID =  "USERID";
+    public static final String KEY_FIRSTNAME = "FIRSTNAME";
+    public static final String KEY_MIDDLENAME = "MIDDLENAME";
+    public static final String KEY_LASTNAME = "LASTNAME";
+    public static final String KEY_OCCUPATION = "OCCUPATION";
+    public static final String KEY_MOBILE = "MOBILE";
     public static final String KEY_PHOTO =  "personPhotoUrl";
     public static final String KEY_HINT_SWAP =  "swap";
     public static final String KEY_ONE_TIME_PAGE = "pages";
+    public static final String FROM_ = "BYSERVICE";
     public static int countSelectedPhotoFromGallery = 0;
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

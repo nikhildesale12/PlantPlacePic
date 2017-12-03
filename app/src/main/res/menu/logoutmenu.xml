@@ -4,6 +4,12 @@
           android:showAsAction="never"
           android:title="Feedback"
           tools:ignore="AppCompatResource"/>-->
+
+    <item android:id="@+id/action_profile"
+          android:showAsAction="never"
+          android:title="Profile"
+          tools:ignore="AppCompatResource"/>
+
     <item android:id="@+id/action_feedback"
           android:showAsAction="never"
           android:title="Feedback"

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/dialogHeadUserUpdate"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="5dp"
+        android:paddingTop="10dp"
+        android:text=" Update Profile"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
+
+    <EditText
+        android:id="@+id/editFirstNameUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_info_edittext_height"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbg"
+        android:hint="First name*"
+        android:paddingLeft="5dp"
+        android:layout_below="@+id/dialogHeadUserUpdate"
+        android:textSize="@dimen/image_info_text_font_size"
+        android:singleLine="true"/>
+
+    <EditText
+        android:id="@+id/editMiddleNameUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_info_edittext_height"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbg"
+        android:hint="Middle name"
+        android:paddingLeft="5dp"
+        android:layout_below="@+id/editFirstNameUpdate"
+        android:textSize="@dimen/image_info_text_font_size"
+        android:singleLine="true"/>
+
+    <EditText
+        android:id="@+id/editLastNameUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_info_edittext_height"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbg"
+        android:hint="Last name*"
+        android:paddingLeft="5dp"
+        android:layout_below="@+id/editMiddleNameUpdate"
+        android:textSize="@dimen/image_info_text_font_size"
+        android:singleLine="true"/>
+
+    <EditText
+        android:id="@+id/editOccupationUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_info_edittext_height"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbg"
+        android:hint="Occupation*"
+        android:paddingLeft="5dp"
+        android:layout_below="@+id/editLastNameUpdate"
+        android:textSize="@dimen/image_info_text_font_size"
+        android:singleLine="true"/>
+
+    <EditText
+        android:id="@+id/editMobileUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_info_edittext_height"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbg"
+        android:hint="Mobile"
+        android:paddingLeft="5dp"
+        android:maxLength="10"
+        android:layout_below="@+id/editOccupationUpdate"
+        android:textSize="@dimen/image_info_text_font_size"
+        android:inputType="number"
+        android:singleLine="true"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1Update"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editMobileUpdate"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp" >
+
+        <Button
+            android:id="@+id/cancle_user_profile"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="35dp"
+            android:text="Cancle"
+            android:background="@color/colorPrimary"
+            android:textColor="#FFFFFF"
+            android:layout_marginRight="2dp"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+       <Button
+            android:id="@+id/submitUserInfoUpdate"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="35dp"
+            android:text="Submit"
+            android:layout_marginLeft="2dp"
+            android:background="@color/colorPrimary"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout1Update"
+        android:layout_centerInParent="true"/>
+</RelativeLayout>

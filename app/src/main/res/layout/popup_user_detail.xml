@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/dialogHeadUser"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="5dp"
+        android:paddingTop="10dp"
+        android:text=" One more step"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
+
+    <EditText
+        android:id="@+id/editFirstName"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_info_edittext_height"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbg"
+        android:hint="First name*"
+        android:paddingLeft="5dp"
+        android:layout_below="@+id/dialogHeadUser"
+        android:textSize="@dimen/image_info_text_font_size"
+        android:singleLine="true"/>
+
+    <EditText
+        android:id="@+id/editMiddleName"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_info_edittext_height"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbg"
+        android:hint="Middle name"
+        android:paddingLeft="5dp"
+        android:layout_below="@+id/editFirstName"
+        android:textSize="@dimen/image_info_text_font_size"
+        android:singleLine="true"/>
+
+    <EditText
+        android:id="@+id/editLastName"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_info_edittext_height"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbg"
+        android:hint="Last name*"
+        android:paddingLeft="5dp"
+        android:layout_below="@+id/editMiddleName"
+        android:textSize="@dimen/image_info_text_font_size"
+        android:singleLine="true"/>
+
+    <EditText
+        android:id="@+id/editOccupation"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_info_edittext_height"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbg"
+        android:hint="Occupation*"
+        android:paddingLeft="5dp"
+        android:layout_below="@+id/editLastName"
+        android:textSize="@dimen/image_info_text_font_size"
+        android:singleLine="true"/>
+
+    <EditText
+        android:id="@+id/editMobile"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/image_info_edittext_height"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbg"
+        android:hint="Mobile"
+        android:paddingLeft="5dp"
+        android:maxLength="10"
+        android:layout_below="@+id/editOccupation"
+        android:textSize="@dimen/image_info_text_font_size"
+        android:inputType="number"
+        android:singleLine="true"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editMobile"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp" >
+
+       <Button
+            android:id="@+id/submitUserInfo"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:text="Submit"
+            android:background="@color/colorPrimary"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout1"
+        android:layout_centerInParent="true"/>
+</RelativeLayout>

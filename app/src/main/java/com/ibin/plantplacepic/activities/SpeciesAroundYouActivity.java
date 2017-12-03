@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -74,6 +75,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
     public ArrayList<String> speciesList;
     DatabaseHelper databaseHelper;
     List<Information> mainDataList = null;
+    //String userName = "";
 
 //    private ClusterManager<SpeciesPoints> mClusterManager;
     @Override
@@ -81,6 +83,10 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_species_around_you);
 
+        /*SharedPreferences prefs1 = getSharedPreferences(Constants.MY_PREFS_USER_INFO, MODE_PRIVATE);
+        userName  = prefs1.getString(Constants.KEY_FIRSTNAME, "") + " "
+                +prefs1.getString(Constants.KEY_MIDDLENAME, "")  + " "
+                + prefs1.getString(Constants.KEY_LASTNAME, "");*/
 
         ACTtEnterSpeciesName=(AutoCompleteTextView)findViewById(R.id.autoCompletSpeciesSearch);
         speciesList = new ArrayList<>();
@@ -109,11 +115,21 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                     && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")) {
                                 latitude = Double.parseDouble(mainDataList.get(i).getLat());
                                 longitude = Double.parseDouble(mainDataList.get(i).getLng());
+                                if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
+                                    mainDataList.get(i).getAddress().trim().replace(",,","");
+                                }
+                                if(mainDataList.get(i).getUserName() != null && mainDataList.get(i).getUserName().trim().length()>0){
+                                    mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                            .snippet(mainDataList.get(i).getAddress())
+                                            .title(mainDataList.get(i).getSpecies()+"("+mainDataList.get(i).getUserName().trim()+")"))
+                                            .setTag(mainDataList.get(i).getImages());
+                                }else{
+                                    mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                            .snippet(mainDataList.get(i).getAddress())
+                                            .title(mainDataList.get(i).getSpecies()))
+                                            .setTag(mainDataList.get(i).getImages());
+                                }
 
-                                mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                                        .snippet(mainDataList.get(i).getAddress())
-                                        .title(mainDataList.get(i).getSpecies()))
-                                        .setTag(mainDataList.get(i).getImages());
                                 mMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.this);
 //                                String address = "";
 //                                if(mainDataList.get(i).getAddress().trim().contains(",null")){
@@ -174,11 +190,21 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                         && !response.body().getInformation().get(i).getLat().equals("") && !response.body().getInformation().get(i).getLng().equals("")){
                                     double latitude = Double.parseDouble(response.body().getInformation().get(i).getLat());
                                     double longitude = Double.parseDouble(response.body().getInformation().get(i).getLng());
+                                    if(response.body().getInformation().get(i).getAddress() != null && response.body().getInformation().get(i).getAddress().trim().contains(",,")){
+                                        response.body().getInformation().get(i).getAddress().trim().replace(",,","");
+                                    }
+                                    if(response.body().getInformation().get(i).getUserName() != null && response.body().getInformation().get(i).getUserName().trim().length()>0){
+                                        googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                                .snippet(response.body().getInformation().get(i).getAddress())
+                                                .title(response.body().getInformation().get(i).getSpecies()+"("+response.body().getInformation().get(i).getUserName().trim()+")"))
+                                                .setTag(response.body().getInformation().get(i).getImages());
+                                    }else{
+                                        googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                                .snippet(response.body().getInformation().get(i).getAddress())
+                                                .title(response.body().getInformation().get(i).getSpecies()))
+                                                .setTag(response.body().getInformation().get(i).getImages());
+                                    }
 
-                                    googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                                            .snippet(response.body().getInformation().get(i).getAddress())
-                                            .title(response.body().getInformation().get(i).getSpecies()))
-                                             .setTag(response.body().getInformation().get(i).getImages());
                                     googleMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.this);
                                     /*String address = "";
                                     if(response.body().getInformation().get(i).getAddress().trim().contains(",null")){

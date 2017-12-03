@@ -2,6 +2,7 @@ package com.ibin.plantplacepic.fragment;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -29,9 +30,12 @@ import com.ibin.plantplacepic.activities.LargeZoomActivity;
 import com.ibin.plantplacepic.activities.SpeciesAroundYouActivity;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.SpeciesPoints;
+import com.ibin.plantplacepic.utility.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class DistributionFragment extends Fragment implements OnMapReadyCallback,GoogleMap.OnInfoWindowClickListener,
         ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints> {
@@ -40,6 +44,7 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
     ArrayList<Information> mainDataList = null;
     String selectedSpecies = "";
     private static View view;
+    //private String userName = "";
     //private ClusterManager<SpeciesPoints> mClusterManager;
 
     public DistributionFragment() {
@@ -64,7 +69,10 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
         } catch (InflateException e) {
             e.printStackTrace();
         }
-
+        SharedPreferences prefs1 = getContext().getSharedPreferences(Constants.MY_PREFS_USER_INFO, MODE_PRIVATE);
+        /*userName  = prefs1.getString(Constants.KEY_FIRSTNAME, "") + " "
+                +prefs1.getString(Constants.KEY_MIDDLENAME, "")  + " "
+                + prefs1.getString(Constants.KEY_LASTNAME, "");*/
         mainDataList = new ArrayList<>();
         if (getArguments() != null) {
             mainDataList = getArguments().getParcelableArrayList("mainDataList");
@@ -120,11 +128,23 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
                             && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")) {
                         latitude = Double.parseDouble(mainDataList.get(i).getLat());
                         longitude = Double.parseDouble(mainDataList.get(i).getLng());
-                        googleMap.addMarker(new MarkerOptions()
-                                .snippet(mainDataList.get(i).getAddress())
-                                .position(new LatLng(latitude, longitude))
-                                .title(mainDataList.get(i).getSpecies()))
-                                .setTag(mainDataList.get(i).getImages());
+                        if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
+                            mainDataList.get(i).getAddress().trim().replace(",,","");
+                        }
+                        if(mainDataList.get(i).getUserName() != null && mainDataList.get(i).getUserName().trim().length() >0){
+                            googleMap.addMarker(new MarkerOptions()
+                                    .snippet(mainDataList.get(i).getAddress())
+                                    .position(new LatLng(latitude, longitude))
+                                    .title(mainDataList.get(i).getSpecies()+"("+mainDataList.get(i).getUserName().trim()+")"))
+                                    .setTag(mainDataList.get(i).getImages());
+                        }else{
+                            googleMap.addMarker(new MarkerOptions()
+                                    .snippet(mainDataList.get(i).getAddress())
+                                    .position(new LatLng(latitude, longitude))
+                                    .title(mainDataList.get(i).getSpecies()))
+                                    .setTag(mainDataList.get(i).getImages());
+                        }
+
                         googleMap.setOnInfoWindowClickListener(this);
 //                        String address = "";
 //                        if(mainDataList.get(i).getAddress().trim().contains(",null")){

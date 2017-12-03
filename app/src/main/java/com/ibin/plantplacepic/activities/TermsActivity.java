@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.ibin.plantplacepic.R;
+import com.ibin.plantplacepic.utility.Constants;
 
 public class TermsActivity extends AppCompatActivity {
     Button buttonAcceptsTerms;
@@ -19,7 +20,7 @@ public class TermsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intentTerms = new Intent(TermsActivity.this,Dashboard.class);
-                intentTerms.putExtra("uploadedCount","BYSERVICE");
+                intentTerms.putExtra("uploadedCount", Constants.FROM_);
                 startActivity(intentTerms);
                 finish();
             }

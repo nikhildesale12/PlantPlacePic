@@ -1,5 +1,7 @@
 package com.ibin.plantplacepic.activities;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,12 +11,14 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
+import com.ibin.plantplacepic.bean.UserDetailResponseBean;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
 
@@ -118,9 +122,8 @@ public class SignUpActivity extends AppCompatActivity {
                         editor1.putBoolean(Constants.KEY_IS_LOGIN,false);
                         editor1.commit();
 
-                        Intent intent = new Intent(SignUpActivity.this, AboutActivity.class);
-                        startActivity(intent);
-                        finish();
+                        getUserDetailPopup(response.body().getUserId());
+
                     } else if (response.body().getSuccess().toString().trim().equals("0")) {
                         if (dialog != null && dialog.isShowing()) {
                             dialog.dismiss();
@@ -150,8 +153,95 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    private void dispalyToast(String result) {
-        Toast.makeText(this,result,Toast.LENGTH_SHORT).show();
+    private void getUserDetailPopup(final String userId){
+        final Dialog userDetailPopup = new Dialog(SignUpActivity.this);
+        userDetailPopup.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        userDetailPopup.setContentView(R.layout.popup_user_detail);
+        userDetailPopup.setCanceledOnTouchOutside(false);
+        final EditText editFirstName = (EditText) userDetailPopup.findViewById(R.id.editFirstName);
+        final EditText editMiddleName = (EditText) userDetailPopup.findViewById(R.id.editMiddleName);
+        final EditText editLastName = (EditText) userDetailPopup.findViewById(R.id.editLastName);
+        final EditText editOccupation = (EditText) userDetailPopup.findViewById(R.id.editOccupation);
+        final EditText editMobile = (EditText) userDetailPopup.findViewById(R.id.editMobile);
+        Button submitBtton = (Button) userDetailPopup.findViewById(R.id.submitUserInfo);
+        submitBtton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(editFirstName.getText().toString().length() == 0 ){
+                    editFirstName.requestFocus();
+                    editFirstName.setError("Please Enter First Name");
+                }else if(editLastName.getText().toString().length() == 0 ){
+                    editLastName.requestFocus();
+                    editLastName.setError("Please Enter Last Name");
+                }else if(editOccupation.getText().toString().length() == 0 ){
+                    editOccupation.requestFocus();
+                    editOccupation.setError("Please Enter Occupation");
+                }else{
+                    userDetailPopup.dismiss();
+                    updateUserInformation(userId,editFirstName.getText().toString(),editMiddleName.getText().toString(),editLastName.getText().toString(),
+                            editOccupation.getText().toString(),editMobile.getText().toString());
+                }
+            }
+        });
+        userDetailPopup.show();
+    }
+
+    private void updateUserInformation(String userId,String firstName,String middleName,String LastName, String occupation,String mobileNum){
+        //update Info
+        dialog = new ProgressDialog(SignUpActivity.this);
+        dialog.setMessage("Please Wait...");
+        dialog.setIndeterminate(false);
+        dialog.setCancelable(false);
+        dialog.show();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        ApiService service = retrofit.create(ApiService.class);
+        Call<UserDetailResponseBean> call = service.updateUserDetail(userId,firstName, middleName,LastName,occupation,mobileNum);
+        call.enqueue(new Callback<UserDetailResponseBean>() {
+            @Override
+            public void onResponse(Call<UserDetailResponseBean> call, Response<UserDetailResponseBean> response) {
+                if (response != null && response.body() != null) {
+                    if (dialog != null && dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                    if (response.body().getSuccess().toString().trim().equals("1")) {
+                        SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_USER_INFO, MODE_PRIVATE).edit();
+                        editor1.putString(Constants.KEY_FIRSTNAME, response.body().getFirstName());
+                        editor1.putString(Constants.KEY_MIDDLENAME, response.body().getMiddleName());
+                        editor1.putString(Constants.KEY_LASTNAME, response.body().getLastName());
+                        editor1.putString(Constants.KEY_OCCUPATION, response.body().getOccupation());
+                        editor1.putString(Constants.KEY_MOBILE, response.body().getMobile());
+                        editor1.commit();
+                        Intent intent = new Intent(SignUpActivity.this, AboutActivity.class);
+                        startActivity(intent);
+                        finish();
+
+                    } else if (response.body().getSuccess().toString().trim().equals("0")) {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        Constants.dispalyDialogInternet(SignUpActivity.this,"Result",response.body().getResult(),true,false);
+                    } else {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        Constants.dispalyDialogInternet(SignUpActivity.this,"Error","Technical Error !!!",false,false);
+                    }
+                }else{
+                    if (dialog != null && dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                    Constants.dispalyDialogInternet(SignUpActivity.this,"Error","Technical Error !!!",false,false);
+                }
+            }
+            @Override
+            public void onFailure(Call<UserDetailResponseBean> call, Throwable t) {
+                //Log.d("resp
+                if (dialog != null && dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+                Constants.dispalyDialogInternet(SignUpActivity.this,"Result",t.toString(),false,false);
+            }
+        });
     }
 
     private void initViews() {

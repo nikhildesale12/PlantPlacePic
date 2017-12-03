@@ -14,6 +14,9 @@ public class Information implements Parcelable {
     @SerializedName("user_id")
     @Expose
     private String userId;
+    @SerializedName("userName")
+    @Expose
+    private String userName;
     @SerializedName("images")
     @Expose
     private String images;
@@ -166,6 +169,14 @@ public class Information implements Parcelable {
         this.uploadFrom = uploadFrom;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -174,6 +185,7 @@ public class Information implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(userId);
+        dest.writeString(userName);
         dest.writeString(images);
         dest.writeString(species);
         dest.writeString(remark);
@@ -193,6 +205,7 @@ public class Information implements Parcelable {
     }
     public Information(Parcel in) {
         userId = in.readString();
+        userName = in.readString();
         images = in.readString();
         species = in.readString();
         remark = in.readString();

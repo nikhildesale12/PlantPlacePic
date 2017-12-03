@@ -201,7 +201,7 @@
                 <Button
                     android:id="@+id/buttonUpload"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/button_height"
+                    android:layout_height="@dimen/image_info_edittext_height"
                     android:layout_marginRight="5dp"
                     android:layout_weight="0.40"
                     android:textSize="@dimen/image_info_text_font_size"
@@ -216,6 +216,7 @@
                     android:layout_marginRight="5dp"
                     android:layout_weight="0.40"
                     android:textSize="@dimen/image_info_text_font_size"
+                    android:visibility="gone"
                     android:background="@drawable/button_selector"
                     android:text="Save Later"/>
 

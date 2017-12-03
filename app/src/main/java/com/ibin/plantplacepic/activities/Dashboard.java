@@ -1,6 +1,8 @@
 package com.ibin.plantplacepic.activities;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +31,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +49,7 @@ import com.ibin.plantplacepic.BuildConfig;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.SubmitRequest;
+import com.ibin.plantplacepic.bean.UserDetailResponseBean;
 import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.services.ImageUploadService;
@@ -80,6 +86,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     private File mFileTemp;
     private String userName ;
     private String userId ;
+    private String emailId = "";
     private String personPhotoUrl;
     double latitude =0;
     double longitude =0;
@@ -103,21 +110,25 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             topToolBar = (Toolbar)findViewById(R.id.toolbarDashboard);
 
             SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
-            userName  = prefs.getString(Constants.KEY_USERNAME, "Guest");
+            emailId  = prefs.getString(Constants.KEY_USERNAME, "Guest");
             userId = prefs.getString(Constants.KEY_USERID, "0");
             personPhotoUrl = prefs.getString(Constants.KEY_PHOTO, "");
 
+            SharedPreferences prefs1 = getSharedPreferences(Constants.MY_PREFS_USER_INFO, MODE_PRIVATE);
+            userName  = prefs1.getString(Constants.KEY_FIRSTNAME, "") + " "
+                        +prefs1.getString(Constants.KEY_MIDDLENAME, "")  + " "
+                        + prefs1.getString(Constants.KEY_LASTNAME, "");
+
+            textUploadCount.setVisibility(View.VISIBLE);
+            textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
             if(getIntent() != null && getIntent().getStringExtra("uploadedCount") != null){
                 textUploadCount.setVisibility(View.VISIBLE);
                  uploadedCount =  getIntent().getStringExtra("uploadedCount");
-                 if(uploadedCount.equals("BYSERVICE")){
+                 if(uploadedCount.equals(Constants.FROM_)){
                      getUploadedCount(userId);
                  }else {
                      textUploadCount.setText(uploadedCount);
                  }
-            }else{
-                textUploadCount.setVisibility(View.VISIBLE);
-                textUploadCount.setText(""+databaseHelper.getTotalUploadedData(userId));
             }
 
             Target target = new Target() {
@@ -157,7 +168,11 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
 
            // textUserName.setText("Welcome "+userName+" !");
             setSupportActionBar(topToolBar);
-            getSupportActionBar().setTitle(userName);
+            if(userName.length()>0){
+                getSupportActionBar().setTitle(userName);
+            }else{
+                getSupportActionBar().setTitle(prefs.getString(Constants.KEY_USERNAME, "Guest"));
+            }
             topToolBar.setNavigationIcon(R.mipmap.userpic);
 
             buttonGallery.setOnClickListener(new View.OnClickListener() {
@@ -344,8 +359,163 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             intent.putExtra("from","dashboard");
             startActivity(intent);
         }
+        if (id == R.id.action_profile) {
+            //getProfileInfo and upate
+           getProfileInfo();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void getProfileInfo() {
+        final ProgressDialog dialog = new ProgressDialog(Dashboard.this);
+        dialog.setMessage("Please Wait...");
+        dialog.setIndeterminate(false);
+        dialog.setCancelable(false);
+        dialog.show();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        ApiService service = retrofit.create(ApiService.class);
+        Call<UserDetailResponseBean> call = service.getUserProfile(userId);
+        call.enqueue(new Callback<UserDetailResponseBean>() {
+            @Override
+            public void onResponse(Call<UserDetailResponseBean> call, Response<UserDetailResponseBean> response) {
+                if (response != null && response.body() != null) {
+                    if (dialog != null && dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                    if (response.body().getSuccess().toString().trim().equals("1")) {
+                        openProfilePopUp(response);
+                    } else if (response.body().getSuccess().toString().trim().equals("0")) {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        Constants.dispalyDialogInternet(Dashboard.this,"Result",response.body().getResult(),true,false);
+                    } else {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        Constants.dispalyDialogInternet(Dashboard.this,"Error","Technical Error !!!",false,false);
+                    }
+                }else{
+                    if (dialog != null && dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                    Constants.dispalyDialogInternet(Dashboard.this,"Error","Technical Error !!!",false,false);
+                }
+            }
+            @Override
+            public void onFailure(Call<UserDetailResponseBean> call, Throwable t) {
+                //Log.d("resp
+                if (dialog != null && dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+                Constants.dispalyDialogInternet(Dashboard.this,"Result",t.toString(),false,false);
+            }
+        });
+    }
+
+    private void openProfilePopUp(Response<UserDetailResponseBean> response) {
+        {
+            final Dialog userDetailPopup = new Dialog(Dashboard.this);
+            userDetailPopup.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            userDetailPopup.setContentView(R.layout.popup_update_user_detail);
+            userDetailPopup.setCanceledOnTouchOutside(false);
+            final EditText editFirstName = (EditText) userDetailPopup.findViewById(R.id.editFirstNameUpdate);
+            final EditText editMiddleName = (EditText) userDetailPopup.findViewById(R.id.editMiddleNameUpdate);
+            final EditText editLastName = (EditText) userDetailPopup.findViewById(R.id.editLastNameUpdate);
+            final EditText editOccupation = (EditText) userDetailPopup.findViewById(R.id.editOccupationUpdate);
+            final EditText editMobile = (EditText) userDetailPopup.findViewById(R.id.editMobileUpdate);
+            editFirstName.setText(response.body().getFirstName());
+            editMiddleName.setText(response.body().getMiddleName());
+            editLastName.setText(response.body().getLastName());
+            editOccupation.setText(response.body().getOccupation());
+            editMobile.setText(response.body().getMobile());
+            Button submitBtton = (Button) userDetailPopup.findViewById(R.id.submitUserInfoUpdate);
+            submitBtton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(editFirstName.getText().toString().length() == 0 ){
+                        editFirstName.requestFocus();
+                        editFirstName.setError("Please Enter First Name");
+                    }else if(editLastName.getText().toString().length() == 0 ){
+                        editLastName.requestFocus();
+                        editLastName.setError("Please Enter Last Name");
+                    }else if(editOccupation.getText().toString().length() == 0 ){
+                        editOccupation.requestFocus();
+                        editOccupation.setError("Please Enter Occupation");
+                    }else{
+                        userDetailPopup.dismiss();
+                        updateUserInformation(userId,editFirstName.getText().toString(),editMiddleName.getText().toString(),editLastName.getText().toString(),
+                                editOccupation.getText().toString(),editMobile.getText().toString());
+                    }
+                }
+            });
+            Button cancleButton = (Button) userDetailPopup.findViewById(R.id.cancle_user_profile);
+            cancleButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    userDetailPopup.dismiss();
+                }
+            });
+            userDetailPopup.show();
+        }
+    }
+
+
+    private void updateUserInformation(String userId,String firstName,String middleName,String LastName, String occupation,String mobileNum){
+        //update Info
+        final ProgressDialog dialog = new ProgressDialog(Dashboard.this);
+        dialog.setMessage("Please Wait...");
+        dialog.setIndeterminate(false);
+        dialog.setCancelable(false);
+        dialog.show();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        ApiService service = retrofit.create(ApiService.class);
+        Call<UserDetailResponseBean> call = service.updateUserDetail(userId,firstName, middleName,LastName,occupation,mobileNum);
+        call.enqueue(new Callback<UserDetailResponseBean>() {
+            @Override
+            public void onResponse(Call<UserDetailResponseBean> call, Response<UserDetailResponseBean> response) {
+                if (response != null && response.body() != null) {
+                    if (dialog != null && dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                    if (response.body().getSuccess().toString().trim().equals("1")) {
+                        SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_USER_INFO, MODE_PRIVATE).edit();
+                        editor1.putString(Constants.KEY_FIRSTNAME, response.body().getFirstName());
+                        editor1.putString(Constants.KEY_MIDDLENAME, response.body().getMiddleName());
+                        editor1.putString(Constants.KEY_LASTNAME, response.body().getLastName());
+                        editor1.putString(Constants.KEY_OCCUPATION, response.body().getOccupation());
+                        editor1.putString(Constants.KEY_MOBILE, response.body().getMobile());
+                        editor1.commit();
+                        Toast.makeText(Dashboard.this,"Updated Success",Toast.LENGTH_SHORT).show();
+
+                    } else if (response.body().getSuccess().toString().trim().equals("0")) {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        Constants.dispalyDialogInternet(Dashboard.this,"Result",response.body().getResult(),true,false);
+                    } else {
+                        if (dialog != null && dialog.isShowing()) {
+                            dialog.dismiss();
+                        }
+                        Constants.dispalyDialogInternet(Dashboard.this,"Error","Technical Error !!!",false,false);
+                    }
+                }else{
+                    if (dialog != null && dialog.isShowing()) {
+                        dialog.dismiss();
+                    }
+                    Constants.dispalyDialogInternet(Dashboard.this,"Error","Technical Error !!!",false,false);
+                }
+            }
+            @Override
+            public void onFailure(Call<UserDetailResponseBean> call, Throwable t) {
+                //Log.d("resp
+                if (dialog != null && dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+                Constants.dispalyDialogInternet(Dashboard.this,"Result",t.toString(),false,false);
+            }
+        });
     }
 
     private void getUploadedCount(final String userId) {

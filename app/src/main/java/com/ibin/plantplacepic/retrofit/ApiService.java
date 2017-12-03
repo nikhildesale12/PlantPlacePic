@@ -3,6 +3,7 @@ package com.ibin.plantplacepic.retrofit;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.UploadResponse;
+import com.ibin.plantplacepic.bean.UserDetailResponseBean;
 import com.ibin.plantplacepic.utility.Constants;
 
 import okhttp3.MultipartBody;
@@ -110,5 +111,19 @@ public interface ApiService {
             @Query("IMAGENAME") String IMAGENAME,
             @Query("FROMSPECIES") String FROMSPECIES,
             @Query("TOSPECIES") String TOSPECIES
+    );
+
+    @GET(Constants.UPDATE_USER_DEATAIL_SERVICE_URL)
+    Call<UserDetailResponseBean> updateUserDetail(
+            @Query("userId") String userId,
+            @Query("firstName") String firstName,
+            @Query("middleName") String middleName,
+            @Query("LastName") String LastName,
+            @Query("occupation") String occupation,
+            @Query("mobileNum") String mobileNum
+    );
+    @GET(Constants.USER_PROFILE_SERVICE_URL)
+    Call<UserDetailResponseBean> getUserProfile(
+            @Query("userId") String USERID
     );
 }
