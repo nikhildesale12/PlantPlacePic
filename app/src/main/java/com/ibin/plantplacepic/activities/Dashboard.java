@@ -402,11 +402,17 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         }
 
         if (id == R.id.action_help) {
-            Intent intent = new Intent(Dashboard.this, HelpActivity.class);
-            intent.putExtra("from","dashboard");
-            startActivity(intent);
+//            Intent intent = new Intent(Dashboard.this, HelpActivity.class);
+//            intent.putExtra("from","dashboard");
+//            startActivity(intent);
+            File file = new File(Constants.FOLDER_PATH + File.separator + "PlantPlacePicture.pdf");
+            if (file != null && file.exists()) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+            }
         }
-
 
 
         if (id == R.id.action_profile) {
