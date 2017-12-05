@@ -1,15 +1,47 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context="com.ibin.plantplacepic.fragment.DistributionFragment">
+
+
 
     <fragment
         android:id="@+id/mapDistrubution"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.sing.mapexample.MapsActivity"
-        android:layout_below="@+id/linearLayout"/>
+        tools:context="com.sing.mapexample.MapsActivity"/>
 
-</FrameLayout>
+    <RadioGroup
+        android:id="@+id/rg_views"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#80FFFFFF"
+        android:paddingRight="5dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:textStyle="bold"
+            android:text="@string/str_rb_normal"/>
+
+        <RadioButton
+            android:id="@+id/rb_satellite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/str_rb_satellite"/>
+
+      <!--  <RadioButton
+            android:id="@+id/rb_terrain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/str_rb_terrain"/>-->
+
+    </RadioGroup>
+
+</RelativeLayout>

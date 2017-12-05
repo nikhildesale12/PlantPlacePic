@@ -25,6 +25,11 @@
           android:title="About"
           tools:ignore="AppCompatResource"/>
 
+    <item android:id="@+id/action_help"
+          android:showAsAction="never"
+          android:title="Help"
+          tools:ignore="AppCompatResource"/>
+
     <item android:id="@+id/action_logout"
           android:showAsAction="never"
           android:title="Logout"

@@ -9,7 +9,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
@@ -46,6 +48,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibin.plantplacepic.BuildConfig;
+import com.ibin.plantplacepic.HelpActivity;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.SubmitRequest;
@@ -58,6 +61,9 @@ import com.ibin.plantplacepic.utility.GPSTracker;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -131,39 +137,74 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                  }
             }
 
-            Target target = new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    Log.d("onBitmapLoaded", "onBitmapLoaded");
-                    Bitmap b = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
-                    BitmapDrawable icon = new BitmapDrawable(topToolBar.getResources(), b);
-                    topToolBar.setNavigationIcon(icon);
+//            File file = new File(Constants.FOLDER_PATH + File.separator + Constants.USER_PHOTO);
+//            if(file != null && file.exists()){
+//                // imageView.setImageURI(Uri.fromFile(file));
+////                BitmapFactory.Options options = new BitmapFactory.Options();
+////                options.inSampleSize = 2;
+////                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(),options);
+////                BitmapDrawable icon = new BitmapDrawable(topToolBar.getResources(), bitmap);
+////                topToolBar.setNavigationIcon(icon);
+//
+//                Target target = new Target() {
+//                    @Override
+//                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                        Log.d("onBitmapLoaded", "onBitmapLoaded");
+//                        Bitmap b = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+//                        BitmapDrawable icon = new BitmapDrawable(topToolBar.getResources(), b);
+//                        topToolBar.setNavigationIcon(icon);
+//                    }
+//                    @Override
+//                    public void onBitmapFailed(Drawable errorDrawable) {
+//                        Log.d("onBitmapFailed", "onBitmapFailed");
+//                        topToolBar.setNavigationIcon(R.mipmap.userpic);
+//                    }
+//                    @Override
+//                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+//                        Log.d("onPrepareLoad", "onPrepareLoad");
+//                        topToolBar.setNavigationIcon(R.mipmap.userpic);
+//                    }
+//                };
+//
+//                Picasso.with(topToolBar.getContext())
+//                        .load(file)
+//                        .placeholder(R.mipmap.userpic)
+//                        .error(R.mipmap.userpic)
+//                        .into(target);
+//            }else{
+                Target target = new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        Log.d("onBitmapLoaded", "onBitmapLoaded");
+                        Bitmap b = Bitmap.createScaledBitmap(bitmap, 120, 120, false);
+                        BitmapDrawable icon = new BitmapDrawable(topToolBar.getResources(), b);
+                        topToolBar.setNavigationIcon(icon);
+                    }
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        Log.d("onBitmapFailed", "onBitmapFailed");
+                        topToolBar.setNavigationIcon(R.mipmap.userpic);
+                    }
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        Log.d("onPrepareLoad", "onPrepareLoad");
+                        topToolBar.setNavigationIcon(R.mipmap.userpic);
+                    }
+                };
+                if(personPhotoUrl != null && personPhotoUrl.length()>0){
+                    Picasso.with(topToolBar.getContext())
+                            .load(personPhotoUrl)
+                            .placeholder(R.mipmap.userpic)
+                            .error(R.mipmap.userpic)
+                            .into(target);
+                }else{
+                    Picasso.with(topToolBar.getContext())
+                            .load(R.mipmap.userpic)
+                            .placeholder(R.mipmap.userpic)
+                            .error(R.mipmap.userpic)
+                            .into(target);
                 }
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                    Log.d("onBitmapFailed", "onBitmapFailed");
-                    topToolBar.setNavigationIcon(R.mipmap.userpic);
-                }
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-                    Log.d("onPrepareLoad", "onPrepareLoad");
-                    topToolBar.setNavigationIcon(R.mipmap.userpic);
-                }
-            };
-            if(personPhotoUrl != null && personPhotoUrl.length()>0){
-                Picasso.with(topToolBar.getContext())
-                        .load(personPhotoUrl)
-                        .placeholder(R.mipmap.userpic)
-                        .error(R.mipmap.userpic)
-                        .into(target);
-            }else{
-                Picasso.with(topToolBar.getContext())
-                        .load(R.mipmap.userpic)
-                        .placeholder(R.mipmap.userpic)
-                        .error(R.mipmap.userpic)
-                        .into(target);
-            }
-
+//            }
             //getUploadedCount(userId);
 
            // textUserName.setText("Welcome "+userName+" !");
@@ -359,6 +400,15 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             intent.putExtra("from","dashboard");
             startActivity(intent);
         }
+
+        if (id == R.id.action_help) {
+            Intent intent = new Intent(Dashboard.this, HelpActivity.class);
+            intent.putExtra("from","dashboard");
+            startActivity(intent);
+        }
+
+
+
         if (id == R.id.action_profile) {
             //getProfileInfo and upate
            getProfileInfo();

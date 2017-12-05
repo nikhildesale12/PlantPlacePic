@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -32,7 +34,12 @@ import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.UserDetailResponseBean;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -359,6 +366,11 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             String email = "";
             email = acct.getEmail();
             Log.e(TAG, "Name: " + personName + ", email: " + email + ", Image: " + personPhotoUrl);
+            if(personPhotoUrl.length()>0){
+                Picasso.with(SignInActivity.this)
+                        .load(personPhotoUrl)
+                        .into(getTarget());
+            }
             if(email.length() > 0){
                 if(Constants.isNetworkAvailable(SignInActivity.this)){
                     if(email.length() > 0){
@@ -384,6 +396,44 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         Toast.makeText(SignInActivity.this,"Failed to connect",Toast.LENGTH_SHORT).show();
     }
     /*Google auth end*/
+
+    //target to save
+    private static Target getTarget(){
+        Target target = new Target(){
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        //File file = new File(Environment.getExternalStorageDirectory().getPath() + "/" + url);
+                        File file = new File(Constants.FOLDER_PATH + File.separator + Constants.USER_PHOTO);
+                        try {
+                            if(file != null && !file.exists()) {
+                                file.createNewFile();
+                                FileOutputStream ostream = new FileOutputStream(file);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream);
+                                ostream.flush();
+                                ostream.close();
+                            }
+                        } catch (IOException e) {
+                            Log.e("IOException", e.getLocalizedMessage());
+                        }
+                    }
+                }).start();
+            }
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
+        return target;
+    }
+
     /** Permission code starts*/
     private void requestPermission() {
         ActivityCompat.requestPermissions(SignInActivity.this, new String[]

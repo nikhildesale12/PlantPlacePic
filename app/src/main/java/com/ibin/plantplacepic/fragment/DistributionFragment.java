@@ -13,6 +13,8 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,7 +29,6 @@ import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.activities.LargeZoomActivity;
-import com.ibin.plantplacepic.activities.SpeciesAroundYouActivity;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.SpeciesPoints;
 import com.ibin.plantplacepic.utility.Constants;
@@ -41,6 +42,7 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
         ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints> {
 
     private GoogleMap mMap;
+    private RadioGroup rgViews;
     ArrayList<Information> mainDataList = null;
     String selectedSpecies = "";
     private static View view;
@@ -59,6 +61,7 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         if (view != null) {
             ViewGroup parent = (ViewGroup) view.getParent();
             if (parent != null)
@@ -81,6 +84,21 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
         FragmentManager fm = getChildFragmentManager();
         SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.mapDistrubution);
         mapFragment.getMapAsync(this);
+        //
+
+        rgViews=(RadioGroup) view.findViewById(R.id.rg_views);
+        rgViews.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.rb_normal){
+                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                }else if(checkedId == R.id.rb_satellite){
+                    mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                }
+            }
+        });
+
+       //
 
         return view;
     }
@@ -101,6 +119,7 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setBuildingsEnabled(true);

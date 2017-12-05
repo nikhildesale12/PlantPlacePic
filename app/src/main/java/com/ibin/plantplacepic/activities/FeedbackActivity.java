@@ -45,7 +45,15 @@ public class FeedbackActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                Intent i=new Intent(FeedbackActivity.this,Dashboard.class);
 //                startActivity(i);
-                  callFeedbackService();
+                  if(editTextUserName.getText().toString().trim().length() == 0){
+                      editTextUserName.requestFocus();
+                      editTextUserName.setError("Please Enter First Name");
+                  }else if(editTextComment.getText().toString().trim().length() == 0){
+                      editTextComment.requestFocus();
+                      editTextComment.setError("Please Enter First Name");
+                  }else{
+                      callFeedbackService();
+                  }
             }
         });
     }
@@ -69,6 +77,7 @@ public class FeedbackActivity extends AppCompatActivity {
                     }
                     if(response.body().getSuccess().toString().trim().equals("1")) {
                         Intent i=new Intent(FeedbackActivity.this,Dashboard.class);
+                        i.putExtra("uploadedCount",Constants.FROM_);
                         startActivity(i);
                         finish();
                     }else  if(response.body().getSuccess().toString().trim().equals("0")) {

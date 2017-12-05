@@ -28,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -75,6 +76,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
     public ArrayList<String> speciesList;
     DatabaseHelper databaseHelper;
     List<Information> mainDataList = null;
+    private RadioGroup rgViews;
     //String userName = "";
 
 //    private ClusterManager<SpeciesPoints> mClusterManager;
@@ -160,6 +162,18 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
             public void onClick(View v) {
                 Intent intent2=new Intent(SpeciesAroundYouActivity.this,SpeciesInfoActivity.class);
                 startActivity(intent2);
+            }
+        });
+
+        rgViews=(RadioGroup) findViewById(R.id.rg_views_around);
+        rgViews.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.rb_normal_around){
+                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                }else if(checkedId == R.id.rb_satellite_around){
+                    mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                }
             }
         });
 

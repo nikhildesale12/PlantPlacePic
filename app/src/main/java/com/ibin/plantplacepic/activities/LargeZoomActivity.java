@@ -1,21 +1,16 @@
 package com.ibin.plantplacepic.activities;
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.adapter.CustomPagerAdapterImage;
 import com.ibin.plantplacepic.bean.Information;
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.Target;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.ibin.plantplacepic.utility.Constants;
 
 import java.util.ArrayList;

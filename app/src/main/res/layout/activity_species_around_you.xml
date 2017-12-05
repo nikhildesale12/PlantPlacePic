@@ -53,7 +53,6 @@
             android:text="Map Species"/>
     </LinearLayout>
 
-
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -62,6 +61,32 @@
         android:layout_marginTop="5dp"
         tools:context="com.sing.mapexample.MapsActivity"
         android:layout_below="@+id/linearLayout"/>
+
+    <RadioGroup
+        android:id="@+id/rg_views_around"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:background="#80FFFFFF"
+        android:paddingRight="5dp"
+        android:layout_below="@+id/linearLayout">
+
+        <RadioButton
+            android:id="@+id/rb_normal_around"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:textStyle="bold"
+            android:text="@string/str_rb_normal"/>
+
+        <RadioButton
+            android:id="@+id/rb_satellite_around"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/str_rb_satellite"/>
+    </RadioGroup>
 
 
 </RelativeLayout>

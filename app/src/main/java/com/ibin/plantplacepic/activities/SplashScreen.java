@@ -1,26 +1,23 @@
 package com.ibin.plantplacepic.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.utility.Constants;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -30,7 +27,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SplashScreen extends AppCompatActivity {
+public class SplashScreen extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
     TextView versionName;
     DatabaseHelper databaseHelper;
     String uploadedCount;
@@ -102,7 +99,21 @@ public class SplashScreen extends AppCompatActivity {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if(response != null && response.body() != null){
                     if(response.body().getResult().trim().equals(version)){
-                        getUploadedCount(isLogin,userId);
+                        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGOUT, MODE_PRIVATE);
+                        boolean logoutUser  = prefs.getBoolean(Constants.KEY_FIRST_TIME_LOGOUT_USER,true);
+                        if(logoutUser){
+                            SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_LOGOUT, MODE_PRIVATE).edit();
+                            editor1.putBoolean(Constants.KEY_FIRST_TIME_LOGOUT_USER, false);
+                            editor1.commit();
+                            SharedPreferences.Editor editor = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE).edit();
+                            editor.clear();
+                            editor.commit();
+                            Intent intent = new Intent(SplashScreen.this, SignInActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }else{
+                            getUploadedCount(isLogin,userId);
+                        }
                     }else{
                         Constants.dispalyDialogInternet(SplashScreen.this,"Upgrade Application","New update "+response.body().getResult()+" is available , Please update it from playstore",false,false);
                     }
@@ -110,12 +121,10 @@ public class SplashScreen extends AppCompatActivity {
                     uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
                     if(userId.equals("0")){
                         Intent i = new Intent(SplashScreen.this,SignInActivity.class);
-                        i.putExtra("uploadedCount",uploadedCount);
                         startActivity(i);
                         finish();
                     }else if(!isLogin) {
                         Intent i = new Intent(SplashScreen.this,SignInActivity.class);
-                        i.putExtra("uploadedCount",uploadedCount);
                         startActivity(i);
                         finish();
                     }else{
@@ -131,12 +140,10 @@ public class SplashScreen extends AppCompatActivity {
                 uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
                 if(userId.equals("0")){
                     Intent i = new Intent(SplashScreen.this,SignInActivity.class);
-                    i.putExtra("uploadedCount",uploadedCount);
                     startActivity(i);
                     finish();
                 }else if(!isLogin) {
                     Intent i = new Intent(SplashScreen.this,SignInActivity.class);
-                    i.putExtra("uploadedCount",uploadedCount);
                     startActivity(i);
                     finish();
                 }else{
@@ -184,7 +191,6 @@ public class SplashScreen extends AppCompatActivity {
                         } else {
                             uploadedCount = "" + databaseHelper.getTotalUploadedData(userId);
                             Intent i = new Intent(SplashScreen.this, SignInActivity.class);
-                            i.putExtra("uploadedCount", uploadedCount);
                             startActivity(i);
                             finish();
                         }
@@ -192,12 +198,10 @@ public class SplashScreen extends AppCompatActivity {
                         uploadedCount = "" + databaseHelper.getTotalUploadedData(userId);
                         if (userId.equals("0")) {
                             Intent i = new Intent(SplashScreen.this, SignInActivity.class);
-                            i.putExtra("uploadedCount", uploadedCount);
                             startActivity(i);
                             finish();
                         } else if (!isLogin) {
                             Intent i = new Intent(SplashScreen.this, SignInActivity.class);
-                            i.putExtra("uploadedCount", uploadedCount);
                             startActivity(i);
                             finish();
                         } else {
@@ -215,12 +219,10 @@ public class SplashScreen extends AppCompatActivity {
                     uploadedCount = "" + databaseHelper.getTotalUploadedData(userId);
                     if (userId.equals("0")) {
                         Intent i = new Intent(SplashScreen.this, SignInActivity.class);
-                        i.putExtra("uploadedCount", uploadedCount);
                         startActivity(i);
                         finish();
                     } else if (!isLogin) {
                         Intent i = new Intent(SplashScreen.this, SignInActivity.class);
-                        i.putExtra("uploadedCount", uploadedCount);
                         startActivity(i);
                         finish();
                     } else {
@@ -300,5 +302,10 @@ public class SplashScreen extends AppCompatActivity {
 //
 //            }
 //        }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d("onConnectionFailed:", "onConnectionFailed:" + connectionResult);
     }
 }

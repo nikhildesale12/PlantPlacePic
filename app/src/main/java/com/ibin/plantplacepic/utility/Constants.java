@@ -38,6 +38,7 @@ public class Constants {
     public static final int REQUEST_CODE_CROP_IMAGE = 3 ;
     public static final int API_LEVEL_23 = 23;
     public static final String IMAGE_NAME = "Upload_" ;
+    public static final String USER_PHOTO = "UserPhoto.jpeg";
     public static final String FOLDER_PATH = Environment.getExternalStorageDirectory() + File.separator + "PLANTPLACE" ;
     //public static final String BASE_URL = "http://test.xamarin-tools.com";
     //public static final String BASE_URL = "http://ibin.plantplacepicture.com";
@@ -87,6 +88,8 @@ public class Constants {
     public static final String KEY_MOBILE = "MOBILE";
     public static final String KEY_PHOTO =  "personPhotoUrl";
     public static final String KEY_HINT_SWAP =  "swap";
+    public static final String MY_PREFS_LOGOUT = "myPrefLogout";
+    public static final String KEY_FIRST_TIME_LOGOUT_USER =  "logoutUser";
     public static final String KEY_ONE_TIME_PAGE = "pages";
     public static final String FROM_ = "BYSERVICE";
     public static int countSelectedPhotoFromGallery = 0;
