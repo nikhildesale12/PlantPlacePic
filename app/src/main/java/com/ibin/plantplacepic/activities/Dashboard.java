@@ -12,12 +12,11 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -27,7 +26,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.ForwardingListener;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -36,9 +35,11 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -48,7 +49,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibin.plantplacepic.BuildConfig;
-import com.ibin.plantplacepic.HelpActivity;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.SubmitRequest;
@@ -58,16 +58,19 @@ import com.ibin.plantplacepic.retrofit.ApiService;
 import com.ibin.plantplacepic.services.ImageUploadService;
 import com.ibin.plantplacepic.utility.Constants;
 import com.ibin.plantplacepic.utility.GPSTracker;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -94,6 +97,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     private String userId ;
     private String emailId = "";
     private String personPhotoUrl;
+    private ImageView userProfilePic;
     double latitude =0;
     double longitude =0;
     String uploadedCount="";
@@ -114,7 +118,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             System.exit(1);
         }else {
             topToolBar = (Toolbar)findViewById(R.id.toolbarDashboard);
-
+            userProfilePic = (ImageView) findViewById(R.id.userProfilePic);
             SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
             emailId  = prefs.getString(Constants.KEY_USERNAME, "Guest");
             userId = prefs.getString(Constants.KEY_USERID, "0");
@@ -137,8 +141,13 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                  }
             }
 
-//            File file = new File(Constants.FOLDER_PATH + File.separator + Constants.USER_PHOTO);
-//            if(file != null && file.exists()){
+            File file = new File(Constants.FOLDER_PATH + File.separator + Constants.USER_PHOTO);
+            if(file != null && file.exists()){
+                Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                userProfilePic.setImageBitmap(myBitmap);
+            }else{
+                userProfilePic.setImageResource(R.drawable.user);
+            }
 //                // imageView.setImageURI(Uri.fromFile(file));
 ////                BitmapFactory.Options options = new BitmapFactory.Options();
 ////                options.inSampleSize = 2;
@@ -172,7 +181,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
 //                        .error(R.mipmap.userpic)
 //                        .into(target);
 //            }else{
-                Target target = new Target() {
+                /*Target target = new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                         Log.d("onBitmapLoaded", "onBitmapLoaded");
@@ -203,7 +212,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                             .placeholder(R.mipmap.userpic)
                             .error(R.mipmap.userpic)
                             .into(target);
-                }
+                }*/
 //            }
             //getUploadedCount(userId);
 
@@ -214,8 +223,8 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             }else{
                 getSupportActionBar().setTitle(prefs.getString(Constants.KEY_USERNAME, "Guest"));
             }
-            topToolBar.setNavigationIcon(R.mipmap.userpic);
-
+            //topToolBar.setNavigationIcon(R.mipmap.userpic);
+            copyPdfFromAssetToSdCard();
             buttonGallery.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -334,21 +343,64 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         }
     } /*onCreate End*/
 
-
-   /* private class StarServiceInAsync extends AsyncTask<Void, Integer, String> {
-        SubmitRequest submitRequest = new SubmitRequest();
-        private StarServiceInAsync(SubmitRequest submitRqt) {
-            submitRequest = submitRqt;
+    private void copyPdfFromAssetToSdCard() {
+        AssetManager assetManager=getAssets();
+        InputStream in=null;
+        OutputStream out=null;
+        try
+        {
+            File dir=new File(Constants.FOLDER_PATH);
+            if(!dir.exists()){
+                dir.mkdirs();
+            }
+            in=assetManager.open("PlantPlacePicture.pdf");
+            File outFile=new File(Constants.FOLDER_PATH,"PlantPlacePicture.pdf");
+            out=new FileOutputStream(outFile);
+            byte[] buffer=new byte[1024];
+            int read;
+            while ((read=in.read(buffer))!=-1){
+                out.write(buffer,0,read);
+            }
+            out.flush();
+            out.close();
+        }catch (IOException e){
+            e.printStackTrace();
+            Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
+        }finally {
+            if(in!=null)
+            {
+                try{
+                    in.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+            if(out!=null)
+            {
+                try{
+                    out.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
         }
-        @Override
-        protected String doInBackground(Void... params) {
-            Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
-            intentService.putExtra("submitRequest",submitRequest);
-            startService(intentService);
-            return null;
-        }
+    }
 
-    }*/
+
+    /* private class StarServiceInAsync extends AsyncTask<Void, Integer, String> {
+         SubmitRequest submitRequest = new SubmitRequest();
+         private StarServiceInAsync(SubmitRequest submitRqt) {
+             submitRequest = submitRqt;
+         }
+         @Override
+         protected String doInBackground(Void... params) {
+             Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
+             intentService.putExtra("submitRequest",submitRequest);
+             startService(intentService);
+             return null;
+         }
+ 
+     }*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -402,17 +454,25 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         }
 
         if (id == R.id.action_help) {
-//            Intent intent = new Intent(Dashboard.this, HelpActivity.class);
-//            intent.putExtra("from","dashboard");
-//            startActivity(intent);
-            File file = new File(Constants.FOLDER_PATH + File.separator + "PlantPlacePicture.pdf");
-            if (file != null && file.exists()) {
+           //copyAsset("PlantPlacePicture.pdf");
+            Uri pdfURI=null;
+            File file = new File(Constants.FOLDER_PATH+ File.separator+"PlantPlacePicture.pdf");
+            if(file != null && file.exists()){
+                if(android.os.Build.VERSION.SDK_INT >= Constants.API_LEVEL_23 ){
+                    pdfURI = FileProvider.getUriForFile(Dashboard.this, BuildConfig.APPLICATION_ID+ ".provider", file);
+                }else {
+                    pdfURI = Uri.fromFile(file);
+                }
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+                intent.setDataAndType(pdfURI,"application/pdf");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(intent);
+            }else{
+                copyAsset("PlantPlacePicture.pdf");
             }
         }
+        
 
 
         if (id == R.id.action_profile) {
@@ -421,6 +481,61 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void copyAsset(String filename)
+    {
+        AssetManager assetManager=getAssets();
+        InputStream in=null;
+        OutputStream out=null;
+        try
+        {
+            in=assetManager.open(filename);
+            File outFile=new File(Constants.FOLDER_PATH,filename);
+            out=new FileOutputStream(outFile);
+            byte[] buffer=new byte[1024];
+            int read;
+            while ((read=in.read(buffer))!=-1){
+                out.write(buffer,0,read);
+            }
+            out.flush();
+            out.close();
+            Uri pdfURI = null;
+            if(outFile != null && outFile.exists()){
+                if(android.os.Build.VERSION.SDK_INT >= Constants.API_LEVEL_23 ){
+                    pdfURI = FileProvider.getUriForFile(Dashboard.this, BuildConfig.APPLICATION_ID+ ".provider", outFile);
+                }else {
+                    pdfURI = Uri.fromFile(outFile);
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(pdfURI,"application/pdf");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+            }else{
+                Toast.makeText(Dashboard.this,"Error,please try again",Toast.LENGTH_LONG).show();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+            Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
+        }finally {
+            if(in!=null)
+            {
+                try{
+                    in.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+            if(out!=null)
+            {
+                try{
+                    out.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void getProfileInfo() {
