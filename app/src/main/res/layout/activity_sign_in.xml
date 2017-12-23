@@ -111,6 +111,7 @@
                     android:background="@drawable/edittextbg"/>-->
 
                 <Button
+                    android:visibility="invisible"
                     android:id="@+id/buttonGoogleSignIn"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/button_height"

@@ -1,4 +1,3 @@
-
 package com.ibin.plantplacepic.activities;
 
 import android.app.Dialog;
@@ -8,11 +7,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -21,8 +22,15 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -55,30 +63,33 @@ import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener  {
-    Button buttonSignUp;
-    Button buttonSignIn;
-    //Button buttonGoogleSignIn;
-    EditText editTextEmailSignin ;
-    EditText editTextPassSignin ;
-    //String personPhotoUrl="";
-    ProgressDialog dialog;
+
+public class LoginMainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+    CallbackManager callbackManager;
+    TextView toLogin ;
+    TextView toRegister;
+    ImageView signinGmail;
+    ImageView signinFacebook;
     CheckBox keepMeSignin;
-    private static final String TAG = SignInActivity.class.getSimpleName();
-//    private GoogleApiClient mGoogleApiClient;
-//    private static final int RC_SIGN_IN = 007;
+    String personPhotoUrl="";
+    ProgressDialog dialog;
+    private GoogleApiClient mGoogleApiClient;
+    private static final int RC_SIGN_IN = 007;
+    private static final String TAG = LoginMainActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_sign_in);
+        setContentView(R.layout.activity_login_main);
         initViews();
+
         if(android.os.Build.VERSION.SDK_INT >= Constants.API_LEVEL_23){
             if(checkPermission()){
-                }else {
-                    requestPermission();
+            }else {
+                requestPermission();
             }
         }
+
         keepMeSignin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -91,59 +102,130 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 editor2.commit();
             }
         });
-        buttonSignUp.setOnClickListener(new View.OnClickListener() {
+
+        String lgn="Login";
+        SpannableString content = new SpannableString(lgn);
+        content.setSpan(new UnderlineSpan(), 0, lgn.length(), 0);
+        toLogin.setText(content);
+        String rgstr="Register";
+        SpannableString content1 = new SpannableString(rgstr);
+        content1.setSpan(new UnderlineSpan(), 0, rgstr.length(), 0);
+        toRegister.setText(content1);
+
+        toLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                Intent activityChangeIntent = new Intent(SignInActivity.this, SignUpActivity.class);
-                startActivity(activityChangeIntent);
-                //finish();
-              /*  Intent intent = new Intent(SignInActivity.this,Dashboard.class);
-                intent.putExtra("USERNAME","n");
-                intent.putExtra("USERID","1");
-                startActivity(intent);*/
+                Intent i = new Intent(LoginMainActivity.this,SignInActivity.class);
+                startActivity(i);
+                finish();
             }
         });
 
-        buttonSignIn.setOnClickListener(new View.OnClickListener() {
+        toRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String USER = editTextEmailSignin.getText().toString();
-                String PASS = editTextPassSignin.getText().toString();
-                if(Constants.isNetworkAvailable(SignInActivity.this)){
-                    if(USER.length() == 0 ){
-                        editTextEmailSignin.requestFocus();
-                        editTextEmailSignin.setError("Please Enter Email id");
-                    }else if(PASS.length() == 0){
-                        editTextPassSignin.requestFocus();
-                        editTextPassSignin.setError("Please Enter Password");
+                Intent i = new Intent(LoginMainActivity.this,SignUpActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        signinGmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Constants.isNetworkAvailable(LoginMainActivity.this)){
+                    signInGoogle();
+                }else{
+                    Constants.dispalyDialogInternet(LoginMainActivity.this,"Internet Connection Issue","Please check internet connection ...",false,false);
+                }
+            }
+        });
+
+        signinFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Constants.isNetworkAvailable(LoginMainActivity.this)){
+                    //signinViaFacebook();
+                    Toast.makeText(LoginMainActivity.this, "Coming soon", Toast.LENGTH_SHORT).show();
+                }else{
+                    Constants.dispalyDialogInternet(LoginMainActivity.this,"Internet Connection Issue","Please check internet connection ...",false,false);
+                }
+            }
+        });
+    }
+
+    /*private void signinViaFacebook() {
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Toast.makeText(LoginMainActivity.this, "Login Success\n"+loginResult.getAccessToken(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(LoginMainActivity.this, "Login Cancel", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Toast.makeText(LoginMainActivity.this, "Login Error", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+    }
+*/
+    private void signInGoogle() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+       // callbackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
+    }
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+
+            Log.e(TAG, "display name: " + acct.getDisplayName());
+
+            String personName = acct.getDisplayName();
+            if(acct.getPhotoUrl() != null){
+                personPhotoUrl = acct.getPhotoUrl().toString();
+            }
+            String email = "";
+            email = acct.getEmail();
+            Log.e(TAG, "Name: " + personName + ", email: " + email + ", Image: " + personPhotoUrl);
+            if(personPhotoUrl.length()>0){
+                Picasso.with(LoginMainActivity.this)
+                        .load(personPhotoUrl)
+                        .into(getTarget());
+            }
+            if(email.length() > 0){
+                if(Constants.isNetworkAvailable(LoginMainActivity.this)){
+                    if(email.length() > 0){
+                        executeLoginService(email,"","Y");
                     }else{
-                        if(Constants.isValidEmailAddress(USER)){
-                            executeLoginService(USER,PASS,"N");
-                        }else{
-                            //Toast.makeText(SignInActivity.this,"Please enter valid email address",Toast.LENGTH_LONG).show();
-                            editTextEmailSignin.requestFocus();
-                            editTextEmailSignin.setError("Invalid Email Id");
-                        }
-                        //Constants.dispalyDialogInternet(SignInActivity.this,"Invalid Credentials","Please enter login details...",true,false);
+                        Constants.dispalyDialogInternet(LoginMainActivity.this,"Invalid Credentials","Invalid Email ID...",true,false);
                     }
                 }else{
-                    Constants.dispalyDialogInternet(SignInActivity.this,"Internet Connection Issue","Please check internet connection ...",false,false);
+                    Constants.dispalyDialogInternet(LoginMainActivity.this,"Internet Connection Issue","Please check internet connection ...",false,false);
                 }
             }
-        });
-        /*buttonGoogleSignIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(Constants.isNetworkAvailable(SignInActivity.this)){
-                    signIn();
-                }else{
-                    Constants.dispalyDialogInternet(SignInActivity.this,"Internet Connection Issue","Please check internet connection ...",false,false);
-                }
-            }
-        });*/
-    }/*onCreate End*/
+        } else {
+            Toast.makeText(LoginMainActivity.this,"unauthenticated user due to "+result.getStatus(),Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void executeLoginService(final String USER , String PASS , String GOOG_ID){
-        dialog = new ProgressDialog(SignInActivity.this);
+        dialog = new ProgressDialog(LoginMainActivity.this);
         dialog.setMessage("Please Wait...");
         dialog.setIndeterminate(false);
         dialog.setCancelable(false);
@@ -173,12 +255,13 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                         SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE).edit();
                         editor1.putString(Constants.KEY_USERNAME, USER);
                         editor1.putString(Constants.KEY_USERID, response.body().getUserId());
-                        //editor1.putString(Constants.KEY_PHOTO, personPhotoUrl);
-                        if(keepMeSignin.isChecked()){
+                        editor1.putString(Constants.KEY_PHOTO, personPhotoUrl);
+                        editor1.putBoolean(Constants.KEY_IS_LOGIN,true);
+                        /*if(keepMeSignin.isChecked()){
                             editor1.putBoolean(Constants.KEY_IS_LOGIN,true);
                         }else{
                             editor1.putBoolean(Constants.KEY_IS_LOGIN,false);
-                        }
+                        }*/
                         editor1.commit();
                         if(response.body().getIsNameAvailable().equals("YES")){
                             SharedPreferences.Editor editor2 = getSharedPreferences(Constants.MY_PREFS_USER_INFO, MODE_PRIVATE).edit();
@@ -194,11 +277,11 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                                 SharedPreferences.Editor editor3 = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE).edit();
                                 editor3.putBoolean(Constants.KEY_ONE_TIME_PAGE, false);
                                 editor3.commit();
-                                Intent intent = new Intent(SignInActivity.this, AboutActivity.class);
+                                Intent intent = new Intent(LoginMainActivity.this, AboutActivity.class);
                                 startActivity(intent);
                                 finish();
                             }else{
-                                Intent intent = new Intent(SignInActivity.this, Dashboard.class);
+                                Intent intent = new Intent(LoginMainActivity.this, Dashboard.class);
                                 intent.putExtra("uploadedCount", Constants.FROM_);
                                 startActivity(intent);
                                 finish();
@@ -210,18 +293,18 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                         if(dialog != null && dialog.isShowing()){
                             dialog.dismiss();
                         }
-                        Constants.dispalyDialogInternet(SignInActivity.this,"Result",response.body().getResult(),true,false);
+                        Constants.dispalyDialogInternet(LoginMainActivity.this,"Result",response.body().getResult(),true,false);
                     }else {
                         if(dialog != null && dialog.isShowing()){
                             dialog.dismiss();
                         }
-                        Constants.dispalyDialogInternet(SignInActivity.this,"Error","Technical Error !!!",false,false);
+                        Constants.dispalyDialogInternet(LoginMainActivity.this,"Error","Technical Error !!!",false,false);
                     }
                 }else{
                     if(dialog != null && dialog.isShowing()){
                         dialog.dismiss();
                     }
-                    Constants.dispalyDialogInternet(SignInActivity.this,"Error","Technical Error !!!",false,false);
+                    Constants.dispalyDialogInternet(LoginMainActivity.this,"Error","Technical Error !!!",false,false);
                 }
             }
             @Override
@@ -230,13 +313,13 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 if(dialog != null && dialog.isShowing()){
                     dialog.dismiss();
                 }
-                Constants.dispalyDialogInternet(SignInActivity.this,"Result",t.toString(),false,false);
+                Constants.dispalyDialogInternet(LoginMainActivity.this,"Result",t.toString(),false,false);
             }
         });
     }
 
     private void getUserDetailPopup(final String userId){
-        final Dialog userDetailPopup = new Dialog(SignInActivity.this);
+        final Dialog userDetailPopup = new Dialog(LoginMainActivity.this);
         userDetailPopup.requestWindowFeature(Window.FEATURE_NO_TITLE);
         userDetailPopup.setContentView(R.layout.popup_user_detail);
         userDetailPopup.setCanceledOnTouchOutside(false);
@@ -270,7 +353,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
     private void updateUserInformation(String userId,String firstName,String middleName,String LastName, String occupation,String mobileNum){
         //update Info
-        dialog = new ProgressDialog(SignInActivity.this);
+        dialog = new ProgressDialog(LoginMainActivity.this);
         dialog.setMessage("Please Wait...");
         dialog.setIndeterminate(false);
         dialog.setCancelable(false);
@@ -299,11 +382,11 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                             SharedPreferences.Editor editor2 = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE).edit();
                             editor2.putBoolean(Constants.KEY_ONE_TIME_PAGE, false);
                             editor2.commit();
-                            Intent intent = new Intent(SignInActivity.this, AboutActivity.class);
+                            Intent intent = new Intent(LoginMainActivity.this, AboutActivity.class);
                             startActivity(intent);
                             finish();
                         }else{
-                            Intent intent = new Intent(SignInActivity.this, Dashboard.class);
+                            Intent intent = new Intent(LoginMainActivity.this, Dashboard.class);
                             intent.putExtra("uploadedCount", Constants.FROM_);
                             startActivity(intent);
                             finish();
@@ -313,18 +396,18 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                         if (dialog != null && dialog.isShowing()) {
                             dialog.dismiss();
                         }
-                        Constants.dispalyDialogInternet(SignInActivity.this,"Result",response.body().getResult(),true,false);
+                        Constants.dispalyDialogInternet(LoginMainActivity.this,"Result",response.body().getResult(),true,false);
                     } else {
                         if (dialog != null && dialog.isShowing()) {
                             dialog.dismiss();
                         }
-                        Constants.dispalyDialogInternet(SignInActivity.this,"Error","Technical Error !!!",false,false);
+                        Constants.dispalyDialogInternet(LoginMainActivity.this,"Error","Technical Error !!!",false,false);
                     }
                 }else{
                     if (dialog != null && dialog.isShowing()) {
                         dialog.dismiss();
                     }
-                    Constants.dispalyDialogInternet(SignInActivity.this,"Error","Technical Error !!!",false,false);
+                    Constants.dispalyDialogInternet(LoginMainActivity.this,"Error","Technical Error !!!",false,false);
                 }
             }
             @Override
@@ -333,71 +416,12 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 if (dialog != null && dialog.isShowing()) {
                     dialog.dismiss();
                 }
-                Constants.dispalyDialogInternet(SignInActivity.this,"Result",t.toString(),false,false);
+                Constants.dispalyDialogInternet(LoginMainActivity.this,"Result",t.toString(),false,false);
             }
         });
     }
-   /* @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
-        }
-    }*/
-    /*Google auth starts*/
-    /*private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }*/
-   /* private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
-            // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
 
-            Log.e(TAG, "display name: " + acct.getDisplayName());
-
-            String personName = acct.getDisplayName();
-            if(acct.getPhotoUrl() != null){
-                personPhotoUrl = acct.getPhotoUrl().toString();
-            }
-            String email = "";
-            email = acct.getEmail();
-            Log.e(TAG, "Name: " + personName + ", email: " + email + ", Image: " + personPhotoUrl);
-            if(personPhotoUrl.length()>0){
-                Picasso.with(SignInActivity.this)
-                        .load(personPhotoUrl)
-                        .into(getTarget());
-            }
-            if(email.length() > 0){
-                if(Constants.isNetworkAvailable(SignInActivity.this)){
-                    if(email.length() > 0){
-                        executeLoginService(email,"","Y");
-                    }else{
-                        Constants.dispalyDialogInternet(SignInActivity.this,"Invalid Credentials","Invalid Email ID...",true,false);
-                    }
-                }else{
-                    Constants.dispalyDialogInternet(SignInActivity.this,"Internet Connection Issue","Please check internet connection ...",false,false);
-                }
-            }
-          //  Toast.makeText(SignInActivity.this,"Sign In Successfully..",Toast.LENGTH_SHORT).show();
-            //updateUI(true);
-        } else {
-            // Signed out, show unauthenticated UI.
-            //updateUI(false);
-            Toast.makeText(SignInActivity.this,"unauthenticated user due to "+result.getStatus(),Toast.LENGTH_SHORT).show();
-        }
-    }*/
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        Toast.makeText(SignInActivity.this,"Failed to connect",Toast.LENGTH_SHORT).show();
-    }
-    /*Google auth end*/
-
-    //target to save
-   /* private static Target getTarget(){
+    private static Target getTarget(){
         Target target = new Target(){
             @Override
             public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -431,11 +455,27 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             }
         };
         return target;
-    }*/
+    }
+
+    private void initViews() {
+        callbackManager=CallbackManager.Factory.create();
+        toLogin = (TextView)findViewById(R.id.move_to_login);
+        toRegister = (TextView)findViewById(R.id.move_to_register);
+        signinGmail = (ImageView) findViewById(R.id.signin_gmail);
+        signinFacebook = (ImageView) findViewById(R.id.signin_facebook);
+        keepMeSignin = (CheckBox) findViewById(R.id.checkboxRememberNew);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+    }
 
     /** Permission code starts*/
     private void requestPermission() {
-        ActivityCompat.requestPermissions(SignInActivity.this, new String[]
+        ActivityCompat.requestPermissions(LoginMainActivity.this, new String[]
                 {
                         ACCESS_FINE_LOCATION,
                         ACCESS_COARSE_LOCATION,
@@ -457,7 +497,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                     if (AccessFineLocationPermission && AccessCoarseLocPermission && InternetPermission && WriteInternalStoragePermission && ReadInternalStoragePermission) {
                     }
                     else {
-                        Toast toast = Toast.makeText(SignInActivity.this,"Permission Denied,Accept it to use application", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(LoginMainActivity.this,"Permission Denied,Accept it to use application", Toast.LENGTH_LONG);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                         finish();
@@ -479,28 +519,10 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 ForthPermissionResult == PackageManager.PERMISSION_GRANTED &&
                 FifthPermissionResult == PackageManager.PERMISSION_GRANTED;
     }
-    /**Permission code end*/
-    private void initViews() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-       /* mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();*/
-        buttonSignUp = (Button)findViewById(R.id.buttonSignUp);
-        buttonSignIn = (Button)findViewById(R.id.buttonSignIn);
-/*      buttonGoogleSignIn = (Button)findViewById(R.id.buttonGoogleSignIn);*/
-        editTextEmailSignin = (EditText) findViewById(R.id.editTextEmailSignin);
-        editTextPassSignin = (EditText) findViewById(R.id.editTextPassSignin);
-        keepMeSignin = (CheckBox) findViewById(R.id.checkboxRemember);
-    }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        Intent intent = new Intent(SignInActivity.this, LoginMainActivity.class);
-        startActivity(intent);
-        finish();
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(LoginMainActivity.this,"Failed to connect",Toast.LENGTH_SHORT).show();
     }
+    /**Permission code end*/
 }

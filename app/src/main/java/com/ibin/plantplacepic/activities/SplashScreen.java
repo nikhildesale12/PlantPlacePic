@@ -67,12 +67,12 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
             //Internet not available
             uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
             if(userId.equals("0")){
-                Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+                Intent i = new Intent(SplashScreen.this,LoginMainActivity.class);
                 i.putExtra("uploadedCount",uploadedCount);
                 startActivity(i);
                 finish();
             }else if(!isLogin) {
-                Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+                Intent i = new Intent(SplashScreen.this,LoginMainActivity.class);
                 i.putExtra("uploadedCount",uploadedCount);
                 startActivity(i);
                 finish();
@@ -108,7 +108,7 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
                             SharedPreferences.Editor editor = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE).edit();
                             editor.clear();
                             editor.commit();
-                            Intent intent = new Intent(SplashScreen.this, SignInActivity.class);
+                            Intent intent = new Intent(SplashScreen.this, LoginMainActivity.class);
                             startActivity(intent);
                             finish();
                         }else{
@@ -120,11 +120,11 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
                 } else {
                     uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
                     if(userId.equals("0")){
-                        Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+                        Intent i = new Intent(SplashScreen.this,LoginMainActivity.class);
                         startActivity(i);
                         finish();
                     }else if(!isLogin) {
-                        Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+                        Intent i = new Intent(SplashScreen.this,LoginMainActivity.class);
                         startActivity(i);
                         finish();
                     }else{
@@ -139,11 +139,11 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
                 if(userId.equals("0")){
-                    Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+                    Intent i = new Intent(SplashScreen.this,LoginMainActivity.class);
                     startActivity(i);
                     finish();
                 }else if(!isLogin) {
-                    Intent i = new Intent(SplashScreen.this,SignInActivity.class);
+                    Intent i = new Intent(SplashScreen.this,LoginMainActivity.class);
                     startActivity(i);
                     finish();
                 }else{
@@ -158,7 +158,7 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
 
     private void getUploadedCount(final boolean isLogin, final String userId) {
         if (userId.equals("0")) {
-            Intent i = new Intent(SplashScreen.this, SignInActivity.class);
+            Intent i = new Intent(SplashScreen.this, LoginMainActivity.class);
             i.putExtra("uploadedCount", uploadedCount);
             startActivity(i);
             finish();
@@ -190,18 +190,18 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
                             finish();
                         } else {
                             uploadedCount = "" + databaseHelper.getTotalUploadedData(userId);
-                            Intent i = new Intent(SplashScreen.this, SignInActivity.class);
+                            Intent i = new Intent(SplashScreen.this, LoginMainActivity.class);
                             startActivity(i);
                             finish();
                         }
                     } else {
                         uploadedCount = "" + databaseHelper.getTotalUploadedData(userId);
                         if (userId.equals("0")) {
-                            Intent i = new Intent(SplashScreen.this, SignInActivity.class);
+                            Intent i = new Intent(SplashScreen.this, LoginMainActivity.class);
                             startActivity(i);
                             finish();
                         } else if (!isLogin) {
-                            Intent i = new Intent(SplashScreen.this, SignInActivity.class);
+                            Intent i = new Intent(SplashScreen.this, LoginMainActivity.class);
                             startActivity(i);
                             finish();
                         } else {
@@ -218,11 +218,11 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
                     uploadedCount = "" + databaseHelper.getTotalUploadedData(userId);
                     uploadedCount = "" + databaseHelper.getTotalUploadedData(userId);
                     if (userId.equals("0")) {
-                        Intent i = new Intent(SplashScreen.this, SignInActivity.class);
+                        Intent i = new Intent(SplashScreen.this, LoginMainActivity.class);
                         startActivity(i);
                         finish();
                     } else if (!isLogin) {
-                        Intent i = new Intent(SplashScreen.this, SignInActivity.class);
+                        Intent i = new Intent(SplashScreen.this, LoginMainActivity.class);
                         startActivity(i);
                         finish();
                     } else {

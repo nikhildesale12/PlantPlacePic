@@ -24,6 +24,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key"/>
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+                   android:value="456142274781300"/>
+
 
         <activity
             android:name=".activities.SignInActivity"
@@ -127,6 +130,9 @@
         </activity>
         <activity android:name=".HelpActivity">
         </activity>
+        <activity android:name=".activities.LoginMainActivity">
+        </activity>
+
     </application>
 
 </manifest>

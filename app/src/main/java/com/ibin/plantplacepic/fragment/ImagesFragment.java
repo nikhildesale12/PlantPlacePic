@@ -50,7 +50,7 @@ public class ImagesFragment extends Fragment{
             }
         }
         viewPager = (ViewPager) mainView.findViewById(R.id.imagesViewPages);
-        customPagerAdapterImage = new CustomPagerAdapterImage(mContext, imagesDataList);
+        customPagerAdapterImage = new CustomPagerAdapterImage(mContext, imagesDataList ,"whiteBg",getActivity(),true);
         viewPager.setAdapter(customPagerAdapterImage);
         //viewPager.setCurrentItem(selectedPosition);
 

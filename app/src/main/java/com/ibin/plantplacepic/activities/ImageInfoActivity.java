@@ -7,9 +7,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -131,10 +135,10 @@ public class ImageInfoActivity extends AppCompatActivity {
                     imageUri = Uri.parse(submitRequest.getImageUrl());
                     captureImage.setImageURI(imageUri);
                 }
-                if(submitRequest.getLatitude() != null && submitRequest.getLatitude().length()>0){
+                if(submitRequest.getLatitude() != null && submitRequest.getLatitude().trim().length()>0){
                     latitude = Double.valueOf(submitRequest.getLatitude());
                 }
-                if(submitRequest.getLongitude() != null && submitRequest.getLongitude().length()>0){
+                if(submitRequest.getLongitude() != null && submitRequest.getLongitude().trim().length()>0){
                     longitude = Double.valueOf(submitRequest.getLongitude());
                 }
                 if(submitRequest.getAddress() != null && submitRequest.getAddress().length()>0){
@@ -167,6 +171,7 @@ public class ImageInfoActivity extends AppCompatActivity {
         buttonUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //speciesEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                 if (speciesEditText.getText().toString().trim().length() == 0) {
                     speciesEditText.requestFocus();
                     speciesEditText.setError("Please Enter Species");
@@ -174,10 +179,39 @@ public class ImageInfoActivity extends AppCompatActivity {
                     cityEditText.requestFocus();
                     cityEditText.setError("Please Enter Location");
                 } else {
-                    UploadImageServiceCall();
+                    if(latitude != 0) {
+                        UploadImageServiceCall();
+                    }else{
+                        Toast.makeText(ImageInfoActivity.this,"Error while getting location, check your gps",Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
+
+        speciesEditText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+
+            }
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                          int arg3) {
+            }
+            @Override
+            public void afterTextChanged(Editable et) {
+                String s=et.toString();
+                if((!s.equals(s.toUpperCase()) && s.length()==1)) {
+                    s=s.toUpperCase();
+                    speciesEditText.setText(s);
+                }
+                else{
+                    s=s.toLowerCase();
+                }
+            }
+
+        });
+
         buttonSaveLater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -377,13 +411,13 @@ public class ImageInfoActivity extends AppCompatActivity {
                 if(userId.equals("0")){
                     Constants.dispalyDialogInternet(ImageInfoActivity.this,"Invalid User","Please login again to upload information",false,false);
                 }else {
-                    Toast.makeText(ImageInfoActivity.this, "Uploading Data...", Toast.LENGTH_LONG).show();
-                    Intent intentService = new Intent(this, ImageUploadService.class);
-                    //intentService.putExtra("submitRequest", submitReq);
-                    List<SubmitRequest> submitReqList = new ArrayList<>();
-                    submitReqList.add(submitReq);
-                    intentService.putExtra("submitRequest", (Serializable) submitReqList);
-                    startService(intentService);
+                        Toast.makeText(ImageInfoActivity.this, "Uploading Data...", Toast.LENGTH_LONG).show();
+                        Intent intentService = new Intent(this, ImageUploadService.class);
+                        //intentService.putExtra("submitRequest", submitReq);
+                        List<SubmitRequest> submitReqList = new ArrayList<>();
+                        submitReqList.add(submitReq);
+                        intentService.putExtra("submitRequest", (Serializable) submitReqList);
+                        startService(intentService);
                 }
             } else {
                 //save in local db

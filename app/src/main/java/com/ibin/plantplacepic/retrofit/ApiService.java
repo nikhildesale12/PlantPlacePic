@@ -113,6 +113,13 @@ public interface ApiService {
             @Query("TOSPECIES") String TOSPECIES
     );
 
+    @GET(Constants.RENAME_SPECIES_SERVICE_URL)
+    Call<LoginResponse> renameSpeciesService(
+            @Query("IMAGENAME") String IMAGENAME,
+            @Query("FROMSPECIES") String FROMSPECIES,
+            @Query("TOSPECIES") String TOSPECIES
+    );
+
     @GET(Constants.UPDATE_USER_DEATAIL_SERVICE_URL)
     Call<UserDetailResponseBean> updateUserDetail(
             @Query("userId") String userId,

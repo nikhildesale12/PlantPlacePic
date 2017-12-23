@@ -421,7 +421,8 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                         public void onResult(Status status) {
                         }
             });
-            Intent intent = new Intent(Dashboard.this, SignInActivity.class);
+            //Sign out fb too
+            Intent intent = new Intent(Dashboard.this, LoginMainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -794,14 +795,26 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                            if(gps.canGetLocation()){
                                latitude = gps.getLatitude();
                                longitude = gps.getLongitude();
-                               List<Address> addresses =  getAddress(latitude,longitude);
-                               String address="",city="",country="";
-                               if(addresses != null){
-                                   address = addresses.get(0).getAddressLine(0);
-                                   city = addresses.get(0).getAddressLine(1);
-                                   country = addresses.get(0).getAddressLine(2);
+                               if(latitude != 0 && longitude != 0){
+                                   List<Address> addresses =  getAddress(latitude,longitude);
+                                   String address="",city="",country="";
+                                   if(addresses != null){
+                                       address = addresses.get(0).getAddressLine(0);
+                                       city = addresses.get(0).getAddressLine(1);
+                                       country = addresses.get(0).getAddressLine(2);
+                                   }
+                                   if((city == null || (city != null && city.equals("null")))&& (country == null || (country != null && country.equals("null")))){
+                                       finalAddress = address;
+                                   }else if(city == null || (city != null && city.equals("null"))){
+                                       finalAddress = address + "," +  country;
+                                   }else if(country == null || (country != null && country.equals("null"))){
+                                       finalAddress = address + "," + city;
+                                   }else {
+                                       finalAddress = address + "," + city + "," + country;
+                                   }
+                               }else{
+                                   Toast.makeText(Dashboard.this,"Error while getting location , please restart mobile GPS",Toast.LENGTH_SHORT).show();
                                }
-                               finalAddress = address+","+city+","+country;
                            }
 
 //                           if(file.length()/1024 > 2048 ) {

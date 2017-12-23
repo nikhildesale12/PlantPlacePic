@@ -53,7 +53,7 @@ public class LargeZoomActivity extends AppCompatActivity {
 //                            @Override
 //                            public void onShowcaseViewHide(ShowcaseView showcaseView) {
 //                                swipeImage.setVisibility(View.GONE);
-//                                SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE).edit();
+//                                SharedPreferences.Editor editor1 = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE).editpensil();
 //                                editor1.putBoolean(Constants.KEY_HINT_SWAP, false);
 //                                editor1.commit();
 //                            }
@@ -70,18 +70,24 @@ public class LargeZoomActivity extends AppCompatActivity {
 //                        })
 //                        .build();
             }
-
         }else{
             swipeImage.setVisibility(View.GONE);
         }
-        customPagerAdapterImage = new CustomPagerAdapterImage(LargeZoomActivity.this, dataList);
-        viewPager.setAdapter(customPagerAdapterImage);
-        viewPager.setCurrentItem(selectedPosition);
+        if(fromActivity != null && fromActivity.equals("FromMap")){
+            customPagerAdapterImage = new CustomPagerAdapterImage(LargeZoomActivity.this, dataList,"",LargeZoomActivity.this,false);
+            viewPager.setAdapter(customPagerAdapterImage);
+            viewPager.setCurrentItem(selectedPosition);
+        }else{
+            customPagerAdapterImage = new CustomPagerAdapterImage(LargeZoomActivity.this, dataList,"",LargeZoomActivity.this,true);
+            viewPager.setAdapter(customPagerAdapterImage);
+            viewPager.setCurrentItem(selectedPosition);
+        }
 
 //        final TouchImageView touchImageView = (TouchImageView) findViewById(R.id.largeimage);
         final Button cancelDialog = (Button) findViewById(R.id.button_cancel_largeimage);
 //
 //        if(getIntent() != null){
+
 //            imageName = getIntent().getStringExtra("imageName");
 //            tag = getIntent().getStringExtra("tag");
 //        }

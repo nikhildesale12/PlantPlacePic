@@ -19,6 +19,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.activities.Dashboard;
+import com.ibin.plantplacepic.activities.LoginMainActivity;
 import com.ibin.plantplacepic.activities.SignInActivity;
 
 import java.io.File;
@@ -51,6 +52,7 @@ public class Constants {
     public static final String UPLOAD_DATA_SERVICE_URL = "/plantplace/uploadData.php";
     public static final String UPDATE_DATA_SERVICE_URL = "/plantplace/updateData.php";
     public static final String MOVE_SPECIES_SERVICE_URL = "/plantplace/moveUpdateData.php";
+    public static final String RENAME_SPECIES_SERVICE_URL = "/plantplace/renameSpecies.php";
     public static final String DOWNLOAD_DATA_SERVICE_URL = "/plantplace/getDataByUserId.php";
     public static final String POST_FEEDBACK_DATA = "/plantplace/getFeedbackData.php";
     //public static final String DOWNLOAD_ALL_DATA_SERVICE_URL  = "/plantplace/getAllData.php";
@@ -137,7 +139,7 @@ public class Constants {
                     SharedPreferences.Editor editor = context.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE).edit();
                     editor.clear();
                     editor.commit();
-                    Intent intent = new Intent(context, SignInActivity.class);
+                    Intent intent = new Intent(context, LoginMainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);

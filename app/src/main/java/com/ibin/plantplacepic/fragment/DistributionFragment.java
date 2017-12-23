@@ -218,6 +218,12 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
         List<Information> dataList = new ArrayList<>();
         Information e = new Information();
         e.setImages(speciesPoints.getImageName());
+        if(speciesPoints.getTitle().contains("(")){
+            String[] split = speciesPoints.getTitle().split("\\(") ;
+            e.setSpecies(split[0]);
+        }else{
+            e.setSpecies(speciesPoints.getTitle());
+        }
         dataList.add(e);
         Bundle data = new Bundle();
         data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);
@@ -232,6 +238,12 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
         List<Information> dataList = new ArrayList<>();
         Information e = new Information();
         e.setImages((String) marker.getTag());
+        if(marker.getTitle().contains("(")){
+            String[] split = marker.getTitle().split("\\(") ;
+            e.setSpecies(split[0]);
+        }else{
+            e.setSpecies(marker.getTitle());
+        }
         dataList.add(e);
         Bundle data = new Bundle();
         data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataList);

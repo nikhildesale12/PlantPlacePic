@@ -59,11 +59,10 @@ public class GetUploadedDataService extends Service{
                 if (response != null && response.body() != null) {
                     if (response.body().getSuccess().toString().trim().equals("1")) {
                         if(response.body().getInformation() != null){
-                            boolean isInsert = false;
-                            if(response.body().getInformation().size() != databaseHelper.getTotalUploadedData(response.body().getInformation().get(0).getUserId())) {
-                                isInsert = true;
+                            //boolean isInsert = false;
+                            //if(response.body().getInformation().size() != databaseHelper.getTotalUploadedData(response.body().getInformation().get(0).getUserId())) {
+                                //isInsert = true;
                                 databaseHelper.removeAllSaveDataFromTable();
-
                                 for(int i = 0 ;i<response.body().getInformation().size();i++){
                                     Information information = new Information();
                                     information.setUserId(response.body().getInformation().get(i).getUserId());
@@ -80,12 +79,12 @@ public class GetUploadedDataService extends Service{
                                     information.setTime(response.body().getInformation().get(i).getTime());
                                     informationList.add(information);
                                     long insertedToLater = -1;
-                                    if(isInsert) {
+                                    //if(isInsert) {
                                         insertedToLater = databaseHelper.insertDataInTableInformationToSave(information);
-                                    }
-                                    if (insertedToLater != -1) {
+                                   // }
+                                   // if (insertedToLater != -1) {
                                         Log.d("Done", "Inserted ---> "+i +" == "+ insertedToLater);
-                                    }
+                                   // }
                                 }
 //                            setupViewPager(viewPager);
 //                            tabLayout.setupWithViewPager(viewPager);
@@ -97,7 +96,7 @@ public class GetUploadedDataService extends Service{
                                 data.putParcelableArrayList("reviewList", (ArrayList<? extends Parcelable>) informationList);
                                 intent.putExtras(data);
                                 sendBroadcast(intent);
-                            }
+                            //}
                         }else{
                             informationList = new ArrayList<>();
                         }

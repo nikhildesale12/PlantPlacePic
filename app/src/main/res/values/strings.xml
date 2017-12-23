@@ -21,7 +21,12 @@
     <string name="str_rb_terrain">Terrain</string>
     <!--<string name="google_maps_api_key">AIzaSyBMBlqdDPcTXZpAXffXPVNReyTe4JmjG9k</string>-->
     <string name="google_map_key" templateMergeStrategy="preserve" translatable="false">
-    AIzaSyBMBlqdDPcTXZpAXffXPVNReyTe4JmjG9k
+    <!--AIzaSyBMBlqdDPcTXZpAXffXPVNReyTe4JmjG9k-->
+    <string name="signinbutton">Login</string>
+        <string name="registerbutton">Register</string>
+    <string name="facebook_app_id">456142274781300</string>
 </string>
 
 </resources>
+
+

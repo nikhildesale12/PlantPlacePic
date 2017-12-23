@@ -1,82 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:CircleProgressView="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
+    <!-- <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="vertical"
+         android:weightSum="1">-->
 
     <com.ibin.plantplacepic.utility.TouchImageView
         android:id="@+id/largeimage"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="90"
+        android:layout_height="match_parent"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
-        android:src="@color/colorPrimaryDark"/>
+        android:src="@android:color/black"/>
+
+    <EditText
+        android:id="@+id/editTextSpeciesName"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/largeimage"
+        android:layout_centerHorizontal="true"
+        android:background="#D8D8D8"
+        android:hint="Species"
+        android:textColor="#000000"
+        android:enabled="false"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:paddingLeft="15dp"/>
+
+    <ImageView
+        android:id="@+id/buttonEditSpeciesName"
+        android:layout_width="32dp"
+        android:layout_height="40dp"
+        android:layout_alignEnd="@+id/editTextSpeciesName"
+        android:layout_alignRight="@+id/editTextSpeciesName"
+        android:layout_alignTop="@+id/editTextSpeciesName"
+        android:layout_marginEnd="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/editpensil"/>
+
+    <!--<ImageView
+        android:id="@+id/buttonSaveSpeciesName"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignEnd="@+id/editTextSpeciesName"
+        android:layout_alignRight="@+id/editTextSpeciesName"
+        android:layout_alignTop="@+id/editTextSpeciesName"
+        android:layout_marginRight="50dp"
+        android:background="@drawable/checkmark"/>-->
+
+    <!--<Button
+         android:id="@+id/buttonEditSpeciesName"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:layout_alignParentRight="true"
+         android:text="Update"/>-->
+
+    <!-- </LinearLayout>-->
+
+    <com.ibin.plantplacepic.utility.progressview.CircleProgressView
+        android:id="@+id/circleView"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerInParent="true"
+        android:focusableInTouchMode="false"
+        android:visibility="gone"
+        CircleProgressView:cpv_autoTextSize="true"
+        CircleProgressView:cpv_barColor="@color/primary_pb"
+        CircleProgressView:cpv_barWidth="15dp"
+        CircleProgressView:cpv_innerContourSize="0dp"
+        CircleProgressView:cpv_maxValue="100"
+        CircleProgressView:cpv_outerContourSize="0dp"
+        CircleProgressView:cpv_rimColor="@color/primary_light_pb"
+        CircleProgressView:cpv_rimWidth="20dp"
+        CircleProgressView:cpv_seekMode="false"
+        CircleProgressView:cpv_showUnit="true"
+        CircleProgressView:cpv_spinColor="@color/primary_pb"
+        CircleProgressView:cpv_textColor="@color/primary_light_pb"
+        CircleProgressView:cpv_textScale="1"
+        CircleProgressView:cpv_unit="%"
+        CircleProgressView:cpv_unitColor="@color/primary_dark_pb"
+        CircleProgressView:cpv_unitPosition="right_top"
+        CircleProgressView:cpv_unitScale="1"
+        CircleProgressView:cpv_value="0"/>
+
 
     <LinearLayout
+        android:id="@+id/likePanel"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="10"
         android:background="#FFF"
-        android:id="@+id/likePanel"
-        android:visibility="gone"
-        android:layout_weight="10">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/buttonLike"
-            android:src="@drawable/like_normal"
             android:layout_width="35dp"
-            android:layout_marginTop="5dp"
+            android:layout_height="40dp"
             android:layout_marginLeft="30dp"
-            android:layout_height="40dp"/>
+            android:layout_marginTop="5dp"
+            android:src="@drawable/like_normal"/>
 
 
         <TextView
             android:id="@+id/like_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
             android:alpha=".9"
             android:background="@drawable/round_shape_map"
-            android:textSize="12sp"
             android:text="0"
-            android:layout_marginTop="3dp"
+            android:textSize="12sp"
             android:textStyle="bold"/>
 
 
         <ImageView
             android:id="@+id/buttonDislike"
             android:layout_width="35dp"
-            android:src="@drawable/dislike"
+            android:layout_height="40dp"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="5dp"
-            android:layout_height="40dp"/>
+            android:src="@drawable/dislike"/>
 
 
         <TextView
             android:id="@+id/dislike_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:alpha=".9"
-            android:layout_marginTop="3dp"
             android:layout_marginLeft="1dp"
+            android:layout_marginTop="3dp"
+            android:alpha=".9"
             android:background="@drawable/round_shape_map"
-            android:textSize="12sp"
             android:text="0"
+            android:textSize="12sp"
             android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/buttonImageComment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="30dp"
             android:background="@drawable/button_selector"
-            android:text="Comment"
             android:padding="5dp"
-            android:layout_gravity="center_vertical"
+            android:text="Comment"
             android:textSize="18sp"/>
 
 
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

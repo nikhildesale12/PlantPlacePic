@@ -88,5 +88,4 @@
             android:text="@string/str_rb_satellite"/>
     </RadioGroup>
 
-
 </RelativeLayout>

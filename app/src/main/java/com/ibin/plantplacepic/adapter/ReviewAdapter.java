@@ -246,7 +246,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
                                     callDeleteService(dataListSameSpecies.get(position).getUserId(), dataListSameSpecies.get(position).getImages(), position);
                                     break;
                                 case R.id.action_edit_popup:
-                                    //Toast.makeText(context,"edit",Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(context,"editpensil",Toast.LENGTH_SHORT).show();
                                     Intent i = new Intent(context, UpdateInfoActivity.class);
                                     i.putExtra("dataListUpdate", dataListSameSpecies.get(position));
                                     context.startActivity(i);
