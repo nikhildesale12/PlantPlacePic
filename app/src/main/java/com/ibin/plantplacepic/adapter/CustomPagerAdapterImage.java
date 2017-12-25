@@ -33,6 +33,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.activities.ReviewMyUploadTabActivity;
+import com.ibin.plantplacepic.activities.SpeciesAroundYouActivity;
 import com.ibin.plantplacepic.activities.SpeciesSearchActivity;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.LoginResponse;
@@ -300,11 +301,12 @@ public class CustomPagerAdapterImage extends PagerAdapter {
                                 Toast toast = Toast.makeText(context, "Updated Successfully...", Toast.LENGTH_LONG);
                                 toast.setGravity(Gravity.CENTER, 0, 0);
                                 toast.show();
-                                //move in local db
+                                //update it in local
+                                databaseHelper.renameSpeciesLocal(imageName,fromSpecies,toSpecies);
                                 SharedPreferences prefs = context.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
                                 String userId = prefs.getString("USERID", "0");
                                 int result = databaseHelper.moveFolderInLocal(userId,imageName,fromSpecies,toSpecies);
-                                Intent i = new Intent(context, SpeciesSearchActivity.class);
+                                Intent i = new Intent(context, SpeciesAroundYouActivity.class);
                                 context.startActivity(i);
                                 ((Activity) context).finish();
                             //}

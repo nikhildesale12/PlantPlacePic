@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Address;
+import android.location.Geocoder;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.SubmitRequest;
@@ -20,10 +24,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static SQLiteDatabase sqLiteDatabase;
     /*Database variables starts*/
     public static final String DATABASE_NAME = "plantplacepic.sqlite";
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     /*Tables Name*/
     private static final String TABLE_INFORMATION_SAVE_TO_LATER = "information";
     private static final String TABLE_INFORMATION_SAVE_DATA = "information_save";
+    private static final String TABLE_ALL_INFORMATION_SAVE_DATA = "all_information_save";
 
     /*Field Name - species_structure */
     private static final String COLUMN_INFO_USERID = "user_id";
@@ -55,6 +60,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + COLUMN_INFO_SPECIES + " TEXT," + COLUMN_INFO_REMATK + " TEXT," + COLUMN_INFO_TAG + " TEXT," + COLUMN_INFO_STATUS + " TEXT," +
             COLUMN_INFO_TITLE + " TEXT," + COLUMN_INFO_LAT + " TEXT," + COLUMN_INFO_LNG + " TEXT," + COLUMN_INFO_ADDRESS + " TEXT," +
             COLUMN_INFO_CROP + " TEXT," + COLUMN_INFO_TIME + " TEXT," + COLUMN_INFO_UPDATE_INFO + " TEXT," + COLUMN_INFO_UPLOAD_FROM + " TEXT);";
+
+    private static final String CREATE_TABLE_ALL_INFORMATION_SAVE = "CREATE TABLE " + TABLE_ALL_INFORMATION_SAVE_DATA + "(" + COLUMN_INFO_USERID + " TEXT," + COLUMN_INFO_IMAGES_URL + " TEXT," + COLUMN_INFO_IMAGES + " TEXT,"
+            + COLUMN_INFO_SPECIES + " TEXT," + COLUMN_INFO_REMATK + " TEXT," + COLUMN_INFO_TAG + " TEXT," + COLUMN_INFO_STATUS + " TEXT," +
+            COLUMN_INFO_TITLE + " TEXT," + COLUMN_INFO_LAT + " TEXT," + COLUMN_INFO_LNG + " TEXT," + COLUMN_INFO_ADDRESS + " TEXT," +
+            COLUMN_INFO_CROP + " TEXT," + COLUMN_INFO_TIME + " TEXT," + COLUMN_INFO_UPDATE_INFO + " TEXT," + COLUMN_INFO_UPLOAD_FROM + " TEXT);";
     /*create Query end*/
 
     private DatabaseHelper(Context context) {
@@ -73,6 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(CREATE_TABLE_INFORMATION_SAVE_TO_LATER);
         sqLiteDatabase.execSQL(CREATE_TABLE_INFORMATION_SAVE);
+        sqLiteDatabase.execSQL(CREATE_TABLE_ALL_INFORMATION_SAVE);
     }
 
     @Override
@@ -80,6 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // on upgrade drop older tables
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INFORMATION_SAVE_TO_LATER);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_INFORMATION_SAVE_DATA);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_ALL_INFORMATION_SAVE_DATA);
         // create new tables
         onCreate(sqLiteDatabase);
     }
@@ -123,7 +135,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ContentValues initialValues = new ContentValues();
                 initialValues.put(COLUMN_INFO_USERID, information.getUserId());
                 initialValues.put(COLUMN_INFO_IMAGES, information.getImages());
-                //initialValues.put(COLUMN_INFO_IMAGES_URL, request.getImageUrl());
                 initialValues.put(COLUMN_INFO_SPECIES, information.getSpecies());
                 initialValues.put(COLUMN_INFO_REMATK, information.getRemark());
                 initialValues.put(COLUMN_INFO_TAG, information.getTag());
@@ -144,13 +155,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         close();
         return lastInsert;
     }
+
+    public long insertDataInTableAllInformationToSave(Information information) {
+        openDatabase();
+        long lastInsert = -1;
+        if (information != null) {
+            try {
+                ContentValues initialValues = new ContentValues();
+                initialValues.put(COLUMN_INFO_USERID, information.getUserId());
+                initialValues.put(COLUMN_INFO_IMAGES, information.getImages());
+                initialValues.put(COLUMN_INFO_SPECIES, information.getSpecies());
+                initialValues.put(COLUMN_INFO_REMATK, information.getRemark());
+                initialValues.put(COLUMN_INFO_TAG, information.getTag());
+                initialValues.put(COLUMN_INFO_STATUS, information.getStatus());
+                initialValues.put(COLUMN_INFO_TITLE, information.getTitle());
+                initialValues.put(COLUMN_INFO_LAT, information.getLat());
+                initialValues.put(COLUMN_INFO_LNG, information.getLng());
+                initialValues.put(COLUMN_INFO_ADDRESS, information.getAddress());
+                initialValues.put(COLUMN_INFO_CROP, information.getCrop());
+                initialValues.put(COLUMN_INFO_TIME, information.getTime());
+                initialValues.put(COLUMN_INFO_UPDATE_INFO, information.getUpdateinfo());
+                initialValues.put(COLUMN_INFO_UPLOAD_FROM, information.getUploadFrom());
+                lastInsert = sqLiteDatabase.insert(TABLE_ALL_INFORMATION_SAVE_DATA, null, initialValues);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        close();
+        return lastInsert;
+    }
     //get info to upload data
     public List<SubmitRequest> getImageInfoToUpload(String userId) {
         openDatabase();
         List<SubmitRequest> dataList = null;
         try {
-            dataList = new ArrayList<SubmitRequest>();
-            //  String selectQuery = "SELECT * FROM " + TABLE_INFORMATION  + " WHERE " + COLUMN_INFO_USERID + "='" + userId + "' AND "+COLUMN_INFO_STATUS + "='false'" ;
+            dataList = new ArrayList<>();
             String selectQuery = "SELECT * FROM " + TABLE_INFORMATION_SAVE_TO_LATER + " WHERE " + COLUMN_INFO_USERID + "='" + userId + "'";
             Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);
             if (cursor.moveToFirst()) {
@@ -171,19 +210,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     dataList.add(sr);
                 } while (cursor.moveToNext());
             }
-            //cursor.close();
-            //close();
+            close();
         }catch(Exception e){
             e.printStackTrace();
         }
         return dataList;
     }
-    //get info of uploaded data
+    /*get info of uploaded data starts */
     public ArrayList<Information> getImageUploadedInfo(String userId) {
         openDatabase();
         ArrayList<Information> dataList = new ArrayList<>();
-        //  String selectQuery = "SELECT * FROM " + TABLE_INFORMATION  + " WHERE " + COLUMN_INFO_USERID + "='" + userId + "' AND "+COLUMN_INFO_STATUS + "='false'" ;
         String selectQuery = "SELECT * FROM " + TABLE_INFORMATION_SAVE_DATA  + " WHERE " + COLUMN_INFO_USERID + "='" + userId + "'";
+        Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                Information sr = new Information();
+                sr.setTime(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_TIME)));
+                sr.setTag(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_TAG)));
+                sr.setTitle(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_TITLE)));
+                sr.setImages(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_IMAGES)));
+                sr.setAddress(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_ADDRESS)));
+                sr.setLat(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_LAT)));
+                sr.setLng(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_LNG)));
+                sr.setRemark(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_REMATK)));
+                sr.setSpecies(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_SPECIES)));
+                sr.setUserId(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_USERID)));
+                sr.setUpdateinfo(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_UPLOAD_FROM)));
+                sr.setUploadFrom(cursor.getString(cursor.getColumnIndex(COLUMN_INFO_UPLOAD_FROM)));
+                dataList.add(sr);
+            } while (cursor.moveToNext());
+        }
+        close();
+        return dataList;
+    }
+    /*end*/
+    /*starts*/
+    public ArrayList<Information> getAllImageUploadedInfo() {
+        openDatabase();
+        ArrayList<Information> dataList = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + TABLE_ALL_INFORMATION_SAVE_DATA ;
         Cursor cursor = sqLiteDatabase.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
@@ -207,7 +272,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         close();
         return dataList;
     }
-
+    /*end*/
     //update information in local
     public int updateInfoInLocal(String userId,String  IMAGE, String SPECIES,String  REMARK,String  TAG, String TITLE,String  serverFolderPath,String  serverFolderPathFrom,String  ADDRESS){
         int updateResult = 0;
@@ -239,6 +304,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return updateResult;
     }
 
+    public int renameSpeciesLocal(String imageName, String fromSpecies, String toSpecies){
+        int updateResult = 0;
+        openDatabase();
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values=new ContentValues();
+
+        values.put(COLUMN_INFO_SPECIES,toSpecies);
+        values.put(COLUMN_INFO_UPDATE_INFO,"From "+fromSpecies+" To "+toSpecies);
+
+        updateResult=db.update(TABLE_INFORMATION_SAVE_DATA,values,"images='"+imageName+"' and species='"+fromSpecies+"'",null);
+        close();
+        return updateResult;
+    }
+
     //get total uploaded info count
     public int getTotalUploadedData(String userId){
         String countQuery = "SELECT * FROM " + TABLE_INFORMATION_SAVE_DATA +" WHERE "+ COLUMN_INFO_USERID + "='" + userId + "'";
@@ -246,6 +325,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(countQuery, null);
         int cnt = cursor.getCount();
         cursor.close();
+        return cnt;
+    }
+
+    public int getTotalALLUploadedData(){
+        String countQuery = "SELECT * FROM " + TABLE_ALL_INFORMATION_SAVE_DATA;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int cnt = cursor.getCount();
+        cursor.close();
+        Log.d("Total upload in local : ","Total upload in local : "+cnt);
         return cnt;
     }
 
@@ -284,9 +373,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.delete(TABLE_INFORMATION_SAVE_TO_LATER, null, null);
         close();
     }
-    public void removeAllSaveDataFromTable() {
+    public void removeSaveDataFromTable() {
         openDatabase();
         sqLiteDatabase.delete(TABLE_INFORMATION_SAVE_DATA, null, null);
+        close();
+    }
+    public void removeAllSaveDataFromTable() {
+        openDatabase();
+        sqLiteDatabase.delete(TABLE_ALL_INFORMATION_SAVE_DATA, null, null);
         close();
     }
 

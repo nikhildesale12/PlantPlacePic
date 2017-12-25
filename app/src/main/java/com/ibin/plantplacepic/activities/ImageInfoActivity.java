@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +36,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
 import com.ibin.plantplacepic.bean.SubmitRequest;
@@ -171,7 +174,19 @@ public class ImageInfoActivity extends AppCompatActivity {
         buttonUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //speciesEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+                String speciesName = speciesEditText.getText().toString();
+                String formatedSpeciesName="";
+                for(int i=0;i<speciesName.length();i++)
+                {
+                    if(i==0){
+                        String firstLetter = ""+speciesName.charAt(i);
+                        formatedSpeciesName += firstLetter.toUpperCase();
+                    }else{
+                        String restLetter = ""+speciesName.charAt(i);
+                        formatedSpeciesName += restLetter.toLowerCase();
+                    }
+                }
+                speciesEditText.setText(formatedSpeciesName);
                 if (speciesEditText.getText().toString().trim().length() == 0) {
                     speciesEditText.requestFocus();
                     speciesEditText.setError("Please Enter Species");
@@ -179,37 +194,9 @@ public class ImageInfoActivity extends AppCompatActivity {
                     cityEditText.requestFocus();
                     cityEditText.setError("Please Enter Location");
                 } else {
-                    if(latitude != 0) {
                         UploadImageServiceCall();
-                    }else{
-                        Toast.makeText(ImageInfoActivity.this,"Error while getting location, check your gps",Toast.LENGTH_SHORT).show();
-                    }
                 }
             }
-        });
-
-        speciesEditText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-
-            }
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-                                          int arg3) {
-            }
-            @Override
-            public void afterTextChanged(Editable et) {
-                String s=et.toString();
-                if((!s.equals(s.toUpperCase()) && s.length()==1)) {
-                    s=s.toUpperCase();
-                    speciesEditText.setText(s);
-                }
-                else{
-                    s=s.toLowerCase();
-                }
-            }
-
         });
 
         buttonSaveLater.setOnClickListener(new View.OnClickListener() {
@@ -266,6 +253,27 @@ public class ImageInfoActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
+            }
+        });
+
+        speciesEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    String speciesName = speciesEditText.getText().toString();
+                    String formatedSpeciesName="";
+                    for(int i=0;i<speciesName.length();i++)
+                    {
+                        if(i==0){
+                            String firstLetter = ""+speciesName.charAt(i);
+                            formatedSpeciesName += firstLetter.toUpperCase();
+                        }else{
+                            String restLetter = ""+speciesName.charAt(i);
+                            formatedSpeciesName += restLetter.toLowerCase();
+                        }
+                    }
+                    speciesEditText.setText(formatedSpeciesName);
+                }
             }
         });
 
@@ -395,12 +403,17 @@ public class ImageInfoActivity extends AppCompatActivity {
             uploadedSpecies = speciesEditText.getText().toString();
             submitReq.setRemark(remarkEditText.getText().toString());
             submitReq.setTag(TAG);
-            submitReq.setLatitude(String.valueOf(latitude));
-            submitReq.setLongitude(String.valueOf(longitude));
             if (cityEditText.getText().toString().length() > 0) {
                 submitReq.setAddress(cityEditText.getText().toString());
             } else {
                 submitReq.setAddress(address);
+            }
+            if(latitude == 0.0 && longitude == 0.0){
+                //convert lat lng from address
+                getAddressOnMap(submitReq);
+            }else {
+                submitReq.setLatitude(String.valueOf(latitude));
+                submitReq.setLongitude(String.valueOf(longitude));
             }
             submitReq.setCrop(cropStatus);
             submitReq.setStatus("false");
@@ -435,6 +448,33 @@ public class ImageInfoActivity extends AppCompatActivity {
             } else {
                 finish();
             }
+    }
+
+
+    private void getAddressOnMap(SubmitRequest submitReq) {
+        Geocoder geocode = new Geocoder(this);
+        double latitude = 0.0;
+        double longitude = 0.0;
+        Address address = null;
+        List<Address> addressList = null;
+        String addressStr = submitReq.getAddress();
+        try {
+            if (!TextUtils.isEmpty(addressStr)) {
+                addressList = geocode.getFromLocationName(addressStr, 5);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (null != addressList && addressList.size() > 0) {
+            address = addressList.get(0);
+        }
+        if (null != address && address.hasLatitude()
+                && address.hasLongitude()) {
+            latitude = address.getLatitude();
+            longitude = address.getLongitude();
+        }
+        submitReq.setLatitude(String.valueOf(latitude));
+        submitReq.setLongitude(String.valueOf(longitude));
     }
 
     private void saveInLocalForLaterUpload(){
@@ -566,6 +606,7 @@ public class ImageInfoActivity extends AppCompatActivity {
         databaseHelper = DatabaseHelper.getDatabaseInstance(getApplicationContext());
         speciesNotLoaded = (TextView) findViewById(R.id.speciesNotLoaded);
     }
+
 
     @Override
     public void onBackPressed() {

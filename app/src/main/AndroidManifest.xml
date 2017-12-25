@@ -60,6 +60,7 @@
 
         <service android:name=".services.ImageUploadService"/>
         <service android:name=".services.GetUploadedDataService"/>
+        <service android:name=".services.GetAllUploadedDataService"/>
 
         <activity
             android:name=".activities.ReviewMyUpload"

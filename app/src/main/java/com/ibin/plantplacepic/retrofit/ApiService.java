@@ -86,6 +86,10 @@ public interface ApiService {
             @Query("USERID") String USERID
     );
 
+    @GET(Constants.GET_ALL_COUNT_SERVICE_URL)
+    Call<LoginResponse> getAllUplodCount(
+    );
+
     @GET(Constants.UPDATE_DATA_SERVICE_URL)
     Call<LoginResponse> dataUpdateService(
             @Query("USERID") String USERID,

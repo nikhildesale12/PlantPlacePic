@@ -57,7 +57,7 @@ public class FeedbackActivity extends AppCompatActivity {
             }
         });
     }
-
+    /*Service Call to give feedback by user*/
     private void callFeedbackService(){
         String rating=String.valueOf(ratingBar.getRating());
         final ProgressDialog dialog = new ProgressDialog(FeedbackActivity.this);

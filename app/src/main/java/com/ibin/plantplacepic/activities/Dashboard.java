@@ -119,6 +119,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         }else {
             topToolBar = (Toolbar)findViewById(R.id.toolbarDashboard);
             userProfilePic = (ImageView) findViewById(R.id.userProfilePic);
+            /*get emailid and userid and user name from shared preference*/
             SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
             emailId  = prefs.getString(Constants.KEY_USERNAME, "Guest");
             userId = prefs.getString(Constants.KEY_USERID, "0");
@@ -134,13 +135,14 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             if(getIntent() != null && getIntent().getStringExtra("uploadedCount") != null){
                 textUploadCount.setVisibility(View.VISIBLE);
                  uploadedCount =  getIntent().getStringExtra("uploadedCount");
+                 /*Uploaded from is to get uploaded count from webservice */
                  if(uploadedCount.equals(Constants.FROM_)){
                      getUploadedCount(userId);
                  }else {
                      textUploadCount.setText(uploadedCount);
                  }
             }
-
+            /*Set profile pic from storage*/
             File file = new File(Constants.FOLDER_PATH + File.separator + Constants.USER_PHOTO);
             if(file != null && file.exists()){
                 Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
@@ -224,7 +226,9 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                 getSupportActionBar().setTitle(prefs.getString(Constants.KEY_USERNAME, "Guest"));
             }
             //topToolBar.setNavigationIcon(R.mipmap.userpic);
+            /*Copy help pdf from asset to local storage for future reference starts*/
             copyPdfFromAssetToSdCard();
+             /*Copy help pdf from asset to local storage for future reference end*/
             buttonGallery.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -284,11 +288,6 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                     Intent intent1 = new Intent(Dashboard.this,ReviewMyUploadTabActivity.class);
                     startActivity(intent1);
                     finish();
-//                    if(Constants.isNetworkAvailable(Dashboard.this)){
-//
-//                    }else{
-//                        Constants.dispalyDialogInternet(Dashboard.this,"Internet Unavailable","Please check internet connection",false,false);
-//                    }
                 }
             });
 
@@ -298,11 +297,6 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                     Intent intent1 = new Intent(Dashboard.this, SpeciesSearchActivity.class);
                     startActivity(intent1);
                     finish();
-//                    if(Constants.isNetworkAvailable(Dashboard.this)){
-//
-//                    }else{
-//                        Constants.dispalyDialogInternet(Dashboard.this,"Internet Unavailable","Please check internet connection",false,false);
-//                    }
                 }
             });
 
@@ -317,32 +311,12 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                         intentService.putExtra("submitRequest", (Serializable) dataList);
                         startService(intentService);
                     }
-                   /* for(int i=0;i<dataList.size();i++){
-                        SubmitRequest  submitRequest = new SubmitRequest();
-                        submitRequest.setUserId(dataList.get(i).getUserId());
-                        submitRequest.setRemark(dataList.get(i).getRemark());
-                        submitRequest.setSpecies(dataList.get(i).getSpecies());
-                        submitRequest.setAddress(dataList.get(i).getAddress());
-                        submitRequest.setCrop(dataList.get(i).getCrop());
-                        submitRequest.setImageName(dataList.get(i).getImageName());
-                        submitRequest.setImagesPathList(dataList.get(i).getImagesPathList());
-                        submitRequest.setImageUrl(dataList.get(i).getImageUrl());
-                        submitRequest.setLatitude(dataList.get(i).getLatitude());
-                        submitRequest.setLongitude(dataList.get(i).getLongitude());
-                        submitRequest.setTitle(dataList.get(i).getTitle());
-                        submitRequest.setTag(dataList.get(i).getTag());
-                        submitRequest.setStatus(dataList.get(i).getStatus());
-                        submitRequest.setTime(dataList.get(i).getTime());
-                        submitRequest.setIsSaveInLocal("NO");
-                    }
-                    if(submitRequest.getImageUrl() != null && (submitRequest.getStatus() == null || submitRequest.getStatus() != null && submitRequest.getStatus().equals("false"))){
-
-                    }*/
                 }
             }
         }
     } /*onCreate End*/
 
+    /*Copy help pdf from asset to local storage for future reference starts*/
     private void copyPdfFromAssetToSdCard() {
         AssetManager assetManager=getAssets();
         InputStream in=null;
@@ -385,22 +359,8 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             }
         }
     }
+ /*Copy help pdf from asset to local storage for future reference end*/
 
-
-    /* private class StarServiceInAsync extends AsyncTask<Void, Integer, String> {
-         SubmitRequest submitRequest = new SubmitRequest();
-         private StarServiceInAsync(SubmitRequest submitRqt) {
-             submitRequest = submitRqt;
-         }
-         @Override
-         protected String doInBackground(Void... params) {
-             Intent intentService = new Intent(Dashboard.this, ImageUploadService.class);
-             intentService.putExtra("submitRequest",submitRequest);
-             startService(intentService);
-             return null;
-         }
- 
-     }*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -412,6 +372,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_logout) {
+            /*clear shared preference while logout*/
             SharedPreferences.Editor editor = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE).edit();
             editor.clear();
             editor.commit();
@@ -484,6 +445,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         return super.onOptionsItemSelected(item);
     }
 
+    /*copy pdf file from asset to storage*/
     private void copyAsset(String filename)
     {
         AssetManager assetManager=getAssets();
@@ -538,7 +500,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             }
         }
     }
-
+    /*Get profile detail to update it*/
     private void getProfileInfo() {
         final ProgressDialog dialog = new ProgressDialog(Dashboard.this);
         dialog.setMessage("Please Wait...");
@@ -556,6 +518,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                         dialog.dismiss();
                     }
                     if (response.body().getSuccess().toString().trim().equals("1")) {
+                        //open popup and display profile details
                         openProfilePopUp(response);
                     } else if (response.body().getSuccess().toString().trim().equals("0")) {
                         if (dialog != null && dialog.isShowing()) {
@@ -633,7 +596,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         }
     }
 
-
+    /*Update user information starts*/
     private void updateUserInformation(String userId,String firstName,String middleName,String LastName, String occupation,String mobileNum){
         //update Info
         final ProgressDialog dialog = new ProgressDialog(Dashboard.this);
@@ -689,6 +652,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             }
         });
     }
+    /*Update user information end*/
 
     private void getUploadedCount(final String userId) {
         if(Constants.isNetworkAvailable(Dashboard.this)){
@@ -701,7 +665,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                 public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                     if(response != null && response.body() != null ){
                         if(response != null && response.body() != null && response.body().getSuccess().equals(1) ){
-                            //databaseHelper.removeAllSaveDataFromTable();
+                            //databaseHelper.removeSaveDataFromTable();
                             textUploadCount.setVisibility(View.VISIBLE);
                             textUploadCount.setText(response.body().getCount());
                         }
@@ -803,11 +767,14 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                                        city = addresses.get(0).getAddressLine(1);
                                        country = addresses.get(0).getAddressLine(2);
                                    }
-                                   if((city == null || (city != null && city.equals("null")))&& (country == null || (country != null && country.equals("null")))){
+                                   if((city == null || (city != null && city.equals("null")))
+                                           && (country == null || (country != null && country.equals("null")))){
                                        finalAddress = address;
-                                   }else if(city == null || (city != null && city.equals("null"))){
+                                   }else if(city == null || (city != null && city.equals("null"))
+                                           && country != null && !country.equals("null") ){
                                        finalAddress = address + "," +  country;
-                                   }else if(country == null || (country != null && country.equals("null"))){
+                                   }else if(country == null || (country != null && country.equals("null"))
+                                           && city != null && !city.equals("null")){
                                        finalAddress = address + "," + city;
                                    }else {
                                        finalAddress = address + "," + city + "," + country;

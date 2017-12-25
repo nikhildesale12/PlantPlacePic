@@ -12,10 +12,13 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
+import com.ibin.plantplacepic.services.GetAllUploadedDataService;
 import com.ibin.plantplacepic.utility.Constants;
 
 import java.util.concurrent.TimeUnit;
@@ -99,6 +102,9 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if(response != null && response.body() != null){
                     if(response.body().getResult().trim().equals(version)){
+                        /*Service to get all records starts*/
+                        getAllUploadedCount();
+                        /*Service to get all reccord end*/
                         SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGOUT, MODE_PRIVATE);
                         boolean logoutUser  = prefs.getBoolean(Constants.KEY_FIRST_TIME_LOGOUT_USER,true);
                         if(logoutUser){
@@ -156,6 +162,45 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
+    private void getAllUploadedCount() {
+            final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .readTimeout(15, TimeUnit.SECONDS)
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .build();
+            Gson gson = new GsonBuilder()
+                    .setLenient()
+                    .create();
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .client(okHttpClient)
+                    .build();
+            ApiService service = retrofit.create(ApiService.class);
+            Call<LoginResponse> call = service.getAllUplodCount();
+            call.enqueue(new Callback<LoginResponse>() {
+                @Override
+                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                    if (response != null && response.body() != null && response.body().getSuccess() == 1) {
+                        if(!response.body().getCount().trim().equals(""+databaseHelper.getTotalALLUploadedData())){
+                            new Thread() {
+                                public void run() {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Intent intentService = new Intent(SplashScreen.this, GetAllUploadedDataService.class);
+                                            startService(intentService);
+                                        }
+                                    });
+                                }
+                            }.start();
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Call<LoginResponse> call, Throwable t) {
+                }
+            });
+    }
+
     private void getUploadedCount(final boolean isLogin, final String userId) {
         if (userId.equals("0")) {
             Intent i = new Intent(SplashScreen.this, LoginMainActivity.class);
@@ -179,7 +224,7 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
                     if (response != null && response.body() != null && response.body().getSuccess() == 1) {
                         if (isLogin) {
                             if (response.body().getCount().trim().equals("0")) {
-                                databaseHelper.removeAllSaveDataFromTable();
+                                databaseHelper.removeSaveDataFromTable();
                                 uploadedCount = "" + databaseHelper.getTotalUploadedData(userId);
                             } else {
                                 uploadedCount = response.body().getCount();
@@ -215,7 +260,6 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
 
                 @Override
                 public void onFailure(Call<LoginResponse> call, Throwable t) {
-                    uploadedCount = "" + databaseHelper.getTotalUploadedData(userId);
                     uploadedCount = "" + databaseHelper.getTotalUploadedData(userId);
                     if (userId.equals("0")) {
                         Intent i = new Intent(SplashScreen.this, LoginMainActivity.class);

@@ -52,11 +52,13 @@ public class CustomGallery extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_gallery);
         initViews();
+        /*Get Lat and Long. address*/
         getLocationInfo();
 
         buttonUploadMultiple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*User can select 5 images at once to upload*/
                 ArrayList<String> selectedItems = imageAdapter.getCheckedItems();
                 if (selectedItems!= null && selectedItems.size() == 0) {
                     Toast.makeText(CustomGallery.this, "Please select atleast one image to upload", Toast.LENGTH_SHORT).show();
@@ -83,8 +85,8 @@ public class CustomGallery extends AppCompatActivity {
         databaseHelper = DatabaseHelper.getDatabaseInstance(getApplicationContext());
     }
 
+    /*set data in bean and open ImageInfoActivity*/
     private void UploadImageServiceCall(ArrayList<String> imageList) {
-
         SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
         userId = prefs.getString("USERID", "0");
         SubmitRequest submitRequest = new SubmitRequest();
@@ -123,43 +125,6 @@ public class CustomGallery extends AppCompatActivity {
             }
             finish();
         }
-        //call Service and pass data
-        /*if(Constants.isNetworkAvailable(CustomGallery.this)){
-            Toast.makeText(CustomGallery.this,"Uploading Images...",Toast.LENGTH_LONG).show();
-            Intent intentService = new Intent(CustomGallery.this, ImageUploadService.class);
-            intentService.putExtra("submitRequest",submitRequest);
-            startService(intentService);
-        }else{
-            //save in local db
-            long save = -1;
-            if(submitRequest != null && submitRequest.getImagesPathList()!= null && submitRequest.getImagesPathList().size() >0){
-                for(int i=0;i < submitRequest.getImagesPathList().size();i++){
-                    String path = submitRequest.getImagesPathList().get(i);
-                    ExifInterface exif = null;
-                    try {
-                        exif = new ExifInterface(path);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    String datetime =  exif.getAttribute(ExifInterface.TAG_DATETIME);
-                    String fileName = path.substring(path.lastIndexOf('/')+1, path.length());
-                    submitRequest.setTime(datetime);
-                    submitRequest.setImageUrl(path);
-                    submitRequest.setImageName(fileName);
-                    save = databaseHelper.insertDataInTableInformation(submitRequest);
-                }
-            }
-            if(save != -1){
-                Toast.makeText(getApplicationContext(),"Internet Unavailable your data will upload automatically later",Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(getApplicationContext(),"Unable to save",Toast.LENGTH_SHORT).show();
-            }
-
-        }
-        Intent intentdASH = new Intent(this, Dashboard.class);
-        startActivity(intentdASH);
-        finish();*/
-
     }
 
 
@@ -301,7 +266,6 @@ public class CustomGallery extends AppCompatActivity {
                         REQUEST_FOR_STORAGE_PERMISSION);
             }
         }).show();
-
     }
 
     @Override

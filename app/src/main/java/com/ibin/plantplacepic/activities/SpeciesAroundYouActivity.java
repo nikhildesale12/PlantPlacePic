@@ -115,6 +115,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                     double longitude = 0;
 //                    mClusterManager.clearItems();
                     mMap.clear();
+                    mMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.this);
                     for (int i=0;i< mainDataList.size();i++){
                         if(mainDataList.get(i).getSpecies().trim().equalsIgnoreCase(ACTtEnterSpeciesName.getText().toString().trim())){
                             if(mainDataList.get(i).getLat() != null && mainDataList.get(i).getLng() != null
@@ -137,8 +138,6 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                             .title(mainDataList.get(i).getSpecies()))
                                             .setTag(mainDataList.get(i).getImages());
                                 }
-
-                                mMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.this);
 //                                String address = "";
 //                                if(mainDataList.get(i).getAddress().trim().contains(",null")){
 //                                    address = mainDataList.get(i).getAddress().trim().replace(",null","");
@@ -147,17 +146,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                             }else{
                                 //get address and get it on map
                                 if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().length()>3){
-                                    final int finalI = i;
-                                    new Thread() {
-                                        public void run() {
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    getAddressOnMap (mainDataList.get(finalI).getAddress(), finalI);
-                                                }
-                                            });
-                                        }
-                                    }.start();
+                                    getAddressOnMap (mainDataList.get(i).getAddress(), i);
                                 }
                             }
                         }
@@ -317,8 +306,8 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                     }
                                 }
                             }
-//                            mClusterManager.cluster();
-//                            new RenderClusterInfoWindow(SpeciesAroundYouActivity.this,googleMap,mClusterManager);
+//                          mClusterManager.cluster();
+//                          new RenderClusterInfoWindow(SpeciesAroundYouActivity.this,googleMap,mClusterManager);
                             ArrayAdapter<String> adapter = new ArrayAdapter<String>(SpeciesAroundYouActivity.this,android.R.layout.simple_list_item_1, speciesList);
                             ACTtEnterSpeciesName.setThreshold(1);
                             ACTtEnterSpeciesName.setAdapter(adapter);
@@ -413,24 +402,87 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
 //                    addSpeciesPointsItems(mClusterManager,googleMap);
 
                     //mClusterManager.cluster();
-            if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
-                Runnable runThis = new Runnable() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        callServiceToGetSpeciesNames(googleMap);
-                        Looper.loop();
+                    if(databaseHelper.getTotalALLUploadedData() == 0) {
+                        if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
+                            Runnable runThis = new Runnable() {
+                                @Override
+                                public void run() {
+                                    Looper.prepare();
+                                    if(databaseHelper.getTotalALLUploadedData() == 0) {
+                                        callServiceToGetSpeciesNames(googleMap);
+                                    }
+                                    Looper.loop();
+                                }
+                            };
+                            Thread th = new Thread(runThis);
+                            th.start();
+                        }
+                    }else{
+                        showPointsFromLocal(googleMap);
                     }
-                };
-                Thread th = new Thread(runThis);
-                th.start();
             }
-                }
 //        googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!"));
             }else {
                 requestPermission();
             }
         }
+    }
+
+    private void showPointsFromLocal(GoogleMap googleMap){
+        googleMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.this);
+        mainDataList = databaseHelper.getAllImageUploadedInfo();
+        for(int i = 0 ;i<mainDataList.size();i++){
+            if(mainDataList.get(i).getLat() != null && mainDataList.get(i).getLng() != null
+                    && !mainDataList.get(i).getLat().equals("0") && !mainDataList.get(i).getLat().equals("0.0")
+                    && !mainDataList.get(i).getLng().equals("0") && !mainDataList.get(i).getLng().equals("0.0")
+                    && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")){
+                double latitude = Double.parseDouble(mainDataList.get(i).getLat());
+                double longitude = Double.parseDouble(mainDataList.get(i).getLng());
+                if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
+                    mainDataList.get(i).getAddress().trim().replace(",,","");
+                }
+                if(mainDataList.get(i).getUserName() != null && mainDataList.get(i).getUserName().trim().length()>0){
+                    googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                            .snippet(mainDataList.get(i).getAddress())
+                            .title(mainDataList.get(i).getSpecies()+"("+mainDataList.get(i).getUserName().trim()+")"))
+                            .setTag(mainDataList.get(i).getImages());
+                }else{
+                    googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                            .snippet(mainDataList.get(i).getAddress())
+                            .title(mainDataList.get(i).getSpecies()))
+                            .setTag(mainDataList.get(i).getImages());
+                }
+
+                                    /*String address = "";
+                                    if(response.body().getInformation().get(i).getAddress().trim().contains(",null")){
+                                        address = response.body().getInformation().get(i).getAddress().trim().replace(",null","");
+                                    }
+                                    mClusterManager.addItem(new SpeciesPoints(latitude, longitude,response.body().getInformation().get(i).getSpecies() , address , response.body().getInformation().get(i).getImages()));
+*/
+                if(!speciesList.contains(mainDataList.get(i).getSpecies().trim())){
+                    if(mainDataList.get(i).getSpecies().trim().length()>0){
+                        speciesList.add(mainDataList.get(i).getSpecies().trim());
+                    }
+                }
+            }else{
+//                if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
+//                    mainDataList.get(i).getAddress().trim().replace(",,","");
+//                }
+//                if(!speciesList.contains(mainDataList.get(i).getSpecies().trim())){
+//                    if(mainDataList.get(i).getSpecies().trim().length()>0){
+//                        speciesList.add(mainDataList.get(i).getSpecies().trim());
+//                    }
+//                }
+//                if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().length()>3){
+//                    getAddressOnMap (mainDataList.get(i).getAddress(), i);
+//                }
+            }
+        }
+//                          mClusterManager.cluster();
+//                          new RenderClusterInfoWindow(SpeciesAroundYouActivity.this,googleMap,mClusterManager);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(SpeciesAroundYouActivity.this,android.R.layout.simple_list_item_1, speciesList);
+        ACTtEnterSpeciesName.setThreshold(1);
+        ACTtEnterSpeciesName.setAdapter(adapter);
     }
 
     /*private void addSpeciesPointsItems(ClusterManager<SpeciesPoints> mClusterManager,GoogleMap googleMap) {

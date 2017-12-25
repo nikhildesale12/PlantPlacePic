@@ -131,7 +131,7 @@ public class ReviewMyUploadTabActivity extends AppCompatActivity implements Mate
                             boolean isInsert = false;
                             if(response.body().getInformation().size() != databaseHelper.getTotalUploadedData(response.body().getInformation().get(0).getUserId())) {
                                 isInsert = true;
-                                databaseHelper.removeAllSaveDataFromTable();
+                                databaseHelper.removeSaveDataFromTable();
                             }
                             for(int i = 0 ;i<response.body().getInformation().size();i++){
                                 Information information = new Information();

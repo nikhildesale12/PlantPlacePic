@@ -175,7 +175,7 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
             }
             LatLng latLng = new LatLng(latitude, longitude);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(1));
 
 //            mClusterManager.cluster();
 
