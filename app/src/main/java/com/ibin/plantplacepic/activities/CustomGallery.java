@@ -238,7 +238,7 @@ public class CustomGallery extends AppCompatActivity {
             imagecursor.moveToPosition(i);
             int dataColumnIndex = imagecursor.getColumnIndex(MediaStore.Images.Media.DATA);
             imageUrls.add(imagecursor.getString(dataColumnIndex));
-            System.out.println("====> Array path => "+imageUrls.get(i));
+            //System.out.println("====> Array path => "+imageUrls.get(i));
         }
 
         return imageUrls;

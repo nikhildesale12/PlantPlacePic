@@ -175,6 +175,21 @@ public class UpdateInfoActivity extends AppCompatActivity {
         buttonUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*Species name format states*/
+                String speciesName = speciesEditText.getText().toString();
+                String formatedSpeciesName="";
+                for(int i=0;i<speciesName.length();i++)
+                {
+                    if(i==0){
+                        String firstLetter = ""+speciesName.charAt(i);
+                        formatedSpeciesName += firstLetter.toUpperCase();
+                    }else{
+                        String restLetter = ""+speciesName.charAt(i);
+                        formatedSpeciesName += restLetter.toLowerCase();
+                    }
+                }
+                speciesEditText.setText(formatedSpeciesName);
+                /*Species name format end*/
                 UpdateImageServiceCall();
             }
         });
@@ -185,6 +200,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
                 //serverFolderPath = Constants.SERVER_FOLDER_PATH_FLOWER;
                 textTeg.setVisibility(View.VISIBLE);
                 textTeg.setText("TAG : "+TAG);
+                materialDesignFAM.close(true);
             }
         });
         floatingActionButtonFruit.setOnClickListener(new View.OnClickListener() {
@@ -193,6 +209,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
                 //serverFolderPath = Constants.SERVER_FOLDER_PATH_FRUIT;
                 textTeg.setVisibility(View.VISIBLE);
                 textTeg.setText("TAG : "+TAG);
+                materialDesignFAM.close(true);
             }
         });
         floatingActionButtonLeaf.setOnClickListener(new View.OnClickListener() {
@@ -201,6 +218,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
                 //serverFolderPath = Constants.SERVER_FOLDER_PATH_LEAF;
                 textTeg.setVisibility(View.VISIBLE);
                 textTeg.setText("TAG : "+TAG);
+                materialDesignFAM.close(true);
             }
         });
         floatingActionButtonTree.setOnClickListener(new View.OnClickListener() {
@@ -209,6 +227,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
                 //serverFolderPath = Constants.SERVER_FOLDER_PATH_TREE;
                 textTeg.setVisibility(View.VISIBLE);
                 textTeg.setText("TAG : "+TAG);
+                materialDesignFAM.close(true);
             }
         });
 
@@ -237,6 +256,26 @@ public class UpdateInfoActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
+            }
+        });
+        speciesEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    String speciesName = speciesEditText.getText().toString();
+                    String formatedSpeciesName="";
+                    for(int i=0;i<speciesName.length();i++)
+                    {
+                        if(i==0){
+                            String firstLetter = ""+speciesName.charAt(i);
+                            formatedSpeciesName += firstLetter.toUpperCase();
+                        }else{
+                            String restLetter = ""+speciesName.charAt(i);
+                            formatedSpeciesName += restLetter.toLowerCase();
+                        }
+                    }
+                    speciesEditText.setText(formatedSpeciesName);
+                }
             }
         });
     }

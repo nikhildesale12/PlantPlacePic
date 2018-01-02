@@ -12,8 +12,12 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ibin.plantplacepic.R;
+import com.ibin.plantplacepic.activities.SpeciesAroundYouActivity;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
 import com.ibin.plantplacepic.bean.SubmitRequest;
@@ -95,7 +99,7 @@ public class GetAllUploadedDataService extends Service{
                 if (response != null && response.body() != null) {
                     if (response.body().getSuccess().toString().trim().equals("1")) {
                         if(response.body().getInformation() != null){
-                            //databaseHelper.removeAllSaveDataFromTable();
+                            databaseHelper.removeAllSaveDataFromTable();
                             int count = databaseHelper.getTotalALLUploadedData();
                             new SaveInDbAsync(response).executeOnExecutor(sExecutor);
                         }else{
@@ -134,6 +138,7 @@ public class GetAllUploadedDataService extends Service{
             for(int i = 0 ;i<response.body().getInformation().size();i++){
                 Information information = new Information();
                 information.setUserId(response.body().getInformation().get(i).getUserId());
+                information.setUserName(response.body().getInformation().get(i).getUserName());
                 information.setImages(response.body().getInformation().get(i).getImages());
                 information.setSpecies(response.body().getInformation().get(i).getSpecies());
                 information.setRemark(response.body().getInformation().get(i).getRemark());
@@ -169,19 +174,23 @@ public class GetAllUploadedDataService extends Service{
                     information.setLat(response.body().getInformation().get(i).getLat());
                     information.setLng(response.body().getInformation().get(i).getLng());
                 }
-                information.setAddress(response.body().getInformation().get(i).getAddress());
+                String finalAddr = response.body().getInformation().get(i).getAddress().replace(",null","");
+                finalAddr = finalAddr.replace(",,","");
+                information.setAddress(finalAddr);
                 information.setCrop(response.body().getInformation().get(i).getCrop());
                 information.setTime(response.body().getInformation().get(i).getTime());
                 informationList.add(information);
                 long insertedToLater = -1;
                 insertedToLater = databaseHelper.insertDataInTableAllInformationToSave(information);
-                Log.d("Done", "Inserted ---> "+i +" == "+ insertedToLater);
+                Log.d("Done", "Inserted ---> "+i+" == "+ insertedToLater);
             }
          return "";
         }
         @Override
         protected void onPostExecute(String result) {
-
+            if(SpeciesAroundYouActivity.animateText != null){
+                SpeciesAroundYouActivity.animateText.setVisibility(View.GONE);
+            }
         }
     }
 

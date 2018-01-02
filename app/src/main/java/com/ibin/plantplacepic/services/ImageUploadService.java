@@ -20,6 +20,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.SubmitRequest;
 import com.ibin.plantplacepic.database.DatabaseHelper;
@@ -172,8 +173,14 @@ public class ImageUploadService extends Service{
 //      max Height and width values of the compressed image is taken as 816x612
         float maxHeight = 816.0f;
         float maxWidth = 612.0f;
-        float imgRatio = actualWidth / actualHeight;
-        float maxRatio = maxWidth / maxHeight;
+        float imgRatio = 0;
+        float maxRatio = 0;
+        if(actualHeight != 0){
+            imgRatio = actualWidth / actualHeight;
+        }
+        if(maxHeight != 0){
+            maxRatio = maxWidth / maxHeight;
+        }
 //      width and height values are set maintaining the aspect ratio of the image
         if (actualHeight > maxHeight || actualWidth > maxWidth) {
             if (imgRatio < maxRatio) {
@@ -256,15 +263,6 @@ public class ImageUploadService extends Service{
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getFilename() {
-        File file = new File(Environment.getExternalStorageDirectory().getPath(), "MyFolder/Images");
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-        String uriSting = (file.getAbsolutePath() + "/" + System.currentTimeMillis() + ".jpg");
-        return uriSting;
     }
 
     private String getRealPathFromURI(String contentURI) {
@@ -375,8 +373,8 @@ public class ImageUploadService extends Service{
                 alreadySave = true;
                 saveInLocalForLaterUpload(submitRequest);
                 showErrorToast();
-                if(e.toString().contains("failed to connect to ibin.plantplacepicture.com")){
-                    result = "failed to connect to ibin.plantplacepicture.com";
+                if(e.toString().contains("failed to connect to plantplacepicture.com")){
+                    result = "failed to connect to plantplacepicture.com";
                 }
                 e.printStackTrace();
             }
@@ -401,13 +399,13 @@ public class ImageUploadService extends Service{
             if(result.equals("true")){
                 callRetrofitToSaveDataServer(submitRequest);
             }else{
-                if(submitRequest.getIsSaveInLocal() != null && submitRequest.getIsSaveInLocal().equals("NO")){
-                    Log.d("ImageUploadService", "Already in DB");
-                }else{
+//                if(submitRequest.getIsSaveInLocal() != null && !submitRequest.getIsSaveInLocal().equals("NO")){
+//                    Log.d("ImageUploadService", "Already in DB");
+//                }else{
                     if(!alreadySave){
                         saveInLocalForLaterUpload(submitRequest);
                     }
-                }
+//                }
             }
             super.onPostExecute(result);
         }
@@ -472,9 +470,54 @@ public class ImageUploadService extends Service{
                                 tempFile.delete();
                             }
                         }
+                        /*Save uploaded into local too starts*/
+                        Information information = new Information();
+                        information.setUserId(USERID);
+                        if(submitRequest.getImageName() != null){
+                            information.setImages(submitRequest.getImageName());
+                        }
+                        if(submitRequest.getSpecies() != null){
+                            information.setSpecies(submitRequest.getSpecies());
+                        }
+                        if(submitRequest.getRemark() != null){
+                            information.setRemark(submitRequest.getRemark());
+                        }
+                        if(submitRequest.getTag() != null){
+                            information.setTag(submitRequest.getTag());
+                        }
+                        if(submitRequest.getStatus() != null){
+                            information.setStatus(submitRequest.getStatus());
+                        }
+                        if(submitRequest.getTitle() != null){
+                            information.setTitle(submitRequest.getTitle());
+                        }
+                        if(submitRequest.getLatitude() != null){
+                            information.setLat(submitRequest.getLatitude());
+                        }
+                        if(submitRequest.getLongitude() != null){
+                            information.setLng(submitRequest.getLongitude());
+                        }
+                        if(submitRequest.getAddress() != null){
+                            information.setAddress(submitRequest.getAddress());
+                        }
+                        if(submitRequest.getCrop() != null){
+                            information.setCrop(submitRequest.getCrop());
+                        }
+                        if(submitRequest.getTime() != null){
+                            information.setTime(submitRequest.getTime());
+                        }
+                        if(submitRequest.getUpdateInfo() != null){
+                            information.setUpdateinfo(submitRequest.getUpdateInfo());
+                        }
+                        if(submitRequest.getUploadedFrom() != null){
+                            information.setUploadFrom(submitRequest.getUploadedFrom());
+                        }
+
+                        databaseHelper.insertDataInTableAllInformationToSave(information);
+                        /*save uploaded into locaal end*/
                         Toast.makeText(getApplicationContext(), "Data upload successfully", Toast.LENGTH_SHORT).show();
-                        List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(USERID);
-                        Log.d("List : ","List : "+dataList.size());
+                        //List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(USERID);
+                        //Log.d("List : ","List : "+dataList.size());
 //                        try {
 //                            Thread.sleep(2000);
 //                        } catch (InterruptedException e) {

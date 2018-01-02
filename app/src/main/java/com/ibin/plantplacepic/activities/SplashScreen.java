@@ -180,6 +180,8 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
                 @Override
                 public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                     if (response != null && response.body() != null && response.body().getSuccess() == 1) {
+                        Log.d("Counttt from service : ",response.body().getCount());
+                        Log.d("Counttt from database : ",""+databaseHelper.getTotalALLUploadedData());
                         if(!response.body().getCount().trim().equals(""+databaseHelper.getTotalALLUploadedData())){
                             new Thread() {
                                 public void run() {

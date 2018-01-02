@@ -219,6 +219,7 @@ public class ImageInfoActivity extends AppCompatActivity {
                 TAG = Constants.TAG_FLOWER;
                 textTeg.setVisibility(View.VISIBLE);
                 textTeg.setText("TAG : "+TAG);
+                materialDesignFAM.close(true);
             }
         });
         floatingActionButtonFruit.setOnClickListener(new View.OnClickListener() {
@@ -226,6 +227,7 @@ public class ImageInfoActivity extends AppCompatActivity {
                 TAG = Constants.TAG_FRUIT;
                 textTeg.setVisibility(View.VISIBLE);
                 textTeg.setText("TAG : "+TAG);
+                materialDesignFAM.close(true);
             }
         });
         floatingActionButtonLeaf.setOnClickListener(new View.OnClickListener() {
@@ -233,6 +235,7 @@ public class ImageInfoActivity extends AppCompatActivity {
                 TAG = Constants.TAG_LEAF;
                 textTeg.setVisibility(View.VISIBLE);
                 textTeg.setText("TAG : "+TAG);
+                materialDesignFAM.close(true);
             }
         });
         floatingActionButtonTree.setOnClickListener(new View.OnClickListener() {
@@ -240,6 +243,7 @@ public class ImageInfoActivity extends AppCompatActivity {
                 TAG = Constants.TAG_TREE;
                 textTeg.setVisibility(View.VISIBLE);
                 textTeg.setText("TAG : "+TAG);
+                materialDesignFAM.close(true);
             }
         });
 
@@ -312,9 +316,6 @@ public class ImageInfoActivity extends AppCompatActivity {
                             if(dataListSpeciesNames.size() > 1){
                                 layoutSpeciesSpinner.setVisibility(View.VISIBLE);
                                 SpinnerCustomAdapter adapter;
-                                //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ImageInfoActivity.this,
-                                //         android.R.layout.simple_list_item_1, dataListSpeciesNames);
-                                //speciesSpinner.setAdapter(arrayAdapter);
                                 adapter = new SpinnerCustomAdapter(ImageInfoActivity.this,dataListSpeciesNames);
                                 speciesSpinner.setAdapter(adapter);
                                 speciesNotLoaded.setVisibility(View.GONE);

@@ -147,18 +147,18 @@ public class DistributionFragment extends Fragment implements OnMapReadyCallback
                             && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")) {
                         latitude = Double.parseDouble(mainDataList.get(i).getLat());
                         longitude = Double.parseDouble(mainDataList.get(i).getLng());
-                        if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
-                            mainDataList.get(i).getAddress().trim().replace(",,","");
-                        }
+//                        if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
+//                            mainDataList.get(i).getAddress().trim().replace(",,","");
+//                        }
                         if(mainDataList.get(i).getUserName() != null && mainDataList.get(i).getUserName().trim().length() >0){
                             googleMap.addMarker(new MarkerOptions()
-                                    .snippet(mainDataList.get(i).getAddress())
+                                    .snippet(mainDataList.get(i).getAddress().replace(",null","").replace(",,",""))
                                     .position(new LatLng(latitude, longitude))
                                     .title(mainDataList.get(i).getSpecies()+"("+mainDataList.get(i).getUserName().trim()+")"))
                                     .setTag(mainDataList.get(i).getImages());
                         }else{
                             googleMap.addMarker(new MarkerOptions()
-                                    .snippet(mainDataList.get(i).getAddress())
+                                    .snippet(mainDataList.get(i).getAddress().replace(",null","").replace(",,",""))
                                     .position(new LatLng(latitude, longitude))
                                     .title(mainDataList.get(i).getSpecies()))
                                     .setTag(mainDataList.get(i).getImages());

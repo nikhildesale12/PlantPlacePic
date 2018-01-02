@@ -303,6 +303,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             if(Constants.isNetworkAvailable(Dashboard.this)){
                 List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(userId);
                 Log.d("List : ","List : "+dataList.size());
+                /*Upload data from local which is failed to upload in previous */
                 if(dataList!=null && dataList.size()>0){
                     if(userId.equals("0")){
                         Constants.dispalyDialogInternet(Dashboard.this,"Invalid User","Please login again to upload information",false,false);

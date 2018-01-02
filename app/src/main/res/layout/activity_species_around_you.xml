@@ -88,4 +88,19 @@
             android:text="@string/str_rb_satellite"/>
     </RadioGroup>
 
+    <TextView
+        android:id="@+id/animateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rg_views_around"
+         android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="20sp"
+        android:padding="5dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:textStyle="bold"
+        android:background="#80FFFFFF"
+        android:text="Please wait , we will get back in 2 minute approx"/>
+
 </RelativeLayout>

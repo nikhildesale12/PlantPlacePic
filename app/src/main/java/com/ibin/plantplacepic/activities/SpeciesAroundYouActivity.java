@@ -1,19 +1,17 @@
 package com.ibin.plantplacepic.activities;
 
-import android.annotation.SuppressLint;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
-import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.provider.Settings;
@@ -21,26 +19,24 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -55,12 +51,18 @@ import com.ibin.plantplacepic.bean.InformationResponseBean;
 import com.ibin.plantplacepic.bean.SpeciesPoints;
 import com.ibin.plantplacepic.database.DatabaseHelper;
 import com.ibin.plantplacepic.retrofit.ApiService;
+import com.ibin.plantplacepic.services.GetAllUploadedDataService;
 import com.ibin.plantplacepic.utility.Constants;
 import com.ibin.plantplacepic.utility.GPSTracker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -71,9 +73,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.Manifest.permission.INTERNET;
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener,ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints>{
     private GoogleMap mMap;
@@ -84,17 +83,38 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
     List<Information> mainDataList = null;
     private RadioGroup rgViews;
     //String userName = "";
+    ProgressDialog dialog;
+    public static TextView animateText;
+    private static final int CORE_POOL_SIZE = 5;
+    private static final int MAXIMUM_POOL_SIZE = 128;
+    private static final int KEEP_ALIVE = 10;
+    private static final BlockingQueue<Runnable> sWorkQueue = new LinkedBlockingQueue<>(15);
+    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
+        private final AtomicInteger mCount = new AtomicInteger(1);
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "AsyncTask #" + mCount.getAndIncrement());
+        }
+    };
+    private static final ThreadPoolExecutor sExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE,MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, sWorkQueue, sThreadFactory);
 
-//    private ClusterManager<SpeciesPoints> mClusterManager;
+
+    //    private ClusterManager<SpeciesPoints> mClusterManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_species_around_you);
-
+        animateText = (TextView) findViewById(R.id.animateText);
         /*SharedPreferences prefs1 = getSharedPreferences(Constants.MY_PREFS_USER_INFO, MODE_PRIVATE);
         userName  = prefs1.getString(Constants.KEY_FIRSTNAME, "") + " "
                 +prefs1.getString(Constants.KEY_MIDDLENAME, "")  + " "
                 + prefs1.getString(Constants.KEY_LASTNAME, "");*/
+//        if(isMyServiceRunning()){
+//            animateText.setVisibility(View.VISIBLE);
+//            Animation startAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blinking_animation);
+//            animateText.startAnimation(startAnimation);
+//        }else{
+//            animateText.setVisibility(View.INVISIBLE);
+//        }
 
         ACTtEnterSpeciesName=(AutoCompleteTextView)findViewById(R.id.autoCompletSpeciesSearch);
         speciesList = new ArrayList<>();
@@ -124,17 +144,17 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                     && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")) {
                                 latitude = Double.parseDouble(mainDataList.get(i).getLat());
                                 longitude = Double.parseDouble(mainDataList.get(i).getLng());
-                                if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
-                                    mainDataList.get(i).getAddress().trim().replace(",,","");
-                                }
+//                                if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
+//                                    mainDataList.get(i).getAddress().trim().replace(",,","");
+//                                }
                                 if(mainDataList.get(i).getUserName() != null && mainDataList.get(i).getUserName().trim().length()>0){
                                     mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                                            .snippet(mainDataList.get(i).getAddress())
+                                            .snippet(mainDataList.get(i).getAddress().replace(",null","").replace(",,",""))
                                             .title(mainDataList.get(i).getSpecies()+"("+mainDataList.get(i).getUserName().trim()+")"))
                                             .setTag(mainDataList.get(i).getImages());
                                 }else{
                                     mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                                            .snippet(mainDataList.get(i).getAddress())
+                                            .snippet(mainDataList.get(i).getAddress().replace(",null","").replace(",,",""))
                                             .title(mainDataList.get(i).getSpecies()))
                                             .setTag(mainDataList.get(i).getImages());
                                 }
@@ -210,12 +230,12 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
             if (latitude != 0 && longitude != 0) {
                 if (mainDataList.get(i).getUserName() != null && mainDataList.get(i).getUserName().trim().length() > 0) {
                     mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                            .snippet(mainDataList.get(i).getAddress())
+                            .snippet(mainDataList.get(i).getAddress().replace(",null","").replace(",,",""))
                             .title(mainDataList.get(i).getSpecies() + "(" + mainDataList.get(i).getUserName().trim() + ")"))
                             .setTag(mainDataList.get(i).getImages());
                 } else {
                     mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                            .snippet(mainDataList.get(i).getAddress())
+                            .snippet(mainDataList.get(i).getAddress().replace(",null","").replace(",,",""))
                             .title(mainDataList.get(i).getSpecies()));
                 }
             }
@@ -259,12 +279,12 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                                     }
                                     if(response.body().getInformation().get(i).getUserName() != null && response.body().getInformation().get(i).getUserName().trim().length()>0){
                                         googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                                                .snippet(response.body().getInformation().get(i).getAddress())
+                                                .snippet(response.body().getInformation().get(i).getAddress().replace(",null","").replace(",,",""))
                                                 .title(response.body().getInformation().get(i).getSpecies()+"("+response.body().getInformation().get(i).getUserName().trim()+")"))
                                                 .setTag(response.body().getInformation().get(i).getImages());
                                     }else{
                                         googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                                                .snippet(response.body().getInformation().get(i).getAddress())
+                                                .snippet(response.body().getInformation().get(i).getAddress().replace(",null","").replace(",,",""))
                                                 .title(response.body().getInformation().get(i).getSpecies()))
                                                 .setTag(response.body().getInformation().get(i).getImages());
                                     }
@@ -418,7 +438,8 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                             th.start();
                         }
                     }else{
-                        showPointsFromLocal(googleMap);
+                        //use async task to prevent ui freez
+                        new showPointsFromLocalAsync(googleMap).executeOnExecutor(sExecutor);
                     }
             }
 //        googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!"));
@@ -428,62 +449,71 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         }
     }
 
-    private void showPointsFromLocal(GoogleMap googleMap){
-        googleMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.this);
-        mainDataList = databaseHelper.getAllImageUploadedInfo();
-        for(int i = 0 ;i<mainDataList.size();i++){
-            if(mainDataList.get(i).getLat() != null && mainDataList.get(i).getLng() != null
-                    && !mainDataList.get(i).getLat().equals("0") && !mainDataList.get(i).getLat().equals("0.0")
-                    && !mainDataList.get(i).getLng().equals("0") && !mainDataList.get(i).getLng().equals("0.0")
-                    && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")){
-                double latitude = Double.parseDouble(mainDataList.get(i).getLat());
-                double longitude = Double.parseDouble(mainDataList.get(i).getLng());
-                if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
-                    mainDataList.get(i).getAddress().trim().replace(",,","");
-                }
-                if(mainDataList.get(i).getUserName() != null && mainDataList.get(i).getUserName().trim().length()>0){
-                    googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                            .snippet(mainDataList.get(i).getAddress())
-                            .title(mainDataList.get(i).getSpecies()+"("+mainDataList.get(i).getUserName().trim()+")"))
-                            .setTag(mainDataList.get(i).getImages());
-                }else{
-                    googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                            .snippet(mainDataList.get(i).getAddress())
-                            .title(mainDataList.get(i).getSpecies()))
-                            .setTag(mainDataList.get(i).getImages());
-                }
+    private class showPointsFromLocalAsync extends AsyncTask<Void, Integer, String> {
+        GoogleMap googleMap;
+        private showPointsFromLocalAsync(GoogleMap googleMap) {
+            this.googleMap = googleMap;
+        }
 
-                                    /*String address = "";
-                                    if(response.body().getInformation().get(i).getAddress().trim().contains(",null")){
-                                        address = response.body().getInformation().get(i).getAddress().trim().replace(",null","");
-                                    }
-                                    mClusterManager.addItem(new SpeciesPoints(latitude, longitude,response.body().getInformation().get(i).getSpecies() , address , response.body().getInformation().get(i).getImages()));
-*/
-                if(!speciesList.contains(mainDataList.get(i).getSpecies().trim())){
-                    if(mainDataList.get(i).getSpecies().trim().length()>0){
-                        speciesList.add(mainDataList.get(i).getSpecies().trim());
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(SpeciesAroundYouActivity.this);
+            dialog.setMessage("Please Wait...");
+            dialog.setIndeterminate(false);
+            dialog.setCancelable(false);
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            mainDataList = databaseHelper.getAllImageUploadedInfo();
+            return "";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            googleMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.this);
+            for(int i = 0 ;i<mainDataList.size();i++){
+                if(mainDataList.get(i).getLat() != null && mainDataList.get(i).getLng() != null
+                        && !mainDataList.get(i).getLat().equals("0") && !mainDataList.get(i).getLat().equals("0.0")
+                        && !mainDataList.get(i).getLng().equals("0") && !mainDataList.get(i).getLng().equals("0.0")
+                        && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")){
+                    double latitude = Double.parseDouble(mainDataList.get(i).getLat());
+                    double longitude = Double.parseDouble(mainDataList.get(i).getLng());
+                    if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
+                        mainDataList.get(i).getAddress().trim().replace(",,","");
+                    }
+                    if(mainDataList.get(i).getUserName() != null && mainDataList.get(i).getUserName().trim().length()>0){
+                        googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                .snippet(mainDataList.get(i).getAddress())
+                                .title(mainDataList.get(i).getSpecies()+"("+mainDataList.get(i).getUserName().trim()+")"))
+                                .setTag(mainDataList.get(i).getImages());
+                    }else{
+                        googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                .snippet(mainDataList.get(i).getAddress())
+                                .title(mainDataList.get(i).getSpecies()))
+                                .setTag(mainDataList.get(i).getImages());
+                    }
+                    if(!speciesList.contains(mainDataList.get(i).getSpecies().trim())){
+                        if(mainDataList.get(i).getSpecies().trim().length()>0){
+                            speciesList.add(mainDataList.get(i).getSpecies().trim());
+                        }
                     }
                 }
-            }else{
-//                if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().trim().contains(",,")){
-//                    mainDataList.get(i).getAddress().trim().replace(",,","");
-//                }
-//                if(!speciesList.contains(mainDataList.get(i).getSpecies().trim())){
-//                    if(mainDataList.get(i).getSpecies().trim().length()>0){
-//                        speciesList.add(mainDataList.get(i).getSpecies().trim());
-//                    }
-//                }
-//                if(mainDataList.get(i).getAddress() != null && mainDataList.get(i).getAddress().length()>3){
-//                    getAddressOnMap (mainDataList.get(i).getAddress(), i);
-//                }
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(SpeciesAroundYouActivity.this,android.R.layout.simple_list_item_1, speciesList);
+            ACTtEnterSpeciesName.setThreshold(1);
+            ACTtEnterSpeciesName.setAdapter(adapter);
+
+
+            if(dialog != null && dialog.isShowing()){
+                dialog.dismiss();
             }
         }
-//                          mClusterManager.cluster();
-//                          new RenderClusterInfoWindow(SpeciesAroundYouActivity.this,googleMap,mClusterManager);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(SpeciesAroundYouActivity.this,android.R.layout.simple_list_item_1, speciesList);
-        ACTtEnterSpeciesName.setThreshold(1);
-        ACTtEnterSpeciesName.setAdapter(adapter);
     }
+
+
+
 
     /*private void addSpeciesPointsItems(ClusterManager<SpeciesPoints> mClusterManager,GoogleMap googleMap) {
         if (Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)) {
@@ -652,5 +682,15 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 SecondPermissionResult == PackageManager.PERMISSION_GRANTED ;
     }
     /**Permission code end*/
+
+    private boolean isMyServiceRunning() {
+        ActivityManager manager = (ActivityManager)getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (GetAllUploadedDataService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }
