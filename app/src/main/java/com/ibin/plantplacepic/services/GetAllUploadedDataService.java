@@ -57,6 +57,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class GetAllUploadedDataService extends Service{
     DatabaseHelper databaseHelper;
     List<Information> informationList;
+    public static boolean isRunning = false;
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAXIMUM_POOL_SIZE = 128;
     private static final int KEEP_ALIVE = 10;
@@ -71,6 +72,7 @@ public class GetAllUploadedDataService extends Service{
 
     public GetAllUploadedDataService() {
         informationList = new ArrayList<>();
+        isRunning = true;
     }
     @Override
     public IBinder onBind(Intent intent) {
@@ -191,6 +193,7 @@ public class GetAllUploadedDataService extends Service{
             if(SpeciesAroundYouActivity.animateText != null){
                 SpeciesAroundYouActivity.animateText.setVisibility(View.GONE);
             }
+            isRunning = false;
         }
     }
 

@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -108,13 +109,15 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         userName  = prefs1.getString(Constants.KEY_FIRSTNAME, "") + " "
                 +prefs1.getString(Constants.KEY_MIDDLENAME, "")  + " "
                 + prefs1.getString(Constants.KEY_LASTNAME, "");*/
-//        if(isMyServiceRunning()){
-//            animateText.setVisibility(View.VISIBLE);
-//            Animation startAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blinking_animation);
-//            animateText.startAnimation(startAnimation);
-//        }else{
-//            animateText.setVisibility(View.INVISIBLE);
-//        }
+
+        if(GetAllUploadedDataService.isRunning){
+            animateText.setVisibility(View.VISIBLE);
+            Animation startAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blinking_animation);
+            animateText.startAnimation(startAnimation);
+        }else{
+            animateText.setVisibility(View.INVISIBLE);
+        }
+
 
         ACTtEnterSpeciesName=(AutoCompleteTextView)findViewById(R.id.autoCompletSpeciesSearch);
         speciesList = new ArrayList<>();
@@ -683,14 +686,15 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
     }
     /**Permission code end*/
 
-    private boolean isMyServiceRunning() {
+   /* private boolean isMyServiceRunning() {
         ActivityManager manager = (ActivityManager)getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            Log.d("service.service.getClassName() : ","service.service.getClassName() :==> " +service.service.getClassName());
             if (GetAllUploadedDataService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }
         return false;
-    }
+    }*/
 
 }
