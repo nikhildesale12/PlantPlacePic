@@ -59,7 +59,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="5dp"
-        tools:context="com.sing.mapexample.MapsActivity"
         android:layout_below="@+id/linearLayout"/>
 
     <RadioGroup
@@ -102,5 +101,15 @@
         android:textStyle="bold"
         android:background="#80FFFFFF"
         android:text="Updating points will take approx 2 minute"/>
+
+    <ImageView
+        android:id="@+id/refreshPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/refreshmap"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/linearLayout"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"/>
 
 </RelativeLayout>

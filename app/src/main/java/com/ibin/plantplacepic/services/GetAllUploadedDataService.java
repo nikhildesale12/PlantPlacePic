@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.activities.SpeciesAroundYouActivity;
 import com.ibin.plantplacepic.bean.Information;
@@ -92,7 +94,6 @@ public class GetAllUploadedDataService extends Service{
 //                .client(okHttpClient)
                 .build();
         ApiService service = retrofit.create(ApiService.class);
-        SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
         Call<InformationResponseBean> call = service.getAllSpeciesDetail();
         call.enqueue(new Callback<InformationResponseBean>() {
             @Override
@@ -101,8 +102,8 @@ public class GetAllUploadedDataService extends Service{
                 if (response != null && response.body() != null) {
                     if (response.body().getSuccess().toString().trim().equals("1")) {
                         if(response.body().getInformation() != null){
-                            databaseHelper.removeAllSaveDataFromTable();
-                            int count = databaseHelper.getTotalALLUploadedData();
+                            //databaseHelper.removeAllSaveDataFromTable();
+                            //int count = databaseHelper.getTotalALLUploadedData();
                             new SaveInDbAsync(response).executeOnExecutor(sExecutor);
                         }else{
                             informationList = new ArrayList<>();
@@ -190,10 +191,31 @@ public class GetAllUploadedDataService extends Service{
         }
         @Override
         protected void onPostExecute(String result) {
-            if(SpeciesAroundYouActivity.animateText != null){
-                SpeciesAroundYouActivity.animateText.setVisibility(View.GONE);
-            }
+            SpeciesAroundYouActivity.getInstance().animateText.clearAnimation();
+            SpeciesAroundYouActivity.getInstance().animateText.setVisibility(View.INVISIBLE);
             isRunning = false;
+            List<Information> mainDataList = databaseHelper.getAllImageUploadedInfo();
+            for(int i = 0 ;i<mainDataList.size();i++){
+                if(mainDataList.get(i).getLat() != null && mainDataList.get(i).getLng() != null
+                        && !mainDataList.get(i).getLat().equals("0") && !mainDataList.get(i).getLat().equals("0.0")
+                        && !mainDataList.get(i).getLng().equals("0") && !mainDataList.get(i).getLng().equals("0.0")
+                        && !mainDataList.get(i).getLat().equals("") && !mainDataList.get(i).getLng().equals("")){
+                    double latitude = Double.parseDouble(mainDataList.get(i).getLat());
+                    double longitude = Double.parseDouble(mainDataList.get(i).getLng());
+                    if(mainDataList.get(i).getUserName() != null && mainDataList.get(i).getUserName().trim().length()>0){
+                        SpeciesAroundYouActivity.getInstance().mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                .snippet(mainDataList.get(i).getAddress().replace(",null","").replace(",,",""))
+                                .title(mainDataList.get(i).getSpecies()+"("+mainDataList.get(i).getUserName().trim()+")"))
+                                .setTag(mainDataList.get(i).getImages());
+                    }else{
+                        SpeciesAroundYouActivity.getInstance().mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                .snippet(mainDataList.get(i).getAddress().replace(",null","").replace(",,",""))
+                                .title(mainDataList.get(i).getSpecies()))
+                                .setTag(mainDataList.get(i).getImages());
+                    }
+
+                }
+            }
         }
     }
 

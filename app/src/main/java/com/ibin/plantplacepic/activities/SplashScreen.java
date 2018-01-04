@@ -103,7 +103,9 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
                 if(response != null && response.body() != null){
                     if(response.body().getResult().trim().equals(version)){
                         /*Service to get all records starts*/
-                        getAllUploadedCount();
+                        if(databaseHelper.getTotalALLUploadedData() < 1800){
+                            getAllUploadedCount();
+                        }
                         /*Service to get all reccord end*/
                         SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGOUT, MODE_PRIVATE);
                         boolean logoutUser  = prefs.getBoolean(Constants.KEY_FIRST_TIME_LOGOUT_USER,true);

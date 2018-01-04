@@ -30,6 +30,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,16 +77,17 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener,ClusterManager.OnClusterClickListener<SpeciesPoints>, ClusterManager.OnClusterInfoWindowClickListener<SpeciesPoints>, ClusterManager.OnClusterItemClickListener<SpeciesPoints>, ClusterManager.OnClusterItemInfoWindowClickListener<SpeciesPoints>{
-    private GoogleMap mMap;
+    public GoogleMap mMap;
     Button mapSpeciesSarch;
     AutoCompleteTextView ACTtEnterSpeciesName;
     public ArrayList<String> speciesList;
-    DatabaseHelper databaseHelper;
-    List<Information> mainDataList = null;
+    public DatabaseHelper databaseHelper;
+    public List<Information> mainDataList = null;
     private RadioGroup rgViews;
+    private ImageView refreshPoints;
     //String userName = "";
     ProgressDialog dialog;
-    public static TextView animateText;
+    public TextView animateText;
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAXIMUM_POOL_SIZE = 128;
     private static final int KEEP_ALIVE = 10;
@@ -98,6 +100,12 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
     };
     private static final ThreadPoolExecutor sExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE,MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, sWorkQueue, sThreadFactory);
 
+    public static SpeciesAroundYouActivity activity;
+    public static View view;
+    public static SpeciesAroundYouActivity getInstance(){
+        return activity;
+
+    }
 
     //    private ClusterManager<SpeciesPoints> mClusterManager;
     @Override
@@ -105,12 +113,14 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_species_around_you);
         animateText = (TextView) findViewById(R.id.animateText);
+        view = animateText;
         /*SharedPreferences prefs1 = getSharedPreferences(Constants.MY_PREFS_USER_INFO, MODE_PRIVATE);
         userName  = prefs1.getString(Constants.KEY_FIRSTNAME, "") + " "
                 +prefs1.getString(Constants.KEY_MIDDLENAME, "")  + " "
                 + prefs1.getString(Constants.KEY_LASTNAME, "");*/
-
+        activity=this;
         if(GetAllUploadedDataService.isRunning){
+        //if(isServiceRunning(GetAllUploadedDataService.class)){
             animateText.setVisibility(View.VISIBLE);
             Animation startAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blinking_animation);
             animateText.startAnimation(startAnimation);
@@ -207,8 +217,38 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 }
             }
         });
+
+        refreshPoints = (ImageView) findViewById(R.id.refreshPoints);
+        refreshPoints.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread() {
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                animateText.setVisibility(View.VISIBLE);
+                                Animation startAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blinking_animation);
+                                animateText.startAnimation(startAnimation);
+                                Intent intentService = new Intent(SpeciesAroundYouActivity.this, GetAllUploadedDataService.class);
+                                startService(intentService);
+                            }
+                        });
+                    }
+                }.start();
+            }
+        });
     }
 
+    /*private boolean isServiceRunning(Class serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }*/
     private void getAddressOnMap(String addressStr,int i) {
         Geocoder geocode = new Geocoder(this);
         double latitude = 0;
@@ -318,9 +358,8 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
 //                                        new Thread() {
 //                                            public void run() {
 //                                                runOnUiThread(new Runnable() {
-//                                                    @Override
-//                                                    public void run() {
 //
+//                                                    public void run() {
 //                                                    }
 //                                                });
 //                                            }
@@ -376,7 +415,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 mMap.setBuildingsEnabled(true);
                 mMap.setIndoorEnabled(true);
                 mMap.getUiSettings().setCompassEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mMap.getUiSettings().setScrollGesturesEnabled(true);
                 mMap.getUiSettings().setZoomGesturesEnabled(true);
                 mMap.getUiSettings().setTiltGesturesEnabled(true);
@@ -507,7 +546,6 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(SpeciesAroundYouActivity.this,android.R.layout.simple_list_item_1, speciesList);
             ACTtEnterSpeciesName.setThreshold(1);
             ACTtEnterSpeciesName.setAdapter(adapter);
-
 
             if(dialog != null && dialog.isShowing()){
                 dialog.dismiss();
