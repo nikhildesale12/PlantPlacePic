@@ -88,7 +88,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     RelativeLayout buttonGallery;
     RelativeLayout buttonCamera;
     RelativeLayout buttonSearch;
-    TextView textUploadCount;
+    public TextView textUploadCount;
     String currentDateTimeString;
     GPSTracker gps;
     TextView textUserName ;
@@ -106,12 +106,17 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     DatabaseHelper databaseHelper;
     //private ImageView profilePic;
     private GoogleApiClient mGoogleApiClient;
+    public static Dashboard activity;
+    public static Dashboard getInstance(){
+        return activity;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         initViews();
+        activity = this;
         //textUploadCount.setVisibility(View.INVISIBLE);
         if (getIntent() != null && getIntent().getBooleanExtra("EXIT", false)) {
             Dashboard.this.finish();

@@ -1,5 +1,6 @@
 package com.ibin.plantplacepic.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -115,8 +116,22 @@ public class LargeZoomActivity extends AppCompatActivity {
         cancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(fromActivity != null && fromActivity.equals("FromMap")) {
+                    Intent i = new Intent(LargeZoomActivity.this, SpeciesAroundYouActivity.class);
+                    startActivity(i);
+                }
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(fromActivity != null && fromActivity.equals("FromMap")) {
+            Intent i = new Intent(LargeZoomActivity.this, SpeciesAroundYouActivity.class);
+            startActivity(i);
+        }
+        finish();
     }
 }

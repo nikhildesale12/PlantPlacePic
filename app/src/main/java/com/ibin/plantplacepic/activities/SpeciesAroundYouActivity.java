@@ -104,7 +104,6 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
     public static View view;
     public static SpeciesAroundYouActivity getInstance(){
         return activity;
-
     }
 
     //    private ClusterManager<SpeciesPoints> mClusterManager;
@@ -227,11 +226,15 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                animateText.setVisibility(View.VISIBLE);
-                                Animation startAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blinking_animation);
-                                animateText.startAnimation(startAnimation);
-                                Intent intentService = new Intent(SpeciesAroundYouActivity.this, GetAllUploadedDataService.class);
-                                startService(intentService);
+                                if(Constants.isNetworkAvailable(SpeciesAroundYouActivity.this)){
+                                    animateText.setVisibility(View.VISIBLE);
+                                    Animation startAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blinking_animation);
+                                    animateText.startAnimation(startAnimation);
+                                    Intent intentService = new Intent(SpeciesAroundYouActivity.this, GetAllUploadedDataService.class);
+                                    startService(intentService);
+                                }else{
+                                    Toast.makeText(SpeciesAroundYouActivity.this,"No Internet Connction",Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                     }
@@ -640,6 +643,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
         data.putString("FromMap","FromMap");
         i.putExtras(data);
         startActivity(i);
+        finish();
     }
 
     private class RenderClusterInfoWindow extends DefaultClusterRenderer<SpeciesPoints> {

@@ -53,39 +53,40 @@ public class SplashScreen extends AppCompatActivity implements GoogleApiClient.O
             public void run() {
             try {
                 sleep(3000);
+
+                final SharedPreferences sharedPreferences = SplashScreen.this.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
+                final boolean isLogin = sharedPreferences.getBoolean(Constants.KEY_IS_LOGIN, false);
+                final String userId = sharedPreferences.getString(Constants.KEY_USERID, "0");
+
+                if(Constants.isNetworkAvailable(SplashScreen.this)) {
+                    checkAppVersion(isLogin, userId);
+                }else{
+                    //Internet not available
+                    uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
+                    if(userId.equals("0")){
+                        Intent i = new Intent(SplashScreen.this,LoginMainActivity.class);
+                        i.putExtra("uploadedCount",uploadedCount);
+                        startActivity(i);
+                        finish();
+                    }else if(!isLogin) {
+                        Intent i = new Intent(SplashScreen.this,LoginMainActivity.class);
+                        i.putExtra("uploadedCount",uploadedCount);
+                        startActivity(i);
+                        finish();
+                    }else{
+                        Intent i = new Intent(SplashScreen.this, Dashboard.class);
+                        i.putExtra("uploadedCount", uploadedCount);
+                        startActivity(i);
+                        finish();
+                    }
+                }
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             }
         };
         init.start();
-
-        final SharedPreferences sharedPreferences = SplashScreen.this.getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
-        final boolean isLogin = sharedPreferences.getBoolean(Constants.KEY_IS_LOGIN, false);
-        final String userId = sharedPreferences.getString(Constants.KEY_USERID, "0");
-
-        if(Constants.isNetworkAvailable(SplashScreen.this)) {
-            checkAppVersion(isLogin, userId);
-        }else{
-            //Internet not available
-            uploadedCount = ""+databaseHelper.getTotalUploadedData(userId);
-            if(userId.equals("0")){
-                Intent i = new Intent(SplashScreen.this,LoginMainActivity.class);
-                i.putExtra("uploadedCount",uploadedCount);
-                startActivity(i);
-                finish();
-            }else if(!isLogin) {
-                Intent i = new Intent(SplashScreen.this,LoginMainActivity.class);
-                i.putExtra("uploadedCount",uploadedCount);
-                startActivity(i);
-                finish();
-            }else{
-                Intent i = new Intent(SplashScreen.this, Dashboard.class);
-                i.putExtra("uploadedCount", uploadedCount);
-                startActivity(i);
-                finish();
-            }
-        }
     }//end create
 
     private void checkAppVersion(final boolean isLogin, final String userId) {

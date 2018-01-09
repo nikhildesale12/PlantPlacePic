@@ -20,6 +20,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ibin.plantplacepic.activities.Dashboard;
 import com.ibin.plantplacepic.bean.Information;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.SubmitRequest;
@@ -514,8 +515,15 @@ public class ImageUploadService extends Service{
                         }
 
                         databaseHelper.insertDataInTableAllInformationToSave(information);
+                        databaseHelper.insertDataInTableInformationToSave(information);
                         /*save uploaded into locaal end*/
-                        Toast.makeText(getApplicationContext(), "Data upload successfully", Toast.LENGTH_SHORT).show();
+                        try {
+                            int updatedCount = Integer.parseInt(Dashboard.getInstance().textUploadCount.getText().toString()) + 1;
+                            Dashboard.getInstance().textUploadCount.setText("" + updatedCount);
+                            Toast.makeText(getApplicationContext(), "Data upload successfully", Toast.LENGTH_SHORT).show();
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
                         //List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(USERID);
                         //Log.d("List : ","List : "+dataList.size());
 //                        try {

@@ -89,43 +89,57 @@ public class GetAllUploadedDataService extends Service{
 //                .readTimeout(60, TimeUnit.SECONDS)
 //                .connectTimeout(60, TimeUnit.SECONDS)
 //                .build();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+        if(Constants.isNetworkAvailable(getApplicationContext())){
+            Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
 //                .client(okHttpClient)
-                .build();
-        ApiService service = retrofit.create(ApiService.class);
-        Call<InformationResponseBean> call = service.getAllSpeciesDetail();
-        call.enqueue(new Callback<InformationResponseBean>() {
-            @Override
-            public void onResponse(Call<InformationResponseBean> call, Response<InformationResponseBean> response) {
-                informationList = new ArrayList<>();
-                if (response != null && response.body() != null) {
-                    if (response.body().getSuccess().toString().trim().equals("1")) {
-                        if(response.body().getInformation() != null){
-                            //databaseHelper.removeAllSaveDataFromTable();
-                            //int count = databaseHelper.getTotalALLUploadedData();
-                            new SaveInDbAsync(response).executeOnExecutor(sExecutor);
-                        }else{
-                            informationList = new ArrayList<>();
+                    .build();
+            ApiService service = retrofit.create(ApiService.class);
+            Call<InformationResponseBean> call = service.getAllSpeciesDetail();
+            call.enqueue(new Callback<InformationResponseBean>() {
+                @Override
+                public void onResponse(Call<InformationResponseBean> call, Response<InformationResponseBean> response) {
+                    informationList = new ArrayList<>();
+                    if (response != null && response.body() != null) {
+                        if (response.body().getSuccess().toString().trim().equals("1")) {
+                            if(response.body().getInformation() != null){
+                                //databaseHelper.removeAllSaveDataFromTable();
+                                //int count = databaseHelper.getTotalALLUploadedData();
+                                new SaveInDbAsync(response).executeOnExecutor(sExecutor);
+                            }else{
+                                informationList = new ArrayList<>();
+                            }
+                        } else if (response.body().getSuccess().toString().trim().equals("0")) {
+                            Log.d("NO records", "NO records --->");
+                            SpeciesAroundYouActivity.getInstance().animateText.clearAnimation();
+                            SpeciesAroundYouActivity.getInstance().animateText.setVisibility(View.INVISIBLE);
+                            isRunning = false;
+                        } else {
+                            Log.d("Technical Error !!!", "Technical Error !!! --->");
+                            SpeciesAroundYouActivity.getInstance().animateText.clearAnimation();
+                            SpeciesAroundYouActivity.getInstance().animateText.setVisibility(View.INVISIBLE);
+                            isRunning = false;
                         }
-                    } else if (response.body().getSuccess().toString().trim().equals("0")) {
-                        Log.d("NO records", "NO records --->");
-                        //Toast.makeText(getApplicationContext(),"No Records Found",Toast.LENGTH_SHORT).show();
-                    } else {
+                    }else {
                         Log.d("Technical Error !!!", "Technical Error !!! --->");
-                        //Toast.makeText(getApplicationContext(),"Technical Error !!!",Toast.LENGTH_SHORT).show();
+                        SpeciesAroundYouActivity.getInstance().animateText.clearAnimation();
+                        SpeciesAroundYouActivity.getInstance().animateText.setVisibility(View.INVISIBLE);
+                        isRunning = false;
                     }
-                }else {
-                    Log.d("Technical Error !!!", "Technical Error !!! --->");
-                    //Toast.makeText(getApplicationContext(),"Technical Error !!!",Toast.LENGTH_SHORT).show();
                 }
-            }
-            @Override
-            public void onFailure(Call<InformationResponseBean> call, Throwable t) {
-                Log.d("error", "error :--->"+t.toString());
-                //Toast.makeText(getApplicationContext(),t.toString(),Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(Call<InformationResponseBean> call, Throwable t) {
+                    Log.d("error", "error :--->"+t.toString());
+                    SpeciesAroundYouActivity.getInstance().animateText.clearAnimation();
+                    SpeciesAroundYouActivity.getInstance().animateText.setVisibility(View.INVISIBLE);
+                    isRunning = false;
+                }
+            });
+        }else{
+            SpeciesAroundYouActivity.getInstance().animateText.clearAnimation();
+            SpeciesAroundYouActivity.getInstance().animateText.setVisibility(View.INVISIBLE);
+            isRunning = false;
+        }
         stopSelf();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -195,6 +209,7 @@ public class GetAllUploadedDataService extends Service{
             SpeciesAroundYouActivity.getInstance().animateText.setVisibility(View.INVISIBLE);
             isRunning = false;
             List<Information> mainDataList = databaseHelper.getAllImageUploadedInfo();
+            SpeciesAroundYouActivity.getInstance().mMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.getInstance());
             for(int i = 0 ;i<mainDataList.size();i++){
                 if(mainDataList.get(i).getLat() != null && mainDataList.get(i).getLng() != null
                         && !mainDataList.get(i).getLat().equals("0") && !mainDataList.get(i).getLat().equals("0.0")
