@@ -452,7 +452,8 @@ public class ImageUploadService extends Service{
         String ADDRESS = submitRequest.getAddress();
         String CROP = submitRequest.getCrop();
         String UPLOAD_FROM = submitRequest.getUploadedFrom();
-        Call<LoginResponse> call = service.dataUploadService(USERID,IMAGE,SPECIES,REMARK,TAG,STATUS,TITLE,LAT,LNG,ADDRESS,CROP,TIME,UPLOAD_FROM);
+        String MOUNTING_BOARD = submitRequest.getMountingBoard();
+        Call<LoginResponse> call = service.dataUploadService(USERID,IMAGE,SPECIES,REMARK,TAG,STATUS,TITLE,LAT,LNG,ADDRESS,CROP,TIME,UPLOAD_FROM,MOUNTING_BOARD);
         final String finalIMAGE = IMAGE;
         call.enqueue(new Callback<LoginResponse>() {
             @Override
@@ -512,6 +513,9 @@ public class ImageUploadService extends Service{
                         }
                         if(submitRequest.getUploadedFrom() != null){
                             information.setUploadFrom(submitRequest.getUploadedFrom());
+                        }
+                        if(submitRequest.getMountingBoard() != null){
+                            information.setMountingBoard(submitRequest.getMountingBoard());
                         }
 
                         databaseHelper.insertDataInTableAllInformationToSave(information);

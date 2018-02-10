@@ -56,7 +56,7 @@ public class ReviewMyUpload extends AppCompatActivity {
         //executeGetMyReviewData(userId);
         if(getIntent() != null){
             dataListSameSpecies = getIntent().getExtras().getParcelableArrayList("dataListSameSpecies");
-            textSpeciesAlbum.setText("Species : "+dataListSameSpecies.get(0).getSpecies());
+            textSpeciesAlbum.setText(dataListSameSpecies.get(0).getSpecies());
         }
         mAdapter = new ReviewAdapter(dataListSameSpecies,ReviewMyUpload.this,"");
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());

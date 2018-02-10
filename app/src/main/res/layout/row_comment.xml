@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:id="@+id/recyclerItem"
+                android:layout_margin="5dp"
+                android:padding="5dp"
+                android:background="#EEEEEE"
+                android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/layoutHead"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/commentBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nikhil Desale"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/textCommentBy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:layout_marginTop="5dp"
+        android:text="Th i comment is kjkds dshfhdsf  ssdsddvsdhfshldlfhskdf"
+        android:layout_below="@+id/layoutHead"/>
+
+    <TextView
+        android:id="@+id/commentDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10-10-2018"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/textCommentBy"
+        android:textStyle="bold"/>
+
+</RelativeLayout>

@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:background="@android:drawable/dialog_holo_light_frame"
-                android:layout_height="wrap_content" >
+                android:background="@color/colorWhite"
+                android:layout_height="wrap_content">
 
-    <ImageView
+
+    <FrameLayout
+        android:id="@+id/imageViewReview1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageViewReview"
+            android:layout_width="80dp"
+            android:layout_height="90dp"
+            android:layout_margin="8dp"
+            android:background="@drawable/circleimage"
+            android:src="@mipmap/ic_launcher"/>
+
+    </FrameLayout>
+
+
+    <!--<ImageView
        android:id="@+id/imageViewReview"
-       android:layout_width="110dp"
-       android:layout_height="110dp"
-       android:padding="5dp"
-       android:src="@mipmap/ic_launcher"/>
+       android:layout_width="100dp"
+       android:layout_height="100dp"
+       android:layout_margin="8dp"
+       android:src="@mipmap/ic_launcher"/>-->
     <!--android:scaleType="fitXY"-->
 
     <ImageView
@@ -18,75 +35,76 @@
         android:layout_height="20dp"
         android:src="@drawable/threedot"
         android:padding="2dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginRight="2dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="5dp"
         android:layout_alignParentRight="true"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/imageViewReview"
+        android:layout_toRightOf="@+id/imageViewReview1"
         android:orientation="vertical"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="5dp">
+        android:layout_marginLeft="8dp">
 
         <TextView
             android:id="@+id/textSpeciesReview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
+            android:fontFamily="serif"
             android:textStyle="bold"
+            android:textColor="@color/colorText"
             android:layout_marginBottom="1dp"
             android:layout_marginRight="6dp"
-            android:text="SPECIES : Not Available"/>
+            android:text="Not Available"/>
 
-        <View
+        <!--<View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#CAC6C6"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"/>-->
 
         <TextView
             android:id="@+id/textTitleReview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/colordarkGreen"
             android:layout_marginBottom="1dp"
             android:layout_marginTop="2dp"
-            android:text="TITLE : Not Available"/>
+            android:text="Not Available"/>
 
-        <View
+        <!--<View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#CAC6C6"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"/>-->
 
         <TextView
             android:id="@+id/textRemarkReview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textSize="11sp"
             android:layout_marginBottom="1dp"
             android:layout_marginTop="2dp"
-            android:text="REMARK : Not Available"/>
+            android:text="Not Available"/>
 
-        <View
+        <!--<View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#CAC6C6"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"/>-->
 
         <TextView
             android:id="@+id/textTagReview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@color/colorLightGreen"
             android:layout_marginBottom="1dp"
             android:layout_marginTop="2dp"
-            android:text="TAG : Not Available"/>
+            android:text="Not Available"/>
 
 
 

@@ -10,8 +10,9 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbarSpeciesSearchByName"
         android:layout_width="match_parent"
-        android:layout_height="58dp"
+        android:layout_height="55dp"
         android:background="@color/colorPrimary"
+        app:titleTextColor="@color/colorWhite"
         android:minHeight="?attr/actionBarSize"
         app:title="@string/search_species_by_name">
     </android.support.v7.widget.Toolbar>
@@ -110,6 +111,8 @@
             android:layout_gravity="center"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
+            android:textColor="@color/colorWhite"
+            android:textStyle="bold"
             android:background="@drawable/button_selector"
             android:text="Back "
             android:textSize="@dimen/image_info_text_font_size"/>

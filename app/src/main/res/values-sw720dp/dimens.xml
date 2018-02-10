@@ -1,6 +1,6 @@
 <resources>
     <dimen name="image_info_text_font_size">28sp</dimen>
-    <dimen name="image_info_edittext_height">55sp</dimen>
+    <dimen name="image_info_edittext_height">58sp</dimen>
     <dimen name="button_height">65dp</dimen>
     <dimen name="title_font_size">35sp</dimen>
     <dimen name="species_folder_height">180dp</dimen>

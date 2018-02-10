@@ -121,24 +121,24 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         Information review = dataListSameSpecies.get(position);
         if(review.getSpecies() != null && review.getSpecies().length()>0){
-            holder.textSpecies.setText("SPECIES : "+review.getSpecies());
+            holder.textSpecies.setText(review.getSpecies());
         }else{
-            holder.textSpecies.setText("SPECIES : NA");
+            holder.textSpecies.setText("NA");
         }
         if(review.getRemark() != null && review.getRemark().length()>0){
-            holder.textRemark.setText("REMARK : "+review.getRemark());
+            holder.textRemark.setText(review.getRemark());
         }else{
-            holder.textRemark.setText("REMARK : NA");
+            holder.textRemark.setText("NA");
         }
         if(review.getTitle() != null && review.getTitle().length()>0){
-            holder.textTitle.setText("TITLE : "+review.getTitle());
+            holder.textTitle.setText(review.getTitle());
         }else{
-            holder.textTitle.setText("TITLE : NA");
+            holder.textTitle.setText("NA");
         }
         if(review.getTag() != null && review.getTag().length()>0){
-            holder.textTag.setText("TAG : "+review.getTag());
+            holder.textTag.setText(review.getTag());
         }else{
-            holder.textTag.setText("TAG : NA");
+            holder.textTag.setText("NA");
         }
 
         String imageFolderPath ="";

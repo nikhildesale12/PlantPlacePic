@@ -15,7 +15,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_margin="1dp"
-        android:background="#4CC784"
+        android:background="@drawable/dashboardbg1b"
         android:orientation="vertical"
         android:weightSum="1">
 
@@ -24,7 +24,7 @@
             android:id="@+id/captureImageInUpdate"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.40"
+            android:layout_weight="0.38"
             android:background="#FFF"
             android:padding="4dp"
             android:layout_marginTop="10dp"
@@ -51,9 +51,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/image_info_text_font_size"
-                    android:layout_marginTop="5dp"
-                    android:textColor="@android:color/black"
+                    android:textColor="@android:color/white"
                     android:gravity="left"
+                    android:textStyle="bold"
                     android:text="Select species from dropdown or enter below."/>
 
 
@@ -70,8 +70,7 @@
                         <Spinner
                             android:id="@+id/spinnerSpecies"
                             android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:background="@drawable/edittextbg">
+                            android:layout_height="38dp">
                         </Spinner>
 
                         <TextView
@@ -85,12 +84,12 @@
 
                     </RelativeLayout>
 
-                    <ImageView
+                    <!--<ImageView
                         android:layout_alignParentRight="true"
                         android:layout_marginRight="10dp"
                         android:layout_width="35dp"
                         android:src="@drawable/ic_expand_more_black_18dp"
-                        android:layout_height="@dimen/image_info_edittext_height"/>
+                        android:layout_height="@dimen/image_info_edittext_height"/>-->
 
                 </RelativeLayout>
 
@@ -99,32 +98,42 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/image_info_text_font_size"
-                    android:layout_marginTop="2dp"
-                    android:textColor="@android:color/black"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
                     android:gravity="center_horizontal"
                     android:text="OR"/>
 
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/speciesEditTextInUpdate"
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/image_info_edittext_height"
-                android:layout_marginTop="5dp"
-                android:textSize="@dimen/image_info_text_font_size"
-                android:background="@drawable/edittextbg"
-                android:hint="Scientific name*"
-                android:paddingLeft="10dp"
-                android:singleLine="true"
-                />
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/speciesEditTextInUpdate"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_alignParentTop="true"
+                    android:hint="Scientific name*"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorWhite"
+                    android:textColorHint="@android:color/tab_indicator_text"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true"
+                    android:textSize="@dimen/image_info_text_font_size"/>
+
+            </RelativeLayout>
 
             <EditText
                 android:id="@+id/titleEditTextInUpdate"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/image_info_edittext_height"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/edittextbg"
+                android:layout_height="40dp"
                 android:hint="Common name"
+                android:textStyle="bold"
+                android:textColor="@color/colorWhite"
+                android:textColorHint="@android:color/tab_indicator_text"
                 android:textSize="@dimen/image_info_text_font_size"
                 android:paddingLeft="10dp"
                 android:singleLine="true"/>
@@ -132,33 +141,43 @@
             <EditText
                 android:id="@+id/remarkEditTextInUpdate"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/image_info_edittext_height"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/edittextbg"
+                android:layout_height="40dp"
                 android:hint="Remark"
                 android:textSize="@dimen/image_info_text_font_size"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
+                android:textColorHint="@android:color/tab_indicator_text"
                 android:paddingLeft="10dp"
                 android:singleLine="true"/>
 
             <AutoCompleteTextView
                 android:id="@+id/cityEditTextInUpdate"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/image_info_edittext_height"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/edittextbg"
+                android:layout_height="40dp"
                 android:hint="Location"
+                android:textStyle="bold"
+                android:textColor="@color/colorWhite"
+                android:textColorHint="@android:color/tab_indicator_text"
                 android:textSize="@dimen/image_info_text_font_size"
                 android:paddingLeft="10dp"
                 android:singleLine="true"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Do you want to upload to mounting board ?"
+                android:textStyle="bold"
+                android:textColor="@color/colorWhite"
+                android:id="@+id/checkMountainBoardUpdate"/>
 
             <TextView
                 android:id="@+id/textTagUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="2dp"
                 android:paddingLeft="5dp"
                 android:text="TAG : TREE"
-                android:textColor="#000000"
+                android:textColor="@color/colorWhite"
                 android:visibility="gone"
                 android:textSize="@dimen/image_info_text_font_size"
                 android:textStyle="bold"/>
@@ -168,10 +187,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/button_height"
                 android:layout_marginRight="5dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:paddingLeft="30dp"
                 android:paddingRight="30dp"
                 android:textSize="@dimen/image_info_text_font_size"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
                 android:background="@drawable/button_selector"
                 android:text="Update"/>
 

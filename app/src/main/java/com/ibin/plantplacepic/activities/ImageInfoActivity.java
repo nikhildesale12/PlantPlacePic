@@ -25,6 +25,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -75,7 +77,7 @@ public class ImageInfoActivity extends AppCompatActivity {
     private Button buttonCrop ;
     private Button buttonSaveLater;
     private EditText titleEditText;
-    private EditText speciesEditText;
+    private AutoCompleteTextView speciesEditText;
     private EditText remarkEditText;
     private ImageView captureImage;
     private Uri imageUri = null;
@@ -100,6 +102,7 @@ public class ImageInfoActivity extends AppCompatActivity {
     com.github.clans.fab.FloatingActionButton floatingActionButtonTree;
     SubmitRequest submitRequest ;
     public static String uploadedSpecies = "";
+    CheckBox checkMountainBoard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +121,7 @@ public class ImageInfoActivity extends AppCompatActivity {
         }
         //cityEditText.setThreshold(3);
         cityEditText.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.list_text_item));
+
         Intent intent = getIntent();
         submitRequest = new SubmitRequest();
         Log.d(" Constants.countSelectedPhotoFromGallery "," Constants.countSelectedPhotoFromGallery : "+Constants.countSelectedPhotoFromGallery);
@@ -281,6 +285,16 @@ public class ImageInfoActivity extends AppCompatActivity {
             }
         });
 
+//        checkMountainBoard.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if(isChecked){
+//                    Toast.makeText(ImageInfoActivity.this,"True",Toast.LENGTH_SHORT).show();
+//                }else{
+//                    Toast.makeText(ImageInfoActivity.this,"False",Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
     }// end oncreate
 
     private void callServiceToGetSpeciesNames(String userId) {
@@ -319,6 +333,12 @@ public class ImageInfoActivity extends AppCompatActivity {
                                 adapter = new SpinnerCustomAdapter(ImageInfoActivity.this,dataListSpeciesNames);
                                 speciesSpinner.setAdapter(adapter);
                                 speciesNotLoaded.setVisibility(View.GONE);
+
+                                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(ImageInfoActivity.this,
+                                        android.R.layout.simple_list_item_1, dataListSpeciesNames);
+                                speciesEditText.setThreshold(2);
+                                speciesEditText.setAdapter(arrayAdapter);
+
                             }else{
                                 //layoutSpeciesSpinner.setVisibility(View.GONE);
                                 speciesNotLoaded.setVisibility(View.VISIBLE);
@@ -420,6 +440,11 @@ public class ImageInfoActivity extends AppCompatActivity {
             submitReq.setStatus("false");
             submitReq.setTime(currentDateTimeString);
             submitReq.setUploadedFrom(uploadFrom);
+            if(checkMountainBoard.isChecked()){
+                submitReq.setMountingBoard("Y");
+            }else{
+                submitReq.setMountingBoard("N");
+            }
             //call Service and pass data
             if (Constants.isNetworkAvailable(ImageInfoActivity.this)) {
                 if(userId.equals("0")){
@@ -601,11 +626,12 @@ public class ImageInfoActivity extends AppCompatActivity {
         buttonCrop =(Button)findViewById(R.id.buttonCrop);
         captureImage=(ImageView)findViewById(R.id.captureImage);
         titleEditText=(EditText)findViewById(R.id.titleEditText);
-        speciesEditText=(EditText)findViewById(R.id.speciesEditText);
+        speciesEditText=(AutoCompleteTextView)findViewById(R.id.speciesEditText);
         remarkEditText=(EditText)findViewById(R.id.remarkEditText);
         cityEditText=(AutoCompleteTextView) findViewById(R.id.cityEditText);
         databaseHelper = DatabaseHelper.getDatabaseInstance(getApplicationContext());
         speciesNotLoaded = (TextView) findViewById(R.id.speciesNotLoaded);
+        checkMountainBoard= (CheckBox) findViewById(R.id.checkMountainBoard);
     }
 
 

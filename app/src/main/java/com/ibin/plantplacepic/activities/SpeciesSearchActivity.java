@@ -19,13 +19,13 @@ public class SpeciesSearchActivity extends AppCompatActivity {
 
     RelativeLayout buttonSpeciesAroundYou;
     RelativeLayout buttonSpeciesByName;
-    Button buttonBackSpeciesSearch;
+    //Button buttonBackSpeciesSearch;
    // public static String speciesImage="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_species_search);
+        setContentView(R.layout.activity_species_search_new);
         initViews();
         buttonSpeciesAroundYou.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +47,7 @@ public class SpeciesSearchActivity extends AppCompatActivity {
                 //finish();
             }
         });
-        buttonBackSpeciesSearch.setOnClickListener(new View.OnClickListener() {
+        /*buttonBackSpeciesSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent1=new Intent(SpeciesSearchActivity.this,Dashboard.class);
@@ -55,7 +55,7 @@ public class SpeciesSearchActivity extends AppCompatActivity {
                 startActivity(intent1);
                 finish();
             }
-        });
+        });*/
     }
 
     private void showSettingsAlert(){
@@ -81,9 +81,9 @@ public class SpeciesSearchActivity extends AppCompatActivity {
         return GPSStatus;
     }
     private void initViews() {
-        buttonSpeciesAroundYou=(RelativeLayout)findViewById(R.id.buttonSpeciesAroundYou);
-        buttonSpeciesByName=(RelativeLayout)findViewById(R.id.buttonSpeciesByName);
-        buttonBackSpeciesSearch=(Button)findViewById(R.id.buttonBackSpeciesSearch);
+        buttonSpeciesAroundYou=(RelativeLayout)findViewById(R.id.buttonSpeciesAroundYouNew);
+        buttonSpeciesByName=(RelativeLayout)findViewById(R.id.buttonSpeciesByNameNew);
+       // buttonBackSpeciesSearch=(Button)findViewById(R.id.buttonBackSpeciesSearch);
     }
 
     @Override

@@ -8,10 +8,10 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activities.ReviewMyUpload">
 
-    <RelativeLayout
+    <!--<RelativeLayout
         android:id="@+id/headTitleReview"
         android:layout_width="match_parent"
-        android:layout_height="58dp"
+        android:layout_height="55dp"
         android:background="@color/colorPrimary">
 
         <TextView
@@ -20,10 +20,10 @@
             android:text="@string/species_detail_title"
             android:textSize="20dp"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:layout_centerVertical="true"
             android:layout_marginLeft="6dp"/>
-    </RelativeLayout>
+    </RelativeLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,14 +36,17 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="vertical"
-            android:layout_weight="0.92">
+            android:layout_weight="0.94">
 
             <TextView
                 android:id="@+id/textSpeciesAlbum"
                 android:layout_width="match_parent"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:text="Species"
-                android:padding="8dp"
+                android:textColor="@color/colordarkGreen"
+                android:fontFamily="serif"
+                android:gravity="center"
+                android:padding="6dp"
                 android:background="@color/tab_select"
                 android:textStyle="bold"
                 android:layout_height="wrap_content"/>
@@ -52,19 +55,22 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/colorgray"
+                android:background="@color/colorWhite"
                 android:scrollbars="vertical" />
 
         </LinearLayout>
         <Button
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.08"
+            android:layout_weight="0.06"
             android:text="BACK"
             android:layout_marginRight="6dp"
             android:layout_marginLeft="6dp"
+            android:textColor="@color/colorWhite"
+            android:textStyle="bold"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/button_selector"
             android:id="@+id/back"/>
 

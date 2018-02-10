@@ -1,5 +1,7 @@
 package com.ibin.plantplacepic.retrofit;
 
+import com.ibin.plantplacepic.bean.CommentResponse;
+import com.ibin.plantplacepic.bean.CommentResponseBean;
 import com.ibin.plantplacepic.bean.InformationResponseBean;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.UploadResponse;
@@ -56,7 +58,8 @@ public interface ApiService {
             @Query("ADDRESS") String ADDRESS,
             @Query("CROP") String CROP,
             @Query("TIME") String TIME,
-            @Query("UPLOAD_FROM") String UPLOAD_FROM
+            @Query("UPLOAD_FROM") String UPLOAD_FROM,
+            @Query("MOUNTING_BOARD") String MOUNTING_BOARD
     );
 
     @Multipart
@@ -74,6 +77,11 @@ public interface ApiService {
 
     @GET(Constants.GET_ALL_DATA_SERVICE_URL)
     Call<InformationResponseBean> getAllSpeciesDetail(
+    );
+
+    @GET(Constants.GET_ALL_MOUNTING_BOATD_DATA_SERVICE_URL)
+    Call<InformationResponseBean> getAllSpeciesDetailMountingBoard(
+            @Query("USERID") String USERID
     );
 
     @GET(Constants.GET_DETAIL_BY_SPECIES_NAME)
@@ -100,7 +108,8 @@ public interface ApiService {
             @Query("TITLE") String TITLE,
             @Query("serverFolderPath") String serverFolderPath,
             @Query("serverFolderPathFrom") String serverFolderPathFrom,
-            @Query("ADDRESS") String ADDRESS
+            @Query("ADDRESS") String ADDRESS,
+            @Query("MOUNTING_BOARD") String MOUNTING_BOARD
     );
 
     @GET(Constants.DELET_DATA_SERVICE_URL)
@@ -124,6 +133,27 @@ public interface ApiService {
             @Query("TOSPECIES") String TOSPECIES
     );
 
+    @GET(Constants.LIKE_SERVICE_URL)
+    Call<LoginResponse> updateLikeService(
+            @Query("USERID") String USERID,
+            @Query("IMAGENAME") String IMAGENAME,
+            @Query("LIKE_OP") String LIKE_OP
+    );
+
+    @GET(Constants.COMMENT_SERVICE_URL)
+    Call<LoginResponse> commentService(
+            @Query("USERID") String USERID,
+            @Query("IMAGENAME") String IMAGENAME,
+            @Query("COMMENT") String COMMENT
+    );
+
+    @GET(Constants.DISLIKE_SERVICE_URL)
+    Call<LoginResponse> updateDisLikeService(
+            @Query("USERID") String USERID,
+            @Query("IMAGENAME") String IMAGENAME,
+            @Query("DISLIKE_OP") String DISLIKE_OP
+    );
+
     @GET(Constants.UPDATE_USER_DEATAIL_SERVICE_URL)
     Call<UserDetailResponseBean> updateUserDetail(
             @Query("userId") String userId,
@@ -140,4 +170,10 @@ public interface ApiService {
     @GET(Constants.CHECK_VERSION_SERVICE_URL)
     Call<LoginResponse> getAppVersion(
     );
+
+    @GET(Constants.GET_IMAGE_COMMENT_SERVICE_URL)
+    Call<CommentResponse> getAllComments(
+            @Query("IMAGENAME") String IMAGENAME
+    );
+
 }

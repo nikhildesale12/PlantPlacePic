@@ -205,8 +205,9 @@ public class GetAllUploadedDataService extends Service{
         }
         @Override
         protected void onPostExecute(String result) {
-            SpeciesAroundYouActivity.getInstance().animateText.clearAnimation();
-            SpeciesAroundYouActivity.getInstance().animateText.setVisibility(View.INVISIBLE);
+            if(SpeciesAroundYouActivity.getInstance() != null && SpeciesAroundYouActivity.getInstance().animateText != null) {
+                SpeciesAroundYouActivity.getInstance().animateText.clearAnimation();
+                SpeciesAroundYouActivity.getInstance().animateText.setVisibility(View.INVISIBLE);
             isRunning = false;
             List<Information> mainDataList = databaseHelper.getAllImageUploadedInfo();
             SpeciesAroundYouActivity.getInstance().mMap.setOnInfoWindowClickListener(SpeciesAroundYouActivity.getInstance());
@@ -230,6 +231,7 @@ public class GetAllUploadedDataService extends Service{
                     }
 
                 }
+              }
             }
         }
     }

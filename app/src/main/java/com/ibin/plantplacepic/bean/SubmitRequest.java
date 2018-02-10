@@ -29,6 +29,7 @@ public class SubmitRequest implements Serializable {
     private String updateInfo;
     private String uploadedFrom;
     private String isSaveInLocal;
+    private String mountingBoard;
 
     public String getUserId() {
         return userId;
@@ -162,5 +163,13 @@ public class SubmitRequest implements Serializable {
 
     public void setUpdateInfo(String updateInfo) {
         this.updateInfo = updateInfo;
+    }
+
+    public String getMountingBoard() {
+        return mountingBoard;
+    }
+
+    public void setMountingBoard(String mountingBoard) {
+        this.mountingBoard = mountingBoard;
     }
 }

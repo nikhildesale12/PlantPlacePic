@@ -22,7 +22,7 @@
             android:textStyle="bold"
             android:layout_marginBottom="2dp"
             android:layout_marginRight="6dp"
-            android:text="SPECIES : Not Available"/>
+            android:text="Species : Not Available"/>
 
 
         <TextView
@@ -33,7 +33,7 @@
             android:textStyle="bold"
             android:layout_marginBottom="2dp"
             android:layout_marginTop="2dp"
-            android:text="TITLE : Not Available"/>
+            android:text="Title : Not Available"/>
 
 
         <TextView
@@ -44,7 +44,7 @@
             android:textStyle="bold"
             android:layout_marginBottom="2dp"
             android:layout_marginTop="2dp"
-            android:text="REMARK : Not Available"/>
+            android:text="Remark : Not Available"/>
 
 
         <TextView
@@ -55,7 +55,7 @@
             android:textStyle="bold"
             android:layout_marginBottom="2dp"
             android:layout_marginTop="2dp"
-            android:text="TAG : Not Available"/>
+            android:text="Tag : Not Available"/>
     </LinearLayout>
 
     <ImageView

@@ -5,27 +5,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/dashboardbg3"
     tools:context="com.ibin.plantplacepic.activities.SignUpActivity">
-
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbarDashboard"
-        android:minHeight="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
         android:layout_width="match_parent"
-        android:layout_height="58dp"
-        app:contentInsetStart="70dp"
-        app:titleTextAppearance="@style/Toolbar.TitleText"
-        android:layout_alignParentTop="true"
+        android:layout_height="54dp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="#A6B6BFBA"
+        android:minHeight="?attr/actionBarSize"
+        app:contentInsetStart="70dp"
+        app:titleTextAppearance="@style/Toolbar.TitleText">
     </android.support.v7.widget.Toolbar>
 
-    <ImageView
+    <com.ibin.plantplacepic.utility.RoundedImageView
         android:id="@+id/userProfilePic"
-        android:layout_width="55dp"
-        android:layout_height="58dp"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
         android:layout_above="@+id/linearLayout3"
+        android:background="@drawable/circleimage"
         android:src="@drawable/user"/>
 
     <TextView
@@ -41,14 +42,6 @@
         android:layout_marginRight="10dp"
         android:text="Welcome "/>
 
-    <!--    <ImageView
-        android:id="@+id/profilePic"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginTop="5dp"
-        android:src="@mipmap/userpic"
-        android:layout_marginLeft="1dp"/>-->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -57,145 +50,252 @@
         android:layout_below="@+id/textUserName"
         android:id="@+id/linearLayout3">
 
-        <RelativeLayout
-            android:id="@+id/buttonReviewMyUploads"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="0.22"
-            android:background="#DA9695">
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="120dp">
 
-            <ImageView
-                android:id="@+id/iconDownload"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:padding="10dp"
-                android:src="@mipmap/downloadicon1"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.50"
+                android:orientation="vertical"
+                android:layout_marginRight="10dp"
+                android:background="#66494747"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
+                <RelativeLayout
+                    android:background="@drawable/square_shape"
+                    android:id="@+id/buttonCamera"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/camera3"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="@android:color/white"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="5dp"
+                        android:text="Camera"/>
+
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.50"
                 android:layout_marginLeft="10dp"
-                android:layout_toRightOf="@+id/iconDownload"
-                android:text="Review My Uploads"
-                android:textColor="@color/colorText"
-                android:textSize="24sp"/>
+                android:background="#66494747"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/text_uploaded_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="1dp"
-                android:layout_marginTop="1dp"
-                android:background="@drawable/round_shape"
-                android:text="0"
-                android:textSize="12sp"
-                android:textStyle="bold"/>
-        </RelativeLayout>
+                <RelativeLayout
+                    android:background="@drawable/square_shape"
+                    android:id="@+id/buttonGallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/buttonGallery"
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/gallery"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="5dp"
+                        android:text="Gallery"
+                        android:textColor="@android:color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"/>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:background="#FAC090"
-            android:layout_marginLeft="10dp"
-            android:layout_weight="0.22">
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="120dp">
 
-            <ImageView
-                android:id="@+id/icongallary"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/galleryicon1"
-                android:padding="10dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.50"
+                android:orientation="vertical"
+                android:layout_marginRight="10dp"
+                android:background="#66494747"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Upload From Gallery"
-                android:layout_centerVertical="true"
-                android:textSize="24sp"
-                android:textColor="@color/colorText"
+                <RelativeLayout
+                    android:background="@drawable/square_shape"
+                    android:id="@+id/buttonReviewMyUploads"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="60dp"
+                        android:paddingBottom="5dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/upload1"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="@android:color/white"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="5dp"
+                        android:text="Review My Upload"/>
+
+                    <TextView
+                        android:id="@+id/text_uploaded_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/round_shape"
+                        android:text="0"
+                        android:textSize="10sp"
+                        android:textStyle="bold"/>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.50"
                 android:layout_marginLeft="10dp"
-                android:layout_toRightOf="@+id/icongallary"/>
+                android:background="#66494747"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
 
-        </RelativeLayout>
+                <RelativeLayout
+                    android:background="@drawable/square_shape"
+                     android:id="@+id/buttonSearchMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/buttonCamera"
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/worldwide"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="@android:color/white"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="5dp"
+                        android:text="Distribution Search"/>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:background="#C3D79C"
-            android:layout_weight="0.22">
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="120dp">
 
-            <ImageView
-                android:id="@+id/iconCamara"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/cameraicon2"
-                android:padding="10dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.50"
+                android:orientation="vertical"
+                android:layout_marginRight="10dp"
+                android:background="#66494747"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Camera"
-                android:layout_centerVertical="true"
-                android:textSize="24sp"
-                android:textColor="@color/colorText"
-                android:layout_marginLeft="10dp"
-                android:layout_toRightOf="@+id/iconCamara"/>
+                <RelativeLayout
+                    android:background="@drawable/square_shape"
+                    android:id="@+id/buttonMountingBeard"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-        </RelativeLayout>
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/mounting1"/>
 
-        <RelativeLayout
-            android:id="@+id/buttonSearchMain"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:background="#A3C3E0"
-            android:layout_weight="0.22">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:textColor="@android:color/white"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="5dp"
+                        android:text="Mounting Board"/>
 
-            <ImageView
-                android:id="@+id/iconSearch"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/search"
-                android:padding="9dp"
-                android:layout_centerVertical="true"/>
+                </RelativeLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Distribution Search"
-                android:layout_centerVertical="true"
-                android:textSize="24sp"
-                android:textColor="@color/colorText"
-                android:layout_marginLeft="10dp"
-                android:layout_toRightOf="@+id/iconSearch"/>
+            </LinearLayout>
 
-        </RelativeLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.50"
+                android:layout_marginLeft="5dp"
+                android:background="#663B3E3C"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@mipmap/cameraicon"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:textSize="20sp"
+                    android:text="Review My Upload"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
 
     </LinearLayout>
-
-
 
 </RelativeLayout>

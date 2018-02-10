@@ -41,6 +41,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/button_selector"
             android:layout_marginBottom="10dp"
+            android:textColor="@color/colorWhite"
+            android:textStyle="bold"
             android:text="Upload" />
 
         <Button
@@ -50,6 +52,8 @@
             android:background="@drawable/button_selector"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorWhite"
             android:text="Back" />
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

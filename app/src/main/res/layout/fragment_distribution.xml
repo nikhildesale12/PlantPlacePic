@@ -4,8 +4,6 @@
              android:layout_height="match_parent"
              tools:context="com.ibin.plantplacepic.fragment.DistributionFragment">
 
-
-
     <fragment
         android:id="@+id/mapDistrubution"
         android:name="com.google.android.gms.maps.SupportMapFragment"

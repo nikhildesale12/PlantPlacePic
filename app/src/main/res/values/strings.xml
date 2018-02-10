@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Plant Place</string>
     <string name="about_activity">Welcome</string>
+    <string name="notification_activity">Notification</string>
     <string name="terms_activity">Terms and Condition</string>
     <string name="dashboard_activity">Dashboard</string>
     <string name="activity_myuploads">My Uploads</string>
@@ -22,7 +23,7 @@
     <!--<string name="google_maps_api_key">AIzaSyBMBlqdDPcTXZpAXffXPVNReyTe4JmjG9k</string>-->
     <string name="google_map_key" templateMergeStrategy="preserve" translatable="false">
     <!--AIzaSyBMBlqdDPcTXZpAXffXPVNReyTe4JmjG9k-->
-    <string name="signinbutton">Login</string>
+        <string name="signinbutton">Login</string>
         <string name="registerbutton">Register</string>
     <string name="facebook_app_id">456142274781300</string>
 </string>

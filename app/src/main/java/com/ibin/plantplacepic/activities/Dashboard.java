@@ -26,7 +26,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ForwardingListener;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -49,6 +48,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibin.plantplacepic.BuildConfig;
+import com.ibin.plantplacepic.NotificationActivity;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.SubmitRequest;
@@ -65,8 +65,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -88,6 +86,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     RelativeLayout buttonGallery;
     RelativeLayout buttonCamera;
     RelativeLayout buttonSearch;
+    RelativeLayout buttonMountingBeard;
     public TextView textUploadCount;
     String currentDateTimeString;
     GPSTracker gps;
@@ -305,6 +304,15 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                 }
             });
 
+            buttonMountingBeard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent1 = new Intent(Dashboard.this, MountingBoardTabActivity.class);
+                    startActivity(intent1);
+                    //finish();
+                }
+            });
+
             if(Constants.isNetworkAvailable(Dashboard.this)){
                 List<SubmitRequest> dataList = databaseHelper.getImageInfoToUpload(userId);
                 Log.d("List : ","List : "+dataList.size());
@@ -439,6 +447,13 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
             }else{
                 copyAsset("PlantPlacePicture.pdf");
             }
+        }
+
+        if (id == R.id.action_notification) {
+            Toast.makeText(Dashboard.this, "No Notification", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(Dashboard.this, NotificationActivity.class);
+//            intent.putExtra("from","dashboard");
+//            startActivity(intent);
         }
         
 
@@ -892,6 +907,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         buttonReviewMyUploads = (RelativeLayout)findViewById(R.id.buttonReviewMyUploads);
         buttonGallery = (RelativeLayout)findViewById(R.id.buttonGallery);
         buttonSearch = (RelativeLayout)findViewById(R.id.buttonSearchMain);
+        buttonMountingBeard = (RelativeLayout) findViewById(R.id.buttonMountingBeard);
         textUserName = (TextView) findViewById(R.id.textUserName);
         textUploadCount = (TextView)findViewById(R.id.text_uploaded_count);
         databaseHelper = DatabaseHelper.getDatabaseInstance(Dashboard.this);

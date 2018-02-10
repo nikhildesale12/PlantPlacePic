@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -201,7 +202,7 @@ public class ReviewMyUploadTabActivity extends AppCompatActivity implements Mate
     private void setupTabIcons() {
 
         TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-        tabOne.setText("Album");
+        tabOne.setText("ALBUM");
         tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.mipmap.icobspecies, 0, 0);
         tabLayout.getTabAt(0).setCustomView(tabOne);
 

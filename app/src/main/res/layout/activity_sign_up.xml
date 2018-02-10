@@ -85,6 +85,7 @@
                     android:layout_gravity="center"
                     android:text="Sign Up"
                     android:textSize="@dimen/image_info_text_font_size"
+                    android:textColor="@color/colorText"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/button_selector"/>
             </LinearLayout>

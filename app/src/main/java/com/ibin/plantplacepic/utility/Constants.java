@@ -52,14 +52,15 @@ public class Constants {
     public static final String LOGIN_SERVICE_URL = "/plantplace/loginService.php";
     public static final String REGISTER_SERVICE_URL = "/plantplace/signupService.php";
     public static final String UPLOAD_SERVICE_URL = "/plantplace/fileUpload.php";
-    public static final String UPLOAD_DATA_SERVICE_URL = "/plantplace/uploadData.php";
-    public static final String UPDATE_DATA_SERVICE_URL = "/plantplace/updateData.php";
+    public static final String UPLOAD_DATA_SERVICE_URL = "/plantplace/new/uploadData.php";
+    public static final String UPDATE_DATA_SERVICE_URL = "/plantplace/new/updateData.php";
     public static final String MOVE_SPECIES_SERVICE_URL = "/plantplace/moveUpdateData.php";
     public static final String RENAME_SPECIES_SERVICE_URL = "/plantplace/renameSpecies.php";
     public static final String DOWNLOAD_DATA_SERVICE_URL = "/plantplace/getDataByUserId.php";
     public static final String POST_FEEDBACK_DATA = "/plantplace/getFeedbackData.php";
     //public static final String DOWNLOAD_ALL_DATA_SERVICE_URL  = "/plantplace/getAllData.php";
     public static final String GET_ALL_DATA_SERVICE_URL = "/plantplace/getAllSpeciesData.php";
+    public static final String GET_ALL_MOUNTING_BOATD_DATA_SERVICE_URL = "/plantplace/getAllSpeciesDataMountingBoard.php";
     public static final String GET_DETAIL_BY_SPECIES_NAME = "/plantplace/getSpeciesDataByName.php";
     public static final String GET_COUNT_SERVICE_URL = "/plantplace/getUploadCount.php";
     public static final String GET_ALL_COUNT_SERVICE_URL = "/plantplace/getAllUploadCount.php";
@@ -67,6 +68,11 @@ public class Constants {
     public static final String UPDATE_USER_DEATAIL_SERVICE_URL = "/plantplace/updateUserInfo.php";
     public static final String USER_PROFILE_SERVICE_URL = "/plantplace/getUserProfile.php";
     public static final String CHECK_VERSION_SERVICE_URL = "/plantplace/appVersionCheck.php";
+    public static final String LIKE_SERVICE_URL = "/plantplace/like.php";
+    public static final String DISLIKE_SERVICE_URL = "/plantplace/dislike.php";
+    public static final String COMMENT_SERVICE_URL = "/plantplace/comment.php";
+    public static final String GET_IMAGE_COMMENT_SERVICE_URL = "/plantplace/getCommentsDetail.php";
+
 //    public static final String IMAGE_DOWNLOAD_PATH_TAG_TREE = "http://test.xamarin-tools.com/UploadedTree/";
 //    public static final String IMAGE_DOWNLOAD_PATH_TAG_FRUIT = "http://test.xamarin-tools.com/UploadedFruit/";
 //    public static final String IMAGE_DOWNLOAD_PATH_TAG_LEAF = "http://test.xamarin-tools.com/UploadedLeaf/";

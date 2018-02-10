@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:card_view="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@android:drawable/dialog_holo_light_frame"
+              android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:background="#66E0E0E0"
+        card_view:cardCornerRadius="5dp">
+
+        <RelativeLayout
+            android:background="#66E0E0E0"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <LinearLayout
+                android:id="@+id/layoutSpeciesName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!--<EditText
+                    android:id="@+id/textScientificName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Scientific Name"
+                    android:textStyle="bold|italic"
+                    android:layout_gravity="bottom"
+                    android:textSize="18sp"/>
+
+                <ImageView
+                    android:id="@+id/editSpeciesMounting"
+                    android:layout_width="30dp"
+                    android:layout_height="22dp"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/editpensil"/>-->
+
+                <EditText
+                    android:id="@+id/textScientificName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Scientific Name"
+                    android:textStyle="bold|italic"
+                    android:enabled="false"
+                    android:background="@null"
+                    android:layout_gravity="bottom"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"/>
+
+                <ImageView
+                    android:id="@+id/editSpeciesMounting"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_alignEnd="@+id/editTextSpeciesName"
+                    android:layout_alignRight="@+id/editTextSpeciesName"
+                    android:layout_alignTop="@+id/editTextSpeciesName"
+                    android:layout_marginLeft="12dp"
+                    android:background="@drawable/editpensil"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutCommonName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layoutSpeciesName"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:id="@+id/textCommonName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Common Name"
+                    android:layout_gravity="bottom"
+                    android:textSize="@dimen/image_info_text_font_size"/>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/imageSpeciesMbLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="230dp"
+                android:layout_below="@+id/layoutCommonName"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:src="@drawable/pleasewait"
+                    android:id="@+id/imageSpeciesMb"/>
+
+                <com.ibin.plantplacepic.utility.RoundedImageView
+                    android:id="@+id/imagePicType"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@drawable/circleimage"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:visibility="gone"
+                    android:src="@drawable/flowerdisplayicon"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layoutUploadedInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/imageSpeciesMbLayout"
+                android:layout_marginTop="5dp">
+
+                <ImageView
+                    android:id="@+id/userlogo"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/user"/>
+
+
+                <TextView
+                    android:id="@+id/textUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Unknown"
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="center_vertical"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/userlogo"
+                    android:textSize="10sp"/>
+
+                <TextView
+                    android:id="@+id/uploadedDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="14-01-2018"
+                    android:layout_gravity="right"
+                    android:layout_marginLeft="10dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:textSize="@dimen/image_info_text_font_size"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/com_facebook_button_login_silver_background_color_pressed"
+                android:layout_below="@+id/layoutUploadedInfo"/>
+
+            <RelativeLayout
+                android:id="@+id/layoutLikeUnLike"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layoutUploadedInfo"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp">
+
+                    <ImageView
+                        android:id="@+id/buttonLike"
+                        android:layout_width="28dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_height="23dp"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/like_normal"/>
+
+<!-- android:background="@drawable/round_shape_map"-->
+                    <TextView
+                        android:id="@+id/like_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:alpha=".9"
+                        android:layout_toRightOf="@id/buttonLike"
+                        android:text="0"
+                        android:textSize="10sp"
+                        android:textStyle="bold"/>
+
+
+                    <ImageView
+                        android:id="@+id/buttonDislike"
+                        android:layout_width="28dp"
+                        android:layout_marginTop="1dp"
+                        android:layout_height="23dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_toRightOf="@+id/like_count"
+                        android:src="@drawable/dislike"/>
+
+
+                    <TextView
+                        android:id="@+id/dislike_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="1dp"
+                        android:alpha=".9"
+                        android:layout_toRightOf="@+id/buttonDislike"
+                        android:text="0"
+                        android:textSize="10sp"
+                        android:textStyle="bold"/>
+
+                  <ImageView
+                    android:id="@+id/buttonImageComment"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chat"/>
+
+                    <!--<TextView
+                        android:id="@+id/buttonImageComment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="30dp"
+                        android:background="@drawable/button_selector"
+                        android:padding="5dp"
+                        android:text="Comment"
+                        android:textSize="18sp"/>-->
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+
+</LinearLayout>

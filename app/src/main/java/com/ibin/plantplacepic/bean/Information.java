@@ -56,6 +56,21 @@ public class Information implements Parcelable {
     @SerializedName("upload_from")
     @Expose
     private String 	uploadFrom;
+    @SerializedName("mounting_board")
+    @Expose
+    private String 	mountingBoard;
+    @SerializedName("like_count")
+    @Expose
+    private String 	likeCount;
+    @SerializedName("dislike_count")
+    @Expose
+    private String 	disLikeCount;
+    @SerializedName("like")
+    @Expose
+    private String 	like;
+    @SerializedName("dislike")
+    @Expose
+    private String 	disLike;
 
     public String getUserId() {
         return userId;
@@ -177,6 +192,46 @@ public class Information implements Parcelable {
         this.userName = userName;
     }
 
+    public String getMountingBoard() {
+        return mountingBoard;
+    }
+
+    public void setMountingBoard(String mountingBoard) {
+        this.mountingBoard = mountingBoard;
+    }
+
+    public String getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(String likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public String getDisLikeCount() {
+        return disLikeCount;
+    }
+
+    public void setDisLikeCount(String disLikeCount) {
+        this.disLikeCount = disLikeCount;
+    }
+
+    public String getLike() {
+        return like;
+    }
+
+    public void setLike(String like) {
+        this.like = like;
+    }
+
+    public String getDisLike() {
+        return disLike;
+    }
+
+    public void setDisLike(String disLike) {
+        this.disLike = disLike;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -199,6 +254,11 @@ public class Information implements Parcelable {
         dest.writeString(time);
         dest.writeString(updateinfo);
         dest.writeString(uploadFrom);
+        dest.writeString(mountingBoard);
+        dest.writeString(likeCount);
+        dest.writeString(disLikeCount);
+        dest.writeString(like);
+        dest.writeString(disLike);
     }
     public Information() {
 
@@ -219,6 +279,11 @@ public class Information implements Parcelable {
         time = in.readString();
         updateinfo = in.readString();
         uploadFrom = in.readString();
+        mountingBoard = in.readString();
+        likeCount = in.readString();
+        disLikeCount = in.readString();
+        like = in.readString();
+        disLike = in.readString();
     }
 
     public static final Creator<Information> CREATOR = new Parcelable.Creator<Information>() {

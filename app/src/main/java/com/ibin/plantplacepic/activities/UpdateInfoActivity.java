@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -90,6 +91,8 @@ public class UpdateInfoActivity extends AppCompatActivity {
     com.github.clans.fab.FloatingActionButton floatingActionButtonLeaf;
     com.github.clans.fab.FloatingActionButton floatingActionButtonTree;
     DatabaseHelper databaseHelper ;
+    CheckBox checkMountainBoard;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -408,6 +411,12 @@ public class UpdateInfoActivity extends AppCompatActivity {
             final String REMARK = remarkEditText.getText().toString();
             final String IMAGE = updateBean.getImages();
             final String ADDRESS = cityEditText.getText().toString();
+            String mountingBoard = "";
+            if(checkMountainBoard.isChecked()){
+                mountingBoard= "Y";
+            }else{
+                mountingBoard= "N";
+            }
         /*when tag is same no need to move image*/
             if (TAG.equals(updateBean.getTag())) {
                 serverFolderPath = "";
@@ -417,14 +426,15 @@ public class UpdateInfoActivity extends AppCompatActivity {
                 Gson gson = new GsonBuilder().setLenient().create();
                 Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
                 ApiService service = retrofit.create(ApiService.class);
-                Call<LoginResponse> call = service.dataUpdateService(userId, IMAGE, SPECIES, REMARK, TAG, TITLE, serverFolderPath, serverFolderPathFrom, ADDRESS);
+                Call<LoginResponse> call = service.dataUpdateService(userId, IMAGE, SPECIES, REMARK, TAG, TITLE, serverFolderPath, serverFolderPathFrom, ADDRESS,mountingBoard);
+                final String finalMountingBoard = mountingBoard;
                 call.enqueue(new Callback<LoginResponse>() {
                     @Override
                     public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                         if (response != null && response.body() != null) {
                             if (response.body().getSuccess().toString().trim().equals("1")) {
                                 //update it in local db
-                                int updateResult = databaseHelper.updateInfoInLocal(userId, IMAGE, SPECIES, REMARK, TAG, TITLE, serverFolderPath, serverFolderPathFrom, ADDRESS);
+                                int updateResult = databaseHelper.updateInfoInLocal(userId, IMAGE, SPECIES, REMARK, TAG, TITLE, serverFolderPath, serverFolderPathFrom, ADDRESS, finalMountingBoard);
                                 Toast.makeText(UpdateInfoActivity.this, "Data will update soon...", Toast.LENGTH_LONG).show();
                                 Intent intentdASH = new Intent(UpdateInfoActivity.this, Dashboard.class);
                                 startActivity(intentdASH);
@@ -476,6 +486,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
         speciesEditText=(EditText)findViewById(R.id.speciesEditTextInUpdate);
         remarkEditText=(EditText)findViewById(R.id.remarkEditTextInUpdate);
         cityEditText = (AutoCompleteTextView) findViewById(R.id.cityEditTextInUpdate);
+        checkMountainBoard= (CheckBox) findViewById(R.id.checkMountainBoardUpdate);
     }
 
     /*place code starts*/

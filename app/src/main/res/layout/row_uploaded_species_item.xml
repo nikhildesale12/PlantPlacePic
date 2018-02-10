@@ -8,7 +8,9 @@
     <ImageView
         android:id="@+id/imageViewUploadedSpecies"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/species_folder_height"
+        android:layout_height="65dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
         android:src="@mipmap/ic_launcher_round" />
@@ -19,10 +21,7 @@
         android:layout_height="wrap_content"
         android:textSize="15sp"
         android:gravity="center"
-        android:padding="2dp"
-        android:textColor="#000"
-        android:textStyle="bold"
-        android:background="@color/colorgray"
+        android:textColor="#11130F"
         android:layout_gravity="center"
         android:layout_below="@+id/imageViewUploadedSpecies"
         android:text="Species Name"/>
