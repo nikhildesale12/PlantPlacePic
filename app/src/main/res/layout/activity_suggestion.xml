@@ -5,13 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ibin.plantplacepic.activities.FeedbackActivity">
+    tools:context="com.ibin.plantplacepic.activities.SuggestionActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbarFeedback"
         android:minHeight="?attr/actionBarSize"
         android:background="@color/colorPrimary"
-        app:title="@string/feedback_activity"
+        app:title="@string/suggestion_activity"
         app:titleTextColor="@color/colorWhite"
         android:layout_width="match_parent"
         android:layout_height="58dp"
@@ -28,86 +28,81 @@
         android:layout_below="@+id/toolbarFeedback">
 
         <TextView
-            android:id="@+id/textview_username"
+            android:id="@+id/textview_emailid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:text="Username"
+            android:text="Email Id"
             android:textColor="@color/colorText"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold"/>
 
         <EditText
-
-            android:id="@+id/edittext_username"
+            android:id="@+id/edittext_emailid"
             android:layout_width="match_parent"
             android:layout_height="@dimen/image_info_edittext_height"
-            android:layout_below="@+id/textview_username"
+            android:layout_below="@+id/textview_emailid"
             android:layout_marginBottom="20dp"
             android:background="@drawable/edittextbg"
-            android:hint="Please Enter Username"
-            android:paddingLeft="10dp"
+            android:hint="Please Enter Email Id"
             android:singleLine="true"
             android:textSize="@dimen/image_info_text_font_size"/>
 
         <TextView
-            android:id="@+id/textview_comment"
+            android:id="@+id/textview_contact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/edittext_username"
+            android:layout_below="@+id/edittext_emailid"
             android:layout_gravity="left"
             android:paddingTop="10dp"
-            android:text="Comment"
+            android:text="Contact"
             android:textColor="@color/colorText"
             android:textSize="17sp"
             android:textStyle="bold"/>
 
         <EditText
-            android:id="@+id/edittext_comment"
+            android:id="@+id/edittext_contact"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/image_info_edittext_height"
+            android:background="@drawable/edittextbg"
+            android:singleLine="true"
+            android:hint="Contact Number"
+            android:paddingLeft="10dp"
+            android:textSize="@dimen/image_info_text_font_size"
+            android:layout_below="@+id/textview_contact"/>
+
+        <TextView
+            android:id="@+id/textview_suggestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Suggestion"
+            android:textColor="@color/colorText"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingTop="19dp"/>
+
+        <EditText
+            android:id="@+id/edittext_suggestion"
             android:layout_width="match_parent"
             android:layout_height="102dp"
             android:background="@drawable/edittextbg"
             android:gravity="top|left"
-            android:hint="comment"
+            android:hint="Please Enter Suggestion"
             android:scrollbars="vertical"
             android:inputType="textMultiLine"
             android:padding="8dp"
-            android:maxLength="100"
+            android:maxLength="200"
             android:textSize="@dimen/image_info_text_font_size"
-            android:layout_below="@+id/textview_comment"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
-
-        <TextView
-            android:id="@+id/textview_rating"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Rating"
-            android:textColor="@color/colorText"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:paddingTop="19dp"/>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RatingBar
-                android:id="@+id/ratingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="10dp"/>
-
-        </RelativeLayout>
+            android:layout_below="@+id/textview_suggestion"/>
 
         <Button
-            android:id="@+id/button_feedback_submit"
+            android:id="@+id/button_suggestion_submit"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height"
-            android:textColor="@color/colorWhite"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
             android:background="@drawable/button_selector"
+            android:textColor="@color/colorWhite"
             android:text="Submit"/>
     </LinearLayout>
 </RelativeLayout>

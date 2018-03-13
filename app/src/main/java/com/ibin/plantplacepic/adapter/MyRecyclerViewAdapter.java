@@ -31,6 +31,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -50,6 +52,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibin.plantplacepic.R;
+import com.ibin.plantplacepic.activities.LargeZoomActivity;
 import com.ibin.plantplacepic.activities.MountingBoardActivity;
 import com.ibin.plantplacepic.bean.CommentResponse;
 import com.ibin.plantplacepic.bean.CommentResponseBean;
@@ -69,6 +72,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -88,7 +92,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     RecyclerView mRecyclerView;
     RecyclerView.Adapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
-
+    private List<Information> dataListSameSpecies;
     public static class DataObjectHolder extends RecyclerView.ViewHolder {//implements View.OnClickListener
         EditText textScientificName;
         TextView uploadedDate;
@@ -299,6 +303,22 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
                     }
                 }
             });
+
+            holder.imageSpecies.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dataListSameSpecies = new ArrayList<>();
+                    Information information = new Information();
+                    information.setImages(informationList.get(position).getImages());
+                    dataListSameSpecies.add(information);
+                    Intent intent = new Intent(activity, LargeZoomActivity.class);
+                    Bundle data = new Bundle();
+                    data.putParcelableArrayList("imageDataList", (ArrayList<? extends Parcelable>) dataListSameSpecies);
+                    intent.putExtras(data);
+                    activity.startActivity(intent);
+                }
+            });
+
 //            holder.imagePicType.setVisibility(View.VISIBLE);
 //            holder.imagePicType.setImageDrawable(activity.getResources().getDrawable(R.drawable.leafdisplayicon));
             if(informationList.get(position).getTag() != null){

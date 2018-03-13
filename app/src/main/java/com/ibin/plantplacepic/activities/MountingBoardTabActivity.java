@@ -3,6 +3,7 @@ package com.ibin.plantplacepic.activities;
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
+import android.support.annotation.ColorInt;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

@@ -36,6 +36,12 @@ public interface ApiService {
             @Query("COMMENT") String COMMENT,
             @Query("RATING") String RATING
     );
+    @GET(Constants.POST_SUGGESTION_DATA)
+    Call<LoginResponse> postSuggestionData(
+            @Query("USERNAME") String USERNAME,
+            @Query("CONTACT") String CONTACT,
+            @Query("SUGGESTION") String SUGGESTION
+    );
 
     @GET(Constants.REGISTER_SERVICE_URL)
     Call<LoginResponse> registerUserService(

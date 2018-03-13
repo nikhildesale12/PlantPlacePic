@@ -87,6 +87,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
     RelativeLayout buttonCamera;
     RelativeLayout buttonSearch;
     RelativeLayout buttonMountingBeard;
+    RelativeLayout buttonSuggestion;
     public TextView textUploadCount;
     String currentDateTimeString;
     GPSTracker gps;
@@ -308,6 +309,14 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
                 @Override
                 public void onClick(View v) {
                     Intent intent1 = new Intent(Dashboard.this, MountingBoardTabActivity.class);
+                    startActivity(intent1);
+                    //finish();
+                }
+            });
+            buttonSuggestion.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent1 = new Intent(Dashboard.this, SuggestionActivity.class);
                     startActivity(intent1);
                     //finish();
                 }
@@ -908,6 +917,7 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         buttonGallery = (RelativeLayout)findViewById(R.id.buttonGallery);
         buttonSearch = (RelativeLayout)findViewById(R.id.buttonSearchMain);
         buttonMountingBeard = (RelativeLayout) findViewById(R.id.buttonMountingBeard);
+        buttonSuggestion=(RelativeLayout)findViewById(R.id.buttonSuggestion);
         textUserName = (TextView) findViewById(R.id.textUserName);
         textUploadCount = (TextView)findViewById(R.id.text_uploaded_count);
         databaseHelper = DatabaseHelper.getDatabaseInstance(Dashboard.this);

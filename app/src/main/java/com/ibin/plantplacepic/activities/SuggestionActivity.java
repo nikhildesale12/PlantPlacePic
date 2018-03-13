@@ -2,17 +2,15 @@ package com.ibin.plantplacepic.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
-import android.widget.Toast;
 
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
@@ -26,50 +24,51 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class FeedbackActivity extends AppCompatActivity {
+public class SuggestionActivity extends AppCompatActivity {
 
-    Button button_feedback_submit;
-    RatingBar ratingBar;
-    EditText editTextUserName;
-    EditText editTextComment;
+    Button button_suggestion_submit;
+    EditText editTextEmailId;
+    EditText editTextContact;
+    EditText editTextSuggestion;
     DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feedback);
+        setContentView(R.layout.activity_suggestion);
+
         initViews();
         SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_LOGIN, MODE_PRIVATE);
         String username = prefs.getString("USERNAME", "0");
-        editTextUserName.setText(username);
-        button_feedback_submit.setOnClickListener(new View.OnClickListener() {
+        editTextEmailId.setText(username);
+        button_suggestion_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent i=new Intent(FeedbackActivity.this,Dashboard.class);
-//                startActivity(i);
-                  if(editTextUserName.getText().toString().trim().length() == 0){
-                      editTextUserName.requestFocus();
-                      editTextUserName.setError("Please Enter First Name");
-                  }else if(editTextComment.getText().toString().trim().length() == 0){
-                      editTextComment.requestFocus();
-                      editTextComment.setError("Please Enter First Name");
-                  }else{
-                      callFeedbackService();
-                  }
+                if(editTextEmailId.getText().toString().trim().length() == 0){
+                    editTextEmailId.requestFocus();
+                    editTextEmailId.setError("Please Enter First EmailID");
+                }else if(editTextContact.getText().toString().trim().length() == 0) {
+                    editTextContact.requestFocus();
+                    editTextContact.setError("Please Enter First Contact number");
+                }else if(editTextSuggestion.getText().toString().trim().length()==0){
+                    editTextSuggestion.requestFocus();
+                    editTextSuggestion.setError("Please Enter Your Suggestion here");
+                }else{
+                    callSuggestionService();
+                }
             }
         });
     }
-    /*Service Call to give feedback by user*/
-    private void callFeedbackService(){
-        String rating=String.valueOf(ratingBar.getRating());
-        final ProgressDialog dialog = new ProgressDialog(FeedbackActivity.this);
+
+    private void callSuggestionService() {
+        final ProgressDialog dialog = new ProgressDialog(SuggestionActivity.this);
         dialog.setMessage("Please Wait...");
         dialog.setIndeterminate(false);
         dialog.setCancelable(false);
         dialog.show();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         ApiService service = retrofit.create(ApiService.class);
-        Call<LoginResponse> call = service.postFeedBackData(editTextUserName.getText().toString(),editTextComment.getText().toString(),rating);
+        Call<LoginResponse> call = service.postSuggestionData(editTextEmailId.getText().toString(),editTextContact.getText().toString(),editTextSuggestion.getText().toString());
         call.enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
@@ -78,7 +77,7 @@ public class FeedbackActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                     if(response.body().getSuccess().toString().trim().equals("1")) {
-                        Intent i=new Intent(FeedbackActivity.this,Dashboard.class);
+                        Intent i=new Intent(SuggestionActivity.this,Dashboard.class);
                         i.putExtra("uploadedCount",Constants.FROM_);
                         startActivity(i);
                         finish();
@@ -86,12 +85,12 @@ public class FeedbackActivity extends AppCompatActivity {
                         if(dialog != null && dialog.isShowing()){
                             dialog.dismiss();
                         }
-                        Constants.dispalyDialogInternet(FeedbackActivity.this,"Result",response.body().getResult(),true,false);
+                        Constants.dispalyDialogInternet(SuggestionActivity.this,"Result",response.body().getResult(),true,false);
                     }else {
                         if(dialog != null && dialog.isShowing()){
                             dialog.dismiss();
                         }
-                        Constants.dispalyDialogInternet(FeedbackActivity.this,"Error","Technical Error !!!",false,false);
+                        Constants.dispalyDialogInternet(SuggestionActivity.this,"Error","Technical Error !!!",false,false);
                     }
                 }
             }
@@ -101,19 +100,19 @@ public class FeedbackActivity extends AppCompatActivity {
                 if(dialog != null && dialog.isShowing()){
                     dialog.dismiss();
                 }
-                Constants.dispalyDialogInternet(FeedbackActivity.this,"Result",t.toString(),false,false);
+                Constants.dispalyDialogInternet(SuggestionActivity.this,"Result",t.toString(),false,false);
             }
         });
+
     }
 
-
     private void initViews() {
-        button_feedback_submit=(Button)findViewById(R.id.button_feedback_submit);
-        ratingBar=(RatingBar) findViewById(R.id.ratingBar);
-        editTextUserName = (EditText) findViewById(R.id.edittext_username);
-        editTextComment = (EditText) findViewById(R.id.edittext_comment);
-        InputMethodManager inputMethodManager = (InputMethodManager) FeedbackActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-//        inputMethodManager.hideSoftInputFromWindow(FeedbackActivity.this.getCurrentFocus().getWindowToken(), 0);
-        inputMethodManager.hideSoftInputFromWindow(editTextUserName.getWindowToken(), 0);
+        button_suggestion_submit=(Button)findViewById(R.id.button_suggestion_submit);
+        editTextEmailId = (EditText) findViewById(R.id.edittext_emailid);
+        editTextContact = (EditText) findViewById(R.id.edittext_contact);
+        editTextSuggestion=(EditText)findViewById(R.id.edittext_suggestion);
+        InputMethodManager inputMethodManager = (InputMethodManager) SuggestionActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+//        inputMethodManager.hideSoftInputFromWindow(SuggestionActivity.this.getCurrentFocus().getWindowToken(), 0);
+        inputMethodManager.hideSoftInputFromWindow(editTextEmailId.getWindowToken(), 0);
     }
 }

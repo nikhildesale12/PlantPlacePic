@@ -75,8 +75,10 @@
                     <ImageView
                         android:layout_width="55dp"
                         android:layout_height="55dp"
-                        android:layout_centerInParent="true"
-                        android:src="@drawable/camera3"/>
+                        android:layout_alignEnd="@+id/textView"
+                        android:layout_alignRight="@+id/textView"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/camera4"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -88,7 +90,8 @@
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginBottom="5dp"
-                        android:text="Camera"/>
+                        android:text="Camera"
+                        android:id="@+id/textView"/>
 
                 </RelativeLayout>
             </LinearLayout>
@@ -147,29 +150,29 @@
                 android:layout_height="match_parent">
 
                 <RelativeLayout
-                    android:background="@drawable/square_shape"
                     android:id="@+id/buttonReviewMyUploads"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:background="@drawable/square_shape">
 
                     <ImageView
                         android:layout_width="55dp"
                         android:layout_height="60dp"
-                        android:paddingBottom="5dp"
                         android:layout_centerInParent="true"
+                        android:paddingBottom="5dp"
                         android:src="@drawable/upload1"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:textColor="@android:color/white"
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginBottom="5dp"
-                        android:text="Review My Upload"/>
+                        android:text="Review My Upload"
+                        android:textColor="@android:color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/text_uploaded_count"
@@ -177,9 +180,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentTop="true"
-                        android:textColor="@android:color/white"
                         android:background="@drawable/round_shape"
                         android:text="0"
+                        android:textColor="@android:color/white"
                         android:textSize="10sp"
                         android:textStyle="bold"/>
                 </RelativeLayout>
@@ -234,17 +237,17 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="0.50"
-                android:orientation="vertical"
+                android:layout_height="match_parent"
                 android:layout_marginRight="10dp"
+                android:layout_weight="0.50"
                 android:background="#66494747"
-                android:layout_height="match_parent">
+                android:orientation="vertical">
 
                 <RelativeLayout
-                    android:background="@drawable/square_shape"
                     android:id="@+id/buttonMountingBeard"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:background="@drawable/square_shape">
 
                     <ImageView
                         android:layout_width="55dp"
@@ -255,14 +258,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:textSize="15sp"
-                        android:textColor="@android:color/white"
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginBottom="5dp"
-                        android:text="Mounting Board"/>
+                        android:text="Mounting Board"
+                        android:textColor="@android:color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"/>
 
                 </RelativeLayout>
 
@@ -270,26 +273,37 @@
 
             <LinearLayout
                 android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
                 android:layout_weight="0.50"
-                android:layout_marginLeft="5dp"
-                android:background="#663B3E3C"
-                android:orientation="vertical"
-                android:visibility="invisible"
-                android:layout_height="match_parent">
+                android:background="#66494747"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:src="@mipmap/cameraicon"/>
+                <RelativeLayout
+                    android:id="@+id/buttonSuggestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/square_shape">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="20sp"
-                    android:text="Review My Upload"/>
+                    <ImageView
+                        android:layout_width="55dp"
+                        android:layout_height="55dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/suggestion1"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="5dp"
+                        android:text="Suggestion"
+                        android:textColor="@android:color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"/>
+
+                </RelativeLayout>
 
             </LinearLayout>
 

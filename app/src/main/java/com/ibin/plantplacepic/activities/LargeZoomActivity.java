@@ -20,7 +20,7 @@ public class LargeZoomActivity extends AppCompatActivity {
     ViewPager viewPager;
     int selectedPosition;
     ImageView swipeImage ;
-    String fromActivity="";
+    String fromMap="";
     CustomPagerAdapterImage customPagerAdapterImage;
     ArrayList<Information> dataList = null;
     @Override
@@ -34,7 +34,7 @@ public class LargeZoomActivity extends AppCompatActivity {
             if(getIntent().getExtras() != null){
                 dataList = getIntent().getExtras().getParcelableArrayList("imageDataList");
                 selectedPosition = getIntent().getExtras().getInt("selectedPosition");
-                fromActivity = getIntent().getExtras().getString("FromMap");
+                fromMap = getIntent().getExtras().getString("FromMap");
             }
         }
         SharedPreferences prefs = getSharedPreferences(Constants.MY_PREFS_SWIPE, MODE_PRIVATE);
@@ -74,7 +74,7 @@ public class LargeZoomActivity extends AppCompatActivity {
         }else{
             swipeImage.setVisibility(View.GONE);
         }
-        if(fromActivity != null && fromActivity.equals("FromMap")){
+        if(fromMap != null && fromMap.equals("FromMap")){
             customPagerAdapterImage = new CustomPagerAdapterImage(LargeZoomActivity.this, dataList,"",LargeZoomActivity.this,false);
             viewPager.setAdapter(customPagerAdapterImage);
             viewPager.setCurrentItem(selectedPosition);
@@ -116,7 +116,7 @@ public class LargeZoomActivity extends AppCompatActivity {
         cancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(fromActivity != null && fromActivity.equals("FromMap")) {
+                if(fromMap != null && fromMap.equals("FromMap")) {
                     Intent i = new Intent(LargeZoomActivity.this, SpeciesAroundYouActivity.class);
                     startActivity(i);
                 }
@@ -128,7 +128,7 @@ public class LargeZoomActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if(fromActivity != null && fromActivity.equals("FromMap")) {
+        if(fromMap != null && fromMap.equals("FromMap")) {
             Intent i = new Intent(LargeZoomActivity.this, SpeciesAroundYouActivity.class);
             startActivity(i);
         }

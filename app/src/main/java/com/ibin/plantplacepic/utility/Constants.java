@@ -58,6 +58,7 @@ public class Constants {
     public static final String RENAME_SPECIES_SERVICE_URL = "/plantplace/renameSpecies.php";
     public static final String DOWNLOAD_DATA_SERVICE_URL = "/plantplace/getDataByUserId.php";
     public static final String POST_FEEDBACK_DATA = "/plantplace/getFeedbackData.php";
+    public static final String POST_SUGGESTION_DATA = "/plantplace/getSuggestionData.php";
     //public static final String DOWNLOAD_ALL_DATA_SERVICE_URL  = "/plantplace/getAllData.php";
     public static final String GET_ALL_DATA_SERVICE_URL = "/plantplace/getAllSpeciesData.php";
     public static final String GET_ALL_MOUNTING_BOATD_DATA_SERVICE_URL = "/plantplace/getAllSpeciesDataMountingBoard.php";

@@ -15,7 +15,7 @@
         android:name=".MyApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="false"
-        android:icon="@drawable/appicon1"
+        android:icon="@mipmap/appicon1"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -138,6 +138,8 @@
         <activity android:name=".activities.MountingBoardTabActivity">
         </activity>
         <activity android:name=".NotificationActivity">
+        </activity>
+        <activity android:name=".activities.SuggestionActivity">
         </activity>
     </application>
 
