@@ -129,6 +129,4 @@ public class UploadedSpeciesAdapter extends SelectableAdapter<UploadedSpeciesAda
             public boolean onItemLongClicked(int position);
         }
     }
-
-
 }
