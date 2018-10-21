@@ -7,7 +7,7 @@ android {
         applicationId "com.ibin.plantplacepic"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 23
+        versionCode 24
         versionName "1.21"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
