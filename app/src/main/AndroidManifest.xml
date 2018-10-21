@@ -28,6 +28,8 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="456142274781300"/>
 
+        <meta-data android:name="firebase_analytics_collection_enabled" android:value="false"/>
+
         <activity
             android:name=".activities.SignInActivity"
             android:screenOrientation="portrait">
