@@ -16,11 +16,13 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -927,7 +929,8 @@ public class Dashboard extends AppCompatActivity implements GoogleApiClient.OnCo
         alertDialog.setTitle("Alert !");
         alertDialog.setMessage("Do you want to close application?");
         alertDialog.setPositiveButton("Close", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int which) {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            public void onClick(DialogInterface dialog, int which) {
                 //finish();
                 Intent intent = new Intent(getApplicationContext(), Dashboard.class);
                 //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -160,7 +160,7 @@ public class ImageUploadService extends Service{
         }
     }
 
-    /*Image Compression new starts*/
+     /*Image Compression new starts*/
     public void compressImage(SubmitRequest submitRequest) {
         String imagePath = getRealPathFromURI(submitRequest.getImageUrl());
         Bitmap scaledBitmap = null;
@@ -259,7 +259,7 @@ public class ImageUploadService extends Service{
                 scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                 out.flush();
                 out.close();
-            /*Uploading image to server*/
+                /*Uploading image to server*/
                 new UploadFileToServer(submitRequest).executeOnExecutor(sExecutor);
             } catch (IOException e) {
                 e.printStackTrace();

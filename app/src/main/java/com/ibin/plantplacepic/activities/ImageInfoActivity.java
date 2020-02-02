@@ -124,8 +124,6 @@ public class ImageInfoActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         submitRequest = new SubmitRequest();
-        Log.d(" Constants.countSelectedPhotoFromGallery "," Constants.countSelectedPhotoFromGallery : "+Constants.countSelectedPhotoFromGallery);
-
         /*if(intent != null){
             imageUri = Uri.parse(intent.getStringExtra("imageUri"));
             captureImage.setImageURI(imageUri);
@@ -197,8 +195,10 @@ public class ImageInfoActivity extends AppCompatActivity {
                 } else if (cityEditText.getVisibility() == View.VISIBLE && cityEditText.getText().toString().trim().length() == 0) {
                     cityEditText.requestFocus();
                     cityEditText.setError("Please Enter Location");
+                } else if(textTeg.getText().toString() == null || (textTeg.getText().toString() != null && textTeg.getText().toString().length()==0)) {
+                    Toast.makeText(ImageInfoActivity.this,"Please select TAG from right below plus button",Toast.LENGTH_LONG).show();
                 } else {
-                        UploadImageServiceCall();
+                    UploadImageServiceCall();
                 }
             }
         });

@@ -37,6 +37,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ibin.plantplacepic.R;
 import com.ibin.plantplacepic.bean.LoginResponse;
 import com.ibin.plantplacepic.bean.UserDetailResponseBean;
@@ -230,15 +232,15 @@ public class LoginMainActivity extends AppCompatActivity implements GoogleApiCli
         dialog.setIndeterminate(false);
         dialog.setCancelable(false);
         dialog.show();
-//        Gson gson = new GsonBuilder()
-//                .setLenient()
-//                .create();
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
         final OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .build();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(okHttpClient)
                 .build();
         ApiService service = retrofit.create(ApiService.class);

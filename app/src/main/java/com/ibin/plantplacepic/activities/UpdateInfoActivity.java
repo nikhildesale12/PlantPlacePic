@@ -193,7 +193,11 @@ public class UpdateInfoActivity extends AppCompatActivity {
                 }
                 speciesEditText.setText(formatedSpeciesName);
                 /*Species name format end*/
-                UpdateImageServiceCall();
+                if(textTeg.getText().toString() == null || (textTeg.getText().toString() != null && textTeg.getText().toString().length()==0)) {
+                    Toast.makeText(UpdateInfoActivity.this,"Please select TAG from right below plus button",Toast.LENGTH_LONG).show();
+                } else {
+                    UpdateImageServiceCall();
+                }
             }
         });
 

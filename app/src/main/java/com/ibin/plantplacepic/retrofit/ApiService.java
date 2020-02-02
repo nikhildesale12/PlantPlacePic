@@ -68,9 +68,9 @@ public interface ApiService {
             @Query("MOUNTING_BOARD") String MOUNTING_BOARD
     );
 
-    @Multipart
-    @POST(Constants.UPLOAD_SERVICE_URL)
-    Call<UploadResponse> uploadFile(@Part MultipartBody.Part file, @Part("file") RequestBody name);
+//    @Multipart
+//    @POST(Constants.UPLOAD_SERVICE_URL)
+//    Call<UploadResponse> uploadFile(@Part MultipartBody.Part file, @Part("file") RequestBody name);
 
     @GET(Constants.DOWNLOAD_DATA_SERVICE_URL)
     Call<InformationResponseBean> downloadDataById(

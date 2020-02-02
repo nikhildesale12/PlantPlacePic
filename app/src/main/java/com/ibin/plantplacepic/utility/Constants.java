@@ -38,7 +38,7 @@ public class Constants {
     public static final int RESULT_OPEN_CAMERA = 2 ;
     public static final int REQUEST_CODE_CROP_IMAGE = 3 ;
     public static final int API_LEVEL_23 = 23;
-    public static final String IMAGE_NAME = "Upload_" ;
+        public static final String IMAGE_NAME = "Upload_" ;
     public static final String USER_PHOTO = "UserPhoto.jpeg";
     public static final String FOLDER_PATH = Environment.getExternalStorageDirectory() + File.separator + "PLANTPLACE" ;
     //public static final String BASE_URL = "http://test.xamarin-tools.com";
