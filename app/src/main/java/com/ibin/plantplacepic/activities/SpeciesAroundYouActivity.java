@@ -418,7 +418,7 @@ public class SpeciesAroundYouActivity extends FragmentActivity  implements OnMap
                 mMap.setBuildingsEnabled(true);
                 mMap.setIndoorEnabled(true);
                 mMap.getUiSettings().setCompassEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
                 mMap.getUiSettings().setScrollGesturesEnabled(true);
                 mMap.getUiSettings().setZoomGesturesEnabled(true);
                 mMap.getUiSettings().setTiltGesturesEnabled(true);
